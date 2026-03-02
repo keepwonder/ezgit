@@ -85,27 +85,6 @@
     <section class="bg-gradient-to-r from-primary to-primary-light text-white py-8">
         <div class="max-w-6xl mx-auto px-4">
             <div class="flex items-center justify-between">
-                <div>
-                    <h2 class="text-2xl font-bold mb-2">收藏有价值的开源项目</h2>
-                    <p class="text-white/80 text-sm">整理、分类、记录你的 GitHub 探索之旅，不再让好项目淹没在浏览历史里</p>
-                </div>
-                
-                <div class="flex gap-6 text-center">
-                    <div>
-                        <p class="text-3xl font-bold" id="total-count">0</p>
-                        <p class="text-white/80 text-xs">已收藏</p>
-                    </div>
-                    <div>
-                        <p class="text-3xl font-bold" id="category-count">0</p>
-                        <p class="text-white/80 text-xs">分类</p>
-                    </div>
-                    <div>
-                        <p class="text-3xl font-bold" id="starred-count">0</p>
-                        <p class="text-white/80 text-xs">精选</p>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- Categories -->
@@ -173,73 +152,87 @@
 
     <!-- Add Modal -->
     <div id="add-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[85vh]">
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
                 <h3 class="text-lg font-bold text-gray-900">添加仓库</h3>
-                <button onclick="hideAddModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
+                <button onclick="hideAddModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">GitHub URL *</label>
-                    <input type="text" id="repo-url" placeholder="https://github.com/user/repo" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        onblur="fetchRepoInfo()">
-                    <p class="text-xs text-gray-500 mt-1">输入 URL 后会自动获取仓库信息</p>
-                </div>
-                
-                <div id="repo-preview" class="hidden bg-gray-50 rounded-lg p-4">
-                    <div class="flex items-center gap-3">
-                        <img id="preview-avatar" src="" alt="" class="w-10 h-10 rounded-full">
-                        <div class="flex-1">
-                            <p id="preview-name" class="font-medium text-gray-900"></p>
-                            <p id="preview-desc" class="text-sm text-gray-600 truncate"></p>
-                        </div>
-                    </div㹍iv class="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                        <span><i class="fas fa-star text-yellow-400 mr-1"></i> <span id="preview-stars"></span></span>
-                        <span><i class="fas fa-code mr-1"></i> <span id="preview-lang"></span></span>
+            <!-- Body -->
+            <div class="px-5 py-4 overflow-y-auto">
+                <!-- URL Input -->
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">GitHub URL <span class="text-red-500">*</span></label>
+                    <div class="flex gap-2">
+                        <input type="text" id="repo-url" placeholder="https://github.com/user/repo" 
+                            class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            onblur="fetchRepoInfo()">
+                        <button onclick="fetchRepoInfo()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm transition">
+                            <i class="fas fa-search"></i>
+                        </button>
                     </div>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">分类 *</label>
-                    <select id="repo-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                <!-- Preview -->
+                <div id="repo-preview" class="hidden mb-3 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <img id="preview-avatar" src="" alt="" class="w-9 h-9 rounded-lg bg-white">
+                        <div class="flex-1 min-w-0">
+                            <p id="preview-name" class="font-medium text-gray-900 text-sm truncate"></p>
+                            <p id="preview-desc" class="text-xs text-gray-500 truncate"></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                        <span><i class="fas fa-star text-yellow-400 mr-1"></i><span id="preview-stars"></span></span>
+                        <span><i class="fas fa-code mr-1"></i><span id="preview-lang"></span></span>
+                    </div>
+                </div>
+                
+                <!-- Category -->
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">分类 <span class="text-red-500">*</span></label>
+                    <select id="repo-category" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
                         <option value="">选择分类...</option>
-                        <option value="ai">🤖 AI & 机器学习</option>
-                        <option value="frontend">💻 前端开发</option>
-                        <option value="backend">🔧 后端服务</option>
-                        <option value="devops">⚙️ DevOps & 运维</option>
-                        <option value="tools">🛠️ 效率工具</option>
-                        <option value="learning">📚 学习资源</option>
+                        <option value="ai">🤖 AI & ML</option>
+                        <option value="frontend">💻 前端</option>
+                        <option value="backend">🔧 后端</option>
+                        <option value="devops">⚙️ DevOps</option>
+                        <option value="tools">🛠️ 工具</option>
+                        <option value="learning">📚 学习</option>
                         <option value="others">📁 其他</option>
                     </select>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">个人评价</label>
-                    <input type="text" id="repo-title" placeholder="一句话概括这个项目的价值..." 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                <!-- Title -->
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">个人评价</label>
+                    <input type="text" id="repo-title" placeholder="一句话概括项目价值..." 
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">详细笔记</label>
-                    <textarea id="repo-notes" rows="3" placeholder="记录项目的亮点、使用心得、学习收获..." 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
+                <!-- Notes -->
+                <div class="mb-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-1.5">详细笔记</label>
+                    <textarea id="repo-notes" rows="2" placeholder="记录亮点、心得..." 
+                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
                 </div>
                 
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="repo-starred" class="w-4 h-4 text-primary rounded border-gray-300">
-                    <label for="repo-starred" class="text-sm text-gray-700"><i class="fas fa-star text-yellow-400 mr-1"></i> 标记为精选</label>
-                </div>
+                <!-- Starred -->
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="repo-starred" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+                    <span class="text-sm text-gray-700"><i class="fas fa-star text-yellow-400 mr-1"></i>标记为精选</span>
+                </label>
             </div>
             
-            <div class="flex gap-3 mt-6">
-                <button onclick="hideAddModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+            <!-- Footer -->
+            <div class="px-5 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
+                <button onclick="hideAddModal()" class="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
                     取消
                 </button>
-                <button onclick="addRepo()" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+                <button onclick="addRepo()" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition text-sm font-medium">
                     添加收藏
                 </button>
             </div>
