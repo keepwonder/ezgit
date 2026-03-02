@@ -291,8 +291,13 @@
             }
         ];
 
+
+        // Cloud API Config
+        const CLOUD_API_URL = "/api/repos";
+
         // Data Management
-        let repos = JSON.parse(localStorage.getItem('ezgit-repos') || JSON.stringify(sampleRepos));
+        let repos = [];
+// let repos = JSON.parse(localStorage.getItem('ezgit-repos') || JSON.stringify(sampleRepos));
         let currentCategory = 'all';
         let searchQuery = '';
         let currentView = localStorage.getItem('ezgit-view') || 'grid'; // 'grid' or 'list'
@@ -313,6 +318,7 @@
             updateStats();
             updateViewButtons();
             renderRepos();
+            loadReposFromCloud();
         });
 
         // Toggle View
