@@ -4,13 +4,13 @@
     "url": "https://github.com/dongbeixiaohuo/writing-agent",
     "owner": "dongbeixiaohuo",
     "name": "writing-agent",
-    "tags": [],
-    "notes": "与 AI 讨论于 2026/3/2 19:22:20",
-    "status": "unread",
+    "description": "🚀 基于 Claude Code 的去AI味写作系统",
+    "language": "Markdown",
+    "stars": "2.1k",
+    "category": "ai",
+    "title": "AI写作工作流，反AI味设计值得借鉴",
+    "notes": "Skills + Subagents 架构设计很棒",
     "starred": false,
-    "discussedWithAI": true,
-    "source": "ai_chat",
-    "addedAt": "2026-03-02T11:22:12.773Z",
-    "updatedAt": "2026-03-02T11:22:20.227Z"
+    "addedAt": "2026-03-02T11:22:12.773Z"
   }
 ]
