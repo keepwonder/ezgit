@@ -89,26 +89,20 @@
                     <button data-category="all" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-green-600 text-white">
                         <i class="fas fa-th-large mr-1"></i> 全部
                     </button>
-                    <button data-category="ai" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-robot mr-1"></i> AI & ML
-                    </button>
-                    <button data-category="frontend" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-desktop mr-1"></i> 前端开发
-                    </button>
-                    <button data-category="backend" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-server mr-1"></i> 后端服务
-                    </button>
-                    <button data-category="devops" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-cogs mr-1"></i> DevOps
-                    </button>
                     <button data-category="tools" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
                         <i class="fas fa-wrench mr-1"></i> 效率工具
                     </button>
                     <button data-category="learning" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
                         <i class="fas fa-graduation-cap mr-1"></i> 学习资源
                     </button>
-                    <button data-category="others" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-folder mr-1"></i> 其他
+                    <button data-category="inspiration" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
+                        <i class="fas fa-lightbulb mr-1"></i> 参考灵感
+                    </button>
+                    <button data-category="infrastructure" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
+                        <i class="fas fa-cubes mr-1"></i> 基础建设
+                    </button>
+                    <button id="add-category-btn" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-500 border border-dashed border-gray-300 hover:bg-gray-200 hover:text-gray-700 transition">
+                        <i class="fas fa-plus mr-1"></i> 添加分类
                     </button>
                 </div>
                 
@@ -211,14 +205,18 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">分类 <span class="text-red-500">*</span></label>
                     <select id="repo-category" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">选择分类...</option>
-                        <option value="ai">🤖 AI & ML</option>
-                        <option value="frontend">💻 前端开发</option>
-                        <option value="backend">⚙️ 后端服务</option>
-                        <option value="devops">🚀 DevOps</option>
                         <option value="tools">🔧 效率工具</option>
                         <option value="learning">📚 学习资源</option>
-                        <option value="others">📦 其他</option>
+                        <option value="inspiration">💡 参考灵感</option>
+                        <option value="infrastructure">📦 基础建设</option>
                     </select>
+                    <div id="custom-category-input" class="hidden mt-2">
+                        <div class="flex gap-2">
+                            <input type="text" id="new-category-name" placeholder="分类名称" class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <button id="save-category-btn" class="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700">添加</button>
+                            <button id="cancel-category-btn" class="px-3 py-2 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200">取消</button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="mb-3">
@@ -272,21 +270,99 @@
         let currentCategory = 'all';
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
 
-        const categoryNames = {
-            ai: 'AI & ML',
-            frontend: '前端开发',
-            backend: '后端服务',
-            devops: 'DevOps',
+        // 加载自定义分类
+        let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
+        
+        const defaultCategoryNames = {
             tools: '效率工具',
             learning: '学习资源',
-            others: '其他'
+            inspiration: '参考灵感',
+            infrastructure: '基础建设'
         };
+        
+        // 合并默认和自定义分类
+        let categoryNames = { ...defaultCategoryNames, ...customCategories };
 
         // DOM 元素
         const repoList = document.getElementById('repo-list');
         const emptyState = document.getElementById('empty-state');
         const addModal = document.getElementById('add-modal');
         const toast = document.getElementById('toast');
+
+        // 渲染分类筛选按钮
+        function renderCategoryFilters() {
+            const container = document.getElementById('category-filters');
+            const addBtn = document.getElementById('add-category-btn');
+            
+            // 清除现有分类按钮（保留"全部"和添加按钮）
+            container.querySelectorAll('.filter-btn:not([data-category="all"])').forEach(btn => btn.remove());
+            
+            // 添加所有分类按钮
+            Object.entries(categoryNames).forEach(([key, name]) => {
+                const btn = document.createElement('button');
+                btn.className = `filter-btn px-4 py-2 rounded-full text-sm font-medium transition border ${currentCategory === key ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200'}`;
+                btn.dataset.category = key;
+                btn.innerHTML = `<i class="fas fa-tag mr-1"></i> ${name}`;
+                btn.onclick = () => filterByCategory(key);
+                container.insertBefore(btn, addBtn);
+            });
+        }
+
+        // 更新分类下拉框
+        function updateCategorySelect() {
+            const select = document.getElementById('repo-category');
+            const currentValue = select.value;
+            
+            // 保留第一个option，重新生成其他选项
+            select.innerHTML = '<option value="">选择分类...</option>';
+            
+            Object.entries(categoryNames).forEach(([key, name]) => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+            
+            // 添加"+ 添加自定义分类"选项
+            const addOption = document.createElement('option');
+            addOption.value = '__add_new__';
+            addOption.textContent = '+ 添加自定义分类';
+            select.appendChild(addOption);
+            
+            select.value = currentValue;
+        }
+
+        // 添加自定义分类
+        function addCustomCategory() {
+            const input = document.getElementById('new-category-name');
+            const name = input.value.trim();
+            
+            if (!name) {
+                showToast('请输入分类名称');
+                return;
+            }
+            
+            // 生成唯一key
+            const key = 'custom_' + Date.now();
+            customCategories[key] = name;
+            categoryNames[key] = name;
+            
+            // 保存到localStorage
+            localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+            
+            // 更新UI
+            renderCategoryFilters();
+            updateCategorySelect();
+            
+            // 选中新添加的分类
+            document.getElementById('repo-category').value = key;
+            
+            // 隐藏输入框
+            document.getElementById('custom-category-input').classList.add('hidden');
+            input.value = '';
+            
+            showToast('分类已添加');
+        }
 
         // 更新统计
         function updateStats() {
@@ -536,6 +612,8 @@
             document.getElementById('repo-notes').value = '';
             document.getElementById('repo-starred').checked = false;
             document.getElementById('repo-preview').classList.add('hidden');
+            document.getElementById('custom-category-input').classList.add('hidden');
+            document.getElementById('new-category-name').value = '';
         }
 
         // 导出数据
@@ -655,12 +733,36 @@
         document.getElementById('view-grid').addEventListener('click', () => toggleView('grid'));
         document.getElementById('view-list').addEventListener('click', () => toggleView('list'));
 
+        // 分类下拉框选择事件
+        document.getElementById('repo-category').addEventListener('change', (e) => {
+            if (e.target.value === '__add_new__') {
+                document.getElementById('custom-category-input').classList.remove('hidden');
+                document.getElementById('new-category-name').focus();
+                e.target.value = '';
+            }
+        });
+
+        // 添加分类按钮事件
+        document.getElementById('add-category-btn').addEventListener('click', () => {
+            addModal.classList.remove('hidden');
+            document.getElementById('custom-category-input').classList.remove('hidden');
+            document.getElementById('new-category-name').focus();
+        });
+
+        document.getElementById('save-category-btn').addEventListener('click', addCustomCategory);
+        document.getElementById('cancel-category-btn').addEventListener('click', () => {
+            document.getElementById('custom-category-input').classList.add('hidden');
+            document.getElementById('new-category-name').value = '';
+        });
+
         // 点击遮罩关闭
         addModal.addEventListener('click', (e) => {
             if (e.target === addModal) hideAddModal();
         });
 
         // 初始化
+        renderCategoryFilters();
+        updateCategorySelect();
         updateStats();
         toggleView(currentView);
         render();
