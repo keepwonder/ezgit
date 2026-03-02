@@ -3,49 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EzGit - 我的 GitHub 精选仓库</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='%23059669' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/svg%3E">
+    <title>EzGit - 我的 GitHub 精选</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#059669',
-                        'primary-light': '#10b981',
-                        github: '#24292f',
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         .repo-card { transition: all 0.2s; }
         .repo-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .category-tag { transition: all 0.2s; }
-        .category-tag:hover { transform: scale(1.05); }
-        
-        /* 确保 footer 在底部 */
-        .main-content {
-            min-height: calc(100vh - 200px);
-        }
-        
-        /* 大屏适配 */
-        @media (min-width: 1920px) {
-            .hubs-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        @media (min-width: 2560px) {
-            .hubs-grid {
-                grid-template-columns: repeat(5, 1fr);
-            }
-        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50 min-h-screen">
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-4">
@@ -58,803 +24,201 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-900">EzGit</h1>
-                        <p class="text-xs text-gray-500">我的 GitHub 精选仓库</p>
+                        <p class="text-xs text-gray-500">我的 GitHub 精选</p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <input type="text" id="search-input" placeholder="搜索仓库..." 
-                            class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-48"
-                            oninput="searchRepos()">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    </div>
-                    <button onclick="showAddModal()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2 transition text-sm">
-                        <i class="fas fa-plus"></i>
-                        <span>添加仓库</span>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportData()" class="px-3 py-2 text-sm text-gray-600 hover:text-primary transition" title="导出数据">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <label class="px-3 py-2 text-sm text-gray-600 hover:text-primary transition cursor-pointer" title="导入数据">
+                        <i class="fas fa-upload"></i>
+                        <input type="file" accept=".json" class="hidden" onchange="importData(this)">
+                    </label>
+                    <button onclick="showAddModal()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm">
+                        <i class="fas fa-plus mr-1"></i>添加
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-content flex-1">
-
-    <!-- Hero Section -->
-    <section class="bg-gradient-to-r from-primary to-primary-light text-white py-8">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between">
-    </section>
-
-    <!-- Categories -->
-    <section class="max-w-6xl mx-auto px-4 py-6">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="flex flex-wrap gap-2" id="category-filters">
-                <button onclick="filterByCategory('all')" class="category-tag active px-4 py-2 rounded-full text-sm font-medium transition bg-primary text-white" data-category="all">
-                    <i class="fas fa-th-large mr-1"></i> 全部
-                </button>
-                <button onclick="filterByCategory('ai')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="ai">
-                    <i class="fas fa-robot mr-1"></i> AI & ML
-                </button>
-                <button onclick="filterByCategory('frontend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="frontend">
-                    <i class="fas fa-desktop mr-1"></i> 前端开发
-                </button>
-                <button onclick="filterByCategory('backend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="backend">
-                    <i class="fas fa-server mr-1"></i> 后端服务
-                </button>
-                <button onclick="filterByCategory('devops')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="devops">
-                    <i class="fas fa-cogs mr-1"></i> DevOps
-                </button>
-                <button onclick="filterByCategory('tools')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="tools">
-                    <i class="fas fa-wrench mr-1"></i> 效率工具
-                </button>
-                <button onclick="filterByCategory('learning')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="learning">
-                    <i class="fas fa-graduation-cap mr-1"></i> 学习资源
-                </button>
-                <button onclick="filterByCategory('others')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="others">
-                    <i class="fas fa-folder mr-1"></i> 其他
-                </button>
-            </div>
-            
-            <!-- View Toggle -->
-            <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                <button onclick="toggleView('grid')" id="view-grid" class="view-btn active px-3 py-1.5 rounded-md text-sm transition bg-white shadow-sm text-gray-700">
-                    <i class="fas fa-th-large"></i>
-                </button>
-                <button onclick="toggleView('list')" id="view-list" class="view-btn px-3 py-1.5 rounded-md text-sm transition text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-list"></i>
-                </button>
-            </div>
+    <!-- Main -->
+    <main class="max-w-6xl mx-auto px-4 py-6">
+        <!-- Search -->
+        <div class="mb-6">
+            <input type="text" id="search" placeholder="搜索仓库..." 
+                class="w-full px-4 py-2 border rounded-lg"
+                oninput="renderRepos()">
         </div>
-    </section>
 
-    <!-- Repo List -->
-    <section class="max-w-6xl mx-auto px-4 pb-8">
-        <div id="repo-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            <!-- Repos will be rendered here -->
+        <!-- Repo List -->
+        <div id="repo-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- 动态渲染 -->
         </div>
-        
-        <!-- Empty State -->
-        <div id="empty-state" class="hidden text-center py-16">
-            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg viewBox="0 0 24 24" fill="#9ca3af" class="w-10 h-10">
-                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-            </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">还没有收藏的仓库</h3>
-            <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目，建立自己的开源知识库</p>
-            <button onclick="showAddModal()" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition">
-                添加第一个仓库
-            </button>
+
+        <!-- Empty -->
+        <div id="empty" class="hidden text-center py-12">
+            <p class="text-gray-500">还没有仓库，添加一个吧</p>
         </div>
-    </section>
+    </main>
 
     <!-- Add Modal -->
-    <div id="add-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl flex flex-col max-h-[85vh]">
-            <!-- Header -->
-            <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between flex-shrink-0">
-                <h3 class="text-lg font-bold text-gray-900">添加仓库</h3>
-                <button onclick="hideAddModal()" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+    <div id="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-full max-w-md p-6">
+            <h3 class="text-lg font-bold mb-4">添加仓库</h3>
             
-            <!-- Body -->
-            <div class="px-5 py-4 overflow-y-auto">
-                <!-- URL Input -->
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">GitHub URL <span class="text-red-500">*</span></label>
-                    <div class="flex gap-2">
-                        <input type="text" id="repo-url" placeholder="https://github.com/user/repo" 
-                            class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                            onblur="fetchRepoInfo()">
-                        <button onclick="fetchRepoInfo()" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm transition">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Preview -->
-                <div id="repo-preview" class="hidden mb-3 bg-gray-50 rounded-lg p-3 border border-gray-100">
-                    <div class="flex items-center gap-3">
-                        <img id="preview-avatar" src="" alt="" class="w-9 h-9 rounded-lg bg-white">
-                        <div class="flex-1 min-w-0">
-                            <p id="preview-name" class="font-medium text-gray-900 text-sm truncate"></p>
-                            <p id="preview-desc" class="text-xs text-gray-500 truncate"></p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                        <span><i class="fas fa-star text-yellow-400 mr-1"></i><span id="preview-stars"></span></span>
-                        <span><i class="fas fa-code mr-1"></i><span id="preview-lang"></span></span>
-                    </div>
-                </div>
-                
-                <!-- Category -->
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">分类 <span class="text-red-500">*</span></label>
-                    <select id="repo-category" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
-                        <option value="">选择分类...</option>
-                        <option value="ai">🤖 AI & ML</option>
-                        <option value="frontend">💻 前端</option>
-                        <option value="backend">🔧 后端</option>
-                        <option value="devops">⚙️ DevOps</option>
-                        <option value="tools">🛠️ 工具</option>
-                        <option value="learning">📚 学习</option>
-                        <option value="others">📁 其他</option>
-                    </select>
-                </div>
-                
-                <!-- Title -->
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">个人评价</label>
-                    <input type="text" id="repo-title" placeholder="一句话概括项目价值..." 
-                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary">
-                </div>
-                
-                <!-- Notes -->
-                <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">详细笔记</label>
-                    <textarea id="repo-notes" rows="2" placeholder="记录亮点、心得..." 
-                        class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"></textarea>
-                </div>
-                
-                <!-- Starred -->
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" id="repo-starred" class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
-                    <span class="text-sm text-gray-700"><i class="fas fa-star text-yellow-400 mr-1"></i>标记为精选</span>
-                </label>
-            </div>
+            <input type="text" id="url" placeholder="https://github.com/user/repo" 
+                class="w-full px-3 py-2 border rounded-lg mb-3"
+                onblur="fetchInfo()">
             
-            <!-- Footer -->
-            <div class="px-5 py-4 border-t border-gray-100 flex gap-3 flex-shrink-0">
-                <button onclick="hideAddModal()" class="flex-1 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
-                    取消
-                </button>
-                <button onclick="addRepo()" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition text-sm font-medium">
-                    添加收藏
-                </button>
+            <input type="text" id="title" placeholder="一句话评价（可选）" 
+                class="w-full px-3 py-2 border rounded-lg mb-3">
+            
+            <textarea id="notes" placeholder="详细笔记（可选）" rows="2"
+                class="w-full px-3 py-2 border rounded-lg mb-4 resize-none"></textarea>
+            
+            <div class="flex gap-3">
+                <button onclick="hideModal()" class="flex-1 py-2 border rounded-lg">取消</button>
+                <button onclick="addRepo()" class="flex-1 py-2 bg-primary text-white rounded-lg">添加</button>
             </div>
         </div>
-    </div>
-
-    <!-- Toast -->
-    <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50">
-        <span id="toast-message">操作成功</span>
     </div>
 
     <script>
-        // 示例数据
-        const sampleRepos = [
-            {
-                id: '1',
-                url: 'https://github.com/dongbeixiaohuo/writing-agent',
-                owner: 'dongbeixiaohuo',
-                name: 'writing-agent',
-                description: '🚀 一个基于 Claude Code 的"去AI味"全栈写作系统',
-                language: 'Markdown',
-                stars: '2.1k',
-                category: 'ai',
-                title: 'AI写作工作流系统，反AI味设计值得借鉴',
-                notes: 'Skills + Subagents 架构设计很棒，Humanizer 去AI味功能有特色',
-                starred: true,
-                addedAt: '2026-03-02T12:00:00Z'
-            },
-            {
-                id: '2',
-                url: 'https://github.com/anthropics/anthropic-cookbook',
-                owner: 'anthropics',
-                name: 'anthropic-cookbook',
-                description: 'A collection of notebooks/recipes showcasing Anthropic API use cases',
-                language: 'Jupyter Notebook',
-                stars: '8.5k',
-                category: 'ai',
-                title: 'Claude API 官方食谱，学习 Prompt Engineering 的好材料',
-                notes: '包含大量实用示例，从基础到高级用法都有覆盖',
-                starred: true,
-                addedAt: '2026-03-01T10:00:00Z'
-            },
-            {
-                id: '3',
-                url: 'https://github.com/microsoft/vscode',
-                owner: 'microsoft',
-                name: 'vscode',
-                description: 'Visual Studio Code',
-                language: 'TypeScript',
-                stars: '162k',
-                category: 'tools',
-                title: '最流行的代码编辑器，插件生态极其丰富',
-                notes: '源码值得学习，扩展系统设计优雅',
-                starred: false,
-                addedAt: '2026-02-28T15:00:00Z'
-            }
-        ];
+        // 数据存储
+        let repos = JSON.parse(localStorage.getItem('ezgit') || '[]');
 
-
-        // Cloud API Config
-        const CLOUD_API_URL = "/api/repos";
-
-        // Data Management
-        let repos = [];
-// let repos = JSON.parse(localStorage.getItem('ezgit-repos') || JSON.stringify(sampleRepos));
-        let currentCategory = 'all';
-        let searchQuery = '';
-        let currentView = localStorage.getItem('ezgit-view') || 'grid'; // 'grid' or 'list'
-
-        // Category names
-        const categoryNames = {
-            ai: 'AI & ML',
-            frontend: '前端开发',
-            backend: '后端服务',
-            devops: 'DevOps',
-            tools: '效率工具',
-            learning: '学习资源',
-            others: '其他'
-        };
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            updateStats();
-            updateViewButtons();
-            renderRepos();
-            loadReposFromCloud();
-        });
-
-        // Toggle View
-        function toggleView(view) {
-            currentView = view;
-            localStorage.setItem('ezgit-view', view);
-            updateViewButtons();
-            renderRepos();
-        }
-
-        function updateViewButtons() {
-            const gridBtn = document.getElementById('view-grid');
-            const listBtn = document.getElementById('view-list');
-            
-            if (currentView === 'grid') {
-                gridBtn.classList.add('bg-white', 'shadow-sm', 'text-gray-700');
-                gridBtn.classList.remove('text-gray-500');
-                listBtn.classList.remove('bg-white', 'shadow-sm', 'text-gray-700');
-                listBtn.classList.add('text-gray-500');
-            } else {
-                listBtn.classList.add('bg-white', 'shadow-sm', 'text-gray-700');
-                listBtn.classList.remove('text-gray-500');
-                gridBtn.classList.remove('bg-white', 'shadow-sm', 'text-gray-700');
-                gridBtn.classList.add('text-gray-500');
-            }
-        }
-
-        // Update Stats
-        function updateStats() {
-            document.getElementById('total-count').textContent = repos.length;
-            
-            const categories = new Set(repos.map(r => r.category).filter(Boolean));
-            document.getElementById('category-count').textContent = categories.size;
-            
-            document.getElementById('starred-count').textContent = repos.filter(r => r.starred).length;
-        }
-
-        // Render Repos
+        // 渲染
         function renderRepos() {
+            const search = document.getElementById('search').value.toLowerCase();
+            const filtered = repos.filter(r => 
+                r.url.toLowerCase().includes(search) ||
+                (r.title || '').toLowerCase().includes(search)
+            );
+            
             const list = document.getElementById('repo-list');
-            const emptyState = document.getElementById('empty-state');
-            
-            let filtered = repos;
-            
-            // Filter by category
-            if (currentCategory !== 'all') {
-                filtered = filtered.filter(r => r.category === currentCategory);
-            }
-            
-            // Filter by search
-            if (searchQuery) {
-                const q = searchQuery.toLowerCase();
-                filtered = filtered.filter(r => 
-                    r.name.toLowerCase().includes(q) ||
-                    r.owner.toLowerCase().includes(q) ||
-                    r.title?.toLowerCase().includes(q) ||
-                    r.notes?.toLowerCase().includes(q) ||
-                    r.description?.toLowerCase().includes(q)
-                );
-            }
-            
-            // Sort by starred first, then by date
-            filtered.sort((a, b) => {
-                if (a.starred !== b.starred) return b.starred ? 1 : -1;
-                return new Date(b.addedAt) - new Date(a.addedAt);
-            });
+            const empty = document.getElementById('empty');
             
             if (filtered.length === 0) {
                 list.innerHTML = '';
-                emptyState.classList.remove('hidden');
+                empty.classList.remove('hidden');
                 return;
             }
             
-            emptyState.classList.add('hidden');
-            
-            // Update container class based on view
-            if (currentView === 'list') {
-                list.className = 'flex flex-col gap-3';
-            } else {
-                list.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
-            }
-            
-            if (currentView === 'list') {
-                // List View
-                list.innerHTML = filtered.map(repo => `
-                    <div class="repo-card bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:border-primary/30 cursor-pointer group flex items-center gap-4"
-                         onclick="window.open('${repo.url}', '_blank')">
-                        
-                        <img src="https://github.com/${repo.owner}.png" 
-                             alt="${repo.owner}" 
-                             class="w-10 h-10 rounded-lg bg-gray-100 flex-shrink-0"
+            empty.classList.add('hidden');
+            list.innerHTML = filtered.map(r => `
+                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border cursor-pointer"
+                     onclick="window.open('${r.url}', '_blank')">
+                    <div class="flex items-start gap-3">
+                        <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg"
                              onerror="this.src='https://github.com/github.png'">
-                        
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-0.5">
-                                <span class="text-xs font-medium px-2 py-0.5 bg-primary/10 text-primary rounded">${categoryNames[repo.category] || '其他'}</span>
-                                ${repo.starred ? '<span class="text-yellow-400"><i class="fas fa-star text-xs"></i></span>' : ''}
-                            </div>
-                            
-                            <h3 class="font-medium text-gray-900 truncate group-hover:text-primary transition text-sm">
-                                ${repo.owner}/${repo.name}
-                            </h3>
-                            
-                            ${repo.title ? `
-                                <p class="text-sm text-gray-600 truncate mt-0.5">${repo.title}</p>
-                            ` : ''}
+                            <h3 class="font-medium truncate">${r.owner}/${r.name}</h3>
+                            ${r.title ? `<p class="text-sm text-gray-600 mt-1">${r.title}</p>` : ''}
+                            ${r.notes ? `<p class="text-xs text-gray-400 mt-1">${r.notes}</p>` : ''}
                         </div>
-                        
-                        <div class="hidden sm:flex items-center gap-4 text-xs text-gray-400 flex-shrink-0">
-                            ${repo.language ? `<span class="flex items-center gap-1"><i class="fas fa-code"></i> ${repo.language}</span>` : ''}
-                            ${repo.stars ? `<span class="flex items-center gap-1"><i class="fas fa-star text-yellow-400"></i> ${repo.stars}</span>` : ''}
-                            <span>${formatDate(repo.addedAt)}</span>
-                        </div>
-                        
-                        <div class="flex items-center gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition">
-                            <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg ${repo.starred ? 'text-yellow-400 bg-yellow-50' : 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-50'} transition"
-                                    title="${repo.starred ? '取消精选' : '标记精选'}">
-                                <i class="fas fa-star"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); editRepo('${repo.id}')" 
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-primary hover:bg-primary/10 transition"
-                                    title="编辑">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
-                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition"
-                                    title="删除">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
+                        <button onclick="event.stopPropagation(); deleteRepo('${r.id}')" 
+                                class="text-gray-400 hover:text-red-500"><i class="fas fa-trash"></i></button>
                     </div>
-                `).join('');
-            } else {
-                // Grid View - Optimized
-                list.innerHTML = filtered.map(repo => `
-                    <div class="repo-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/30 cursor-pointer group flex flex-col h-full"
-                         onclick="window.open('${repo.url}', '_blank')">
-                        
-                        <!-- Header with avatar and title -->
-                        <div class="flex items-start gap-3">
-                            <img src="https://github.com/${repo.owner}.png" 
-                                 alt="${repo.owner}" 
-                                 class="w-11 h-11 rounded-xl bg-gray-50 flex-shrink-0"
-                                 onerror="this.src='https://github.com/github.png'">
-                            
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-1.5 mb-0.5">
-                                    <span class="text-[10px] font-medium px-1.5 py-0.5 bg-primary/10 text-primary rounded">${categoryNames[repo.category] || '其他'}</span>
-                                    ${repo.starred ? '<span class="text-yellow-400 text-xs"><i class="fas fa-star"></i></span>' : ''}
-                                </div>
-                                <h3 class="font-semibold text-gray-900 text-sm truncate group-hover:text-primary transition leading-tight">
-                                    ${repo.owner}/${repo.name}
-                                </h3>
-                            </div>
-                        </div>
-                        
-                        <!-- Content -->
-                        <div class="mt-2.5 flex-1">
-                            ${repo.title ? `
-                                <p class="text-sm text-gray-700 font-medium line-clamp-2 leading-snug">${repo.title}</p>
-                            ` : repo.description ? `
-                                <p class="text-sm text-gray-600 line-clamp-2 leading-snug">${repo.description}</p>
-                            ` : ''}
-                            
-                            ${repo.notes ? `
-                                <p class="text-xs text-gray-500 mt-1.5 line-clamp-2 bg-gray-50 rounded-lg px-2 py-1.5">${repo.notes}</p>
-                            ` : ''}
-                        </div>
-                        
-                        <!-- Footer with meta and actions -->
-                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
-                            <div class="flex items-center gap-3 text-xs text-gray-400">
-                                ${repo.language ? `<span class="flex items-center gap-1"><i class="fas fa-code text-[10px]"></i>${repo.language}</span>` : ''}
-                                ${repo.stars ? `<span class="flex items-center gap-1"><i class="fas fa-star text-yellow-400 text-[10px]"></i>${repo.stars}</span>` : ''}
-                            </div>
-                            
-                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
-                                <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
-                                        class="w-7 h-7 flex items-center justify-center rounded-lg text-xs ${repo.starred ? 'text-yellow-400' : 'text-gray-400 hover:text-yellow-400'} transition"
-                                        title="${repo.starred ? '取消精选' : '标记精选'}">
-                                    <i class="fas fa-star"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); editRepo('${repo.id}')" 
-                                        class="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-gray-400 hover:text-primary transition"
-                                        title="编辑">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
-                                        class="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-gray-400 hover:text-red-500 transition"
-                                        title="删除">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            }
+                </div>
+            `).join('');
         }
 
-        // Filter by Category
-        function filterByCategory(category) {
-            currentCategory = category;
-            
-            document.querySelectorAll('.category-tag').forEach(btn => {
-                if (btn.dataset.category === category) {
-                    btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
-                    btn.classList.add('bg-primary', 'text-white');
-                } else {
-                    btn.classList.remove('bg-primary', 'text-white');
-                    btn.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-200');
-                }
-            });
-            
-            renderRepos();
-        }
-
-        // Search
-        function searchRepos() {
-            searchQuery = document.getElementById('search-input').value.trim();
-            renderRepos();
-        }
-
-        // Toggle Star
-        async function toggleStar(id) {
-            const repo = repos.find(r => r.id === id);
-            if (!repo) return;
-            
-            repo.starred = !repo.starred;
-            
-            try {
-                // 同步到云端
-                await fetch(CLOUD_API_URL, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ezgit-secret-token-2026'
-                    },
-                    body: JSON.stringify({ id, starred: repo.starred })
-                });
-            } catch (error) {
-                console.error('同步失败:', error);
-            }
-            
-            saveRepos();
-            renderRepos();
-            updateStats();
-            showToast(repo.starred ? '已标记为精选' : '已取消精选');
-        }
-
-        // Delete Repo
-        async function deleteRepo(id) {
-            if (!confirm('确定要删除这个仓库吗？')) return;
-            
-            try {
-                // 从云端删除
-                await fetch(CLOUD_API_URL, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ezgit-secret-token-2026'
-                    },
-                    body: JSON.stringify({ id })
-                });
-            } catch (error) {
-                console.error('云端删除失败:', error);
-            }
-            
-            repos = repos.filter(r => r.id !== id);
-            saveRepos();
-            renderRepos();
-            updateStats();
-            showToast('已删除');
-        }
-
-        // Edit Repo
-        function editRepo(id) {
-            const repo = repos.find(r => r.id === id);
-            if (!repo) return;
-            
-            document.getElementById('repo-url').value = repo.url;
-            document.getElementById('repo-category').value = repo.category;
-            document.getElementById('repo-title').value = repo.title || '';
-            document.getElementById('repo-notes').value = repo.notes || '';
-            document.getElementById('repo-starred').checked = repo.starred;
-            
-            showRepoPreview(repo);
-            showAddModal();
-        }
-
-        // Fetch Repo Info (模拟)
-        async function fetchRepoInfo() {
-            const url = document.getElementById('repo-url').value.trim();
+        // 添加
+        function addRepo() {
+            const url = document.getElementById('url').value.trim();
             if (!url) return;
             
             const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-            if (!match) return;
-            
-            const [, owner, name] = match;
-            
-            // 模拟获取数据（实际应该调用 GitHub API）
-            const preview = {
-                owner,
-                name: name.replace(/\.git$/, ''),
-                description: '自动获取的描述信息...',
-                language: 'JavaScript',
-                stars: '1.2k'
-            };
-            
-            showRepoPreview(preview);
-        }
-
-        function showRepoPreview(repo) {
-            document.getElementById('repo-preview').classList.remove('hidden');
-            document.getElementById('preview-avatar').src = `https://github.com/${repo.owner}.png`;
-            document.getElementById('preview-name').textContent = `${repo.owner}/${repo.name}`;
-            document.getElementById('preview-desc').textContent = repo.description || '暂无描述';
-            document.getElementById('preview-stars').textContent = repo.stars || '0';
-            document.getElementById('preview-lang').textContent = repo.language || 'Unknown';
-        }
-
-        // Add Repo
-        async function addRepo() {
-            const url = document.getElementById('repo-url').value.trim();
-            const category = document.getElementById('repo-category').value;
-            const title = document.getElementById('repo-title').value.trim();
-            const notes = document.getElementById('repo-notes').value.trim();
-            const starred = document.getElementById('repo-starred').checked;
-            
-            if (!url || !category) {
-                showToast('请填写 URL 和分类');
-                return;
-            }
-            
-            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
             if (!match) {
-                showToast('无效的 GitHub URL');
-                return;
-            }
-            
-            const [, owner, name] = match;
-            
-            // 检查是否已存在
-            const exists = repos.find(r => r.url === url);
-            if (exists) {
-                showToast('该仓库已存在');
-                return;
-            }
-            
-            const repo = {
-                url,
-                owner,
-                name: name.replace(/\.git$/, ''),
-                description: document.getElementById('preview-desc').textContent || '',
-                language: document.getElementById('preview-lang').textContent || '',
-                stars: document.getElementById('preview-stars').textContent || '',
-                category,
-                title,
-                notes,
-                starred
-            };
-            
-            try {
-                // 保存到云端
-                const response = await fetch(CLOUD_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ezgit-secret-token-2026'
-                    },
-                    body: JSON.stringify(repo)
-                });
-                
-                if (!response.ok) {
-                    throw new Error('保存失败');
-                }
-                
-                const result = await response.json();
-                
-                // 更新本地数据
-                repos.unshift(result.repo);
-                saveRepos();
-                
-                hideAddModal();
-                resetForm();
-                renderRepos();
-                updateStats();
-                
-                showToast('仓库已添加并同步到云端');
-            } catch (error) {
-                console.error('保存失败:', error);
-                showToast('保存到云端失败，已保存到本地');
-                
-                // 离线模式：保存到本地
-                repo.id = Date.now().toString();
-                repo.addedAt = new Date().toISOString();
-                repos.unshift(repo);
-                saveRepos();
-                renderRepos();
-                updateStats();
-                hideAddModal();
-                resetForm();
-            }
-        }
-            
-            // Check if exists
-            const exists = repos.find(r => r.url === url);
-            if (exists) {
-                showToast('该仓库已存在');
+                alert('无效的 GitHub URL');
                 return;
             }
             
             const repo = {
                 id: Date.now().toString(),
-                url,
-                owner,
-                name: name.replace(/\.git$/, ''),
-                description: document.getElementById('preview-desc').textContent || '',
-                language: document.getElementById('preview-lang').textContent || '',
-                stars: document.getElementById('preview-stars').textContent || '',
-                category,
-                title,
-                notes,
-                starred,
+                url: url.replace(/\.git$/, ''),
+                owner: match[1],
+                name: match[2].replace(/\.git$/, ''),
+                title: document.getElementById('title').value.trim(),
+                notes: document.getElementById('notes').value.trim(),
                 addedAt: new Date().toISOString()
             };
             
             repos.unshift(repo);
             saveRepos();
-            
-            hideAddModal();
-            resetForm();
             renderRepos();
-            updateStats();
-            
-            showToast('仓库已添加');
+            hideModal();
         }
 
-        // Reset Form
-        function resetForm() {
-            document.getElementById('repo-url').value = '';
-            document.getElementById('repo-category').value = '';
-            document.getElementById('repo-title').value = '';
-            document.getElementById('repo-notes').value = '';
-            document.getElementById('repo-starred').checked = false;
-            document.getElementById('repo-preview').classList.add('hidden');
+        // 删除
+        function deleteRepo(id) {
+            if (!confirm('删除?')) return;
+            repos = repos.filter(r => r.id !== id);
+            saveRepos();
+            renderRepos();
         }
 
-        // Save to LocalStorage
+        // 保存
         function saveRepos() {
-            localStorage.setItem('ezgit-repos', JSON.stringify(repos));
+            localStorage.setItem('ezgit', JSON.stringify(repos));
         }
 
-        // Modal Functions
+        // 导出
+        function exportData() {
+            const blob = new Blob([JSON.stringify(repos, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ezgit-backup-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // 导入
+        function importData(input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        repos = [...data, ...repos];
+                        saveRepos();
+                        renderRepos();
+                        alert(`导入了 ${data.length} 个仓库`);
+                    }
+                } catch (err) {
+                    alert('导入失败');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // 自动获取信息
+        async function fetchInfo() {
+            const url = document.getElementById('url').value;
+            // 可选：调用 GitHub API 获取仓库信息
+        }
+
+        // Modal
         function showAddModal() {
-            document.getElementById('add-modal').classList.remove('hidden');
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('url').value = '';
+            document.getElementById('title').value = '';
+            document.getElementById('notes').value = '';
         }
 
-        function hideAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
-            resetForm();
+        function hideModal() {
+            document.getElementById('modal').classList.add('hidden');
         }
 
-        // Toast
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').textContent = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 3000);
-        }
-
-        // Helpers
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diff = now - date;
-            
-            if (diff < 86400000) return '今天';
-            if (diff < 172800000) return '昨天';
-            if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`;
-            if (diff < 2592000000) return `${Math.floor(diff / 604800000)}周前`;
-            
-            return date.toLocaleDateString('zh-CN');
-        }
-
-        // Close modal on outside click
-        document.getElementById('add-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'add-modal') hideAddModal();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') hideAddModal();
-        });
+        // 初始化
+        renderRepos();
     </script>
-
-    </div>
-    <!-- End Main Content -->
-
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200">
-        <div class="max-w-6xl mx-auto px-4 py-8">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                        <svg viewBox="0 0 24 24" fill="white" class="w-5 h-5">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-medium text-gray-900">EzGit</p>
-                        <p class="text-xs text-gray-500">GitHub 仓库管家</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-6 text-sm text-gray-600">
-                    <a href="https://keepwonder.top" target="_blank" class="hover:text-primary transition">
-                        <i class="fas fa-home mr-1"></i>主页
-                    </a>
-                    <a href="https://github.com/keepwonder/ezgit" target="_blank" class="hover:text-primary transition">
-                        <i class="fab fa-github mr-1"></i>GitHub
-                    </a>
-                    <a href="mailto:contact@keepwonder.top" class="hover:text-primary transition">
-                        <i class="fas fa-envelope mr-1"></i>联系
-                    </a>
-                </div>
-                
-                <div class="text-sm text-gray-500">
-                    Made with <i class="fas fa-heart text-red-400 mx-1"></i> by <a href="https://keepwonder.top" target="_blank" class="text-primary hover:underline">Kiang</a>
-                </div>
-            </div>
-            
-            <div class="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
-                <p>数据保存在浏览器本地存储中，清除浏览器数据会导致丢失</p>
-                <p class="mt-1">© 2026 EzGit. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 </body>
 </html>
