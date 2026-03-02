@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzGit - GitHub 仓库管家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#059669',
+                        'primary-light': '#10b981',
+                        'primary-dark': '#047857',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                        <i class="fab fa-github text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">EzGit</h1>
+                        <p class="text-xs text-gray-500">GitHub 仓库管家</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="showAddModal()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                        <i class="fas fa-plus"></i>
+                        <span>添加仓库</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Cards -->
+    <section class="max-w-6xl mx-auto px-4 py-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">未读</p>
+                        <p class="text-2xl font-bold text-red-500" id="count-unread">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-circle text-red-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">已读</p>
+                        <p class="text-2xl font-bold text-green-500" id="count-read">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">收藏</p>
+                        <p class="text-2xl font-bold text-yellow-500" id="count-starred">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-star text-yellow-500"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm">总计</p>
+                        <p class="text-2xl font-bold text-primary" id="count-total">0</p>
+                    </div>
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-database text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Tags -->
+    <section class="max-w-6xl mx-auto px-4 pb-4">
+        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+            <div class="flex flex-wrap gap-2" id="filter-tags">
+                <button onclick="filterRepos('all')" class="filter-btn active px-4 py-1.5 rounded-full text-sm font-medium transition bg-primary text-white" data-filter="all">
+                    全部
+                </button>
+                <button onclick="filterRepos('unread')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="unread">
+                    未读
+                </button>
+                <button onclick="filterRepos('read')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="read">
+                    已读
+                </button>
+                <button onclick="filterRepos('starred')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="starred">
+                    收藏
+                </button>
+                <button onclick="filterRepos('ai')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="ai">
+                    🤖 AI讨论
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Repo List -->
+    <section class="max-w-6xl mx-auto px-4 pb-8">
+        <div id="repo-list" class="space-y-4">
+            <!-- Repos will be rendered here -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fab fa-github text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">还没有记录任何仓库</h3>
+            <p class="text-gray-500 mb-4">添加你感兴趣的 GitHub 仓库，或者和 AI 讨论过的项目</p>
+            <button onclick="showAddModal()" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition">
+                添加第一个仓库
+            </button>
+        </div>
+    </section>
+
+    <!-- Add Modal -->
+    <div id="add-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-900">添加仓库</h3>
+                <button onclick="hideAddModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">GitHub URL</label>
+                    <input type="text" id="repo-url" placeholder="https://github.com/user/repo" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">标签 (用逗号分隔)</label>
+                    <input type="text" id="repo-tags" placeholder="ai, tool, javascript" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">备注</label>
+                    <textarea id="repo-notes" rows="3" placeholder="记录你的想法或讨论要点..." 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="repo-ai" class="w-4 h-4 text-primary rounded border-gray-300">
+                    <label for="repo-ai" class="text-sm text-gray-700">和 AI 讨论过</label>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="hideAddModal()" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                    取消
+                </button>
+                <button onclick="addRepo()" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
+                    添加
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+        <span id="toast-message">操作成功</span>
+    </div>
+
+    <script>
+        // Data Management
+        let repos = JSON.parse(localStorage.getItem('ezgit-repos') || '[]');
+        let currentFilter = 'all';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRepos();
+            updateStats();
+        });
+
+        // Render Repos
+        function renderRepos() {
+            const list = document.getElementById('repo-list');
+            const emptyState = document.getElementById('empty-state');
+            
+            let filtered = repos;
+            if (currentFilter === 'unread') filtered = repos.filter(r => r.status === 'unread');
+            else if (currentFilter === 'read') filtered = repos.filter(r => r.status === 'read');
+            else if (currentFilter === 'starred') filtered = repos.filter(r => r.starred);
+            else if (currentFilter === 'ai') filtered = repos.filter(r => r.discussedWithAI);
+            
+            // Sort by date (newest first)
+            filtered.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+            
+            if (filtered.length === 0) {
+                list.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            list.innerHTML = filtered.map(repo => `
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition group">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-github text-gray-600 text-lg"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 truncate">
+                                        <a href="${repo.url}" target="_blank" class="hover:text-primary transition">
+                                            ${repo.owner}/${repo.name}
+                                        </a>
+                                    </h3>
+                                    <p class="text-sm text-gray-500 mt-0.5">${formatDate(repo.addedAt)}</p>
+                                </div>
+                                
+                                <div class="flex items-center gap-2">
+                                    ${repo.discussedWithAI ? '<span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">🤖 AI</span>' : ''}
+                                    <span class="status-badge text-xs px-2 py-1 rounded-full ${getStatusClass(repo.status)}">
+                                        ${getStatusText(repo.status)}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            ${repo.notes ? `
+                                <div class="mt-3 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                                    <i class="fas fa-sticky-note text-gray-400 mr-1"></i>
+                                    ${repo.notes}
+                                </div>
+                            ` : ''}
+                            
+                            ${repo.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-1.5 mt-3">
+                                    ${repo.tags.map(tag => `
+                                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${tag}</span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            
+                            <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
+                                <button onclick="toggleStatus('${repo.id}')" class="text-sm text-gray-600 hover:text-primary transition flex items-center gap-1">
+                                    <i class="fas ${repo.status === 'unread' ? 'fa-check-circle' : 'fa-undo'}"></i>
+                                    ${repo.status === 'unread' ? '标记已读' : '标记未读'}
+                                </button>
+                                <span class="text-gray-300">|</span>
+                                <button onclick="toggleStar('${repo.id}')" class="text-sm ${repo.starred ? 'text-yellow-500' : 'text-gray-600 hover:text-yellow-500'} transition flex items-center gap-1">
+                                    <i class="fas ${repo.starred ? 'fa-star' : 'fa-regular fa-star'}"></i>
+                                    ${repo.starred ? '已收藏' : '收藏'}
+                                </button>
+                                <span class="text-gray-300">|</span>
+                                <button onclick="deleteRepo('${repo.id}')" class="text-sm text-gray-600 hover:text-red-500 transition flex items-center gap-1">
+                                    <i class="fas fa-trash"></i>
+                                    删除
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('count-unread').textContent = repos.filter(r => r.status === 'unread').length;
+            document.getElementById('count-read').textContent = repos.filter(r => r.status === 'read').length;
+            document.getElementById('count-starred').textContent = repos.filter(r => r.starred).length;
+            document.getElementById('count-total').textContent = repos.length;
+        }
+
+        // Filter Repos
+        function filterRepos(filter) {
+            currentFilter = filter;
+            
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.classList.remove('bg-gray-100', 'text-gray-600');
+                    btn.classList.add('bg-primary', 'text-white');
+                } else {
+                    btn.classList.remove('bg-primary', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-600');
+                }
+            });
+            
+            renderRepos();
+        }
+
+        // Add Repo
+        function addRepo() {
+            const url = document.getElementById('repo-url').value.trim();
+            const tagsInput = document.getElementById('repo-tags').value.trim();
+            const notes = document.getElementById('repo-notes').value.trim();
+            const discussedWithAI = document.getElementById('repo-ai').checked;
+            
+            if (!url) {
+                showToast('请输入 GitHub URL');
+                return;
+            }
+            
+            // Parse GitHub URL
+            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+            if (!match) {
+                showToast('无效的 GitHub URL');
+                return;
+            }
+            
+            const [, owner, name] = match;
+            
+            const repo = {
+                id: Date.now().toString(),
+                url: url,
+                owner: owner,
+                name: name.replace(/\.git$/, ''),
+                tags: tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(Boolean) : [],
+                notes: notes,
+                status: 'unread',
+                starred: false,
+                discussedWithAI: discussedWithAI,
+                addedAt: new Date().toISOString()
+            };
+            
+            repos.unshift(repo);
+            saveRepos();
+            
+            hideAddModal();
+            renderRepos();
+            updateStats();
+            
+            // Reset form
+            document.getElementById('repo-url').value = '';
+            document.getElementById('repo-tags').value = '';
+            document.getElementById('repo-notes').value = '';
+            document.getElementById('repo-ai').checked = false;
+            
+            showToast('仓库已添加');
+        }
+
+        // Toggle Status
+        function toggleStatus(id) {
+            const repo = repos.find(r => r.id === id);
+            if (repo) {
+                repo.status = repo.status === 'unread' ? 'read' : 'unread';
+                saveRepos();
+                renderRepos();
+                updateStats();
+            }
+        }
+
+        // Toggle Star
+        function toggleStar(id) {
+            const repo = repos.find(r => r.id === id);
+            if (repo) {
+                repo.starred = !repo.starred;
+                saveRepos();
+                renderRepos();
+                updateStats();
+                showToast(repo.starred ? '已收藏' : '取消收藏');
+            }
+        }
+
+        // Delete Repo
+        function deleteRepo(id) {
+            if (confirm('确定要删除这个仓库记录吗？')) {
+                repos = repos.filter(r => r.id !== id);
+                saveRepos();
+                renderRepos();
+                updateStats();
+                showToast('已删除');
+            }
+        }
+
+        // Save to LocalStorage
+        function saveRepos() {
+            localStorage.setItem('ezgit-repos', JSON.stringify(repos));
+        }
+
+        // Modal Functions
+        function showAddModal() {
+            document.getElementById('add-modal').classList.remove('hidden');
+            document.getElementById('repo-url').focus();
+        }
+
+        function hideAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        // Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // Helpers
+        function getStatusClass(status) {
+            const classes = {
+                'unread': 'bg-red-100 text-red-600',
+                'read': 'bg-green-100 text-green-600',
+                'archived': 'bg-gray-100 text-gray-600'
+            };
+            return classes[status] || classes['unread'];
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'unread': '未读',
+                'read': '已读',
+                'archived': '归档'
+            };
+            return texts[status] || '未读';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return '刚刚';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
+            if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`;
+            
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        // Close modal on outside click
+        document.getElementById('add-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'add-modal') hideAddModal();
+        });
+
+        // Enter key in modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') hideAddModal();
+        });
+    </script>
+</body>
+</html>
