@@ -543,26 +543,55 @@
         }
 
         // Toggle Star
-        function toggleStar(id) {
+        async function toggleStar(id) {
             const repo = repos.find(r => r.id === id);
-            if (repo) {
-                repo.starred = !repo.starred;
-                saveRepos();
-                renderRepos();
-                updateStats();
-                showToast(repo.starred ? '已标记为精选' : '已取消精选');
+            if (!repo) return;
+            
+            repo.starred = !repo.starred;
+            
+            try {
+                // 同步到云端
+                await fetch(CLOUD_API_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ezgit-secret-token-2026'
+                    },
+                    body: JSON.stringify({ id, starred: repo.starred })
+                });
+            } catch (error) {
+                console.error('同步失败:', error);
             }
+            
+            saveRepos();
+            renderRepos();
+            updateStats();
+            showToast(repo.starred ? '已标记为精选' : '已取消精选');
         }
 
         // Delete Repo
-        function deleteRepo(id) {
-            if (confirm('确定要删除这个仓库吗？')) {
-                repos = repos.filter(r => r.id !== id);
-                saveRepos();
-                renderRepos();
-                updateStats();
-                showToast('已删除');
+        async function deleteRepo(id) {
+            if (!confirm('确定要删除这个仓库吗？')) return;
+            
+            try {
+                // 从云端删除
+                await fetch(CLOUD_API_URL, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ezgit-secret-token-2026'
+                    },
+                    body: JSON.stringify({ id })
+                });
+            } catch (error) {
+                console.error('云端删除失败:', error);
             }
+            
+            repos = repos.filter(r => r.id !== id);
+            saveRepos();
+            renderRepos();
+            updateStats();
+            showToast('已删除');
         }
 
         // Edit Repo
@@ -612,7 +641,7 @@
         }
 
         // Add Repo
-        function addRepo() {
+        async function addRepo() {
             const url = document.getElementById('repo-url').value.trim();
             const category = document.getElementById('repo-category').value;
             const title = document.getElementById('repo-title').value.trim();
@@ -631,6 +660,69 @@
             }
             
             const [, owner, name] = match;
+            
+            // 检查是否已存在
+            const exists = repos.find(r => r.url === url);
+            if (exists) {
+                showToast('该仓库已存在');
+                return;
+            }
+            
+            const repo = {
+                url,
+                owner,
+                name: name.replace(/\.git$/, ''),
+                description: document.getElementById('preview-desc').textContent || '',
+                language: document.getElementById('preview-lang').textContent || '',
+                stars: document.getElementById('preview-stars').textContent || '',
+                category,
+                title,
+                notes,
+                starred
+            };
+            
+            try {
+                // 保存到云端
+                const response = await fetch(CLOUD_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ezgit-secret-token-2026'
+                    },
+                    body: JSON.stringify(repo)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('保存失败');
+                }
+                
+                const result = await response.json();
+                
+                // 更新本地数据
+                repos.unshift(result.repo);
+                saveRepos();
+                
+                hideAddModal();
+                resetForm();
+                renderRepos();
+                updateStats();
+                
+                showToast('仓库已添加并同步到云端');
+            } catch (error) {
+                console.error('保存失败:', error);
+                showToast('保存到云端失败，已保存到本地');
+                
+                // 离线模式：保存到本地
+                repo.id = Date.now().toString();
+                repo.addedAt = new Date().toISOString();
+                repos.unshift(repo);
+                saveRepos();
+                renderRepos();
+                updateStats();
+                hideAddModal();
+                resetForm();
+            }
+        }
             
             // Check if exists
             const exists = repos.find(r => r.url === url);
