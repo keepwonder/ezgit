@@ -4,7 +4,7 @@
  */
 
 const EZGIT_API_URL = 'https://ezgit.keepwonder.top/api/repos';
-const EZGIT_TOKEN = process.env.EZGIT_API_TOKEN || 'ezgit-secret-token-2024';
+const EZGIT_TOKEN = process.env.ezgit_API_TOKEN || 'ezgit-secret-token-2026';
 
 /**
  * 从文本中提取 GitHub URL

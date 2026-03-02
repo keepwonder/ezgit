@@ -1,7 +1,7 @@
 import { kv } from '@vercel/kv';
 
 // 简单的 token 验证
-const API_TOKEN = process.env.EZGIT_API_TOKEN || 'ezgit-secret-token-2024';
+const API_TOKEN = process.env.ezgit_API_TOKEN || 'ezgit-secret-token-2026';
 
 export default async function handler(req, res) {
   // 设置 CORS
