@@ -152,7 +152,7 @@
 
     <!-- Repo List -->
     <section class="max-w-6xl mx-auto px-4 pb-8">
-        <div id="repo-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <div id="repo-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <!-- Repos will be rendered here -->
         </div>
         
@@ -399,7 +399,7 @@
             if (currentView === 'list') {
                 list.className = 'flex flex-col gap-3';
             } else {
-                list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4';
+                list.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
             }
             
             if (currentView === 'list') {
@@ -447,67 +447,61 @@
                     </div>
                 `).join('');
             } else {
-                // Grid View
+                // Grid View - Optimized
                 list.innerHTML = filtered.map(repo => `
-                    <div class="repo-card bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-primary/30 cursor-pointer group"
+                    <div class="repo-card bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/30 cursor-pointer group flex flex-col h-full"
                          onclick="window.open('${repo.url}', '_blank')">
+                        
+                        <!-- Header with avatar and title -->
                         <div class="flex items-start gap-3">
                             <img src="https://github.com/${repo.owner}.png" 
                                  alt="${repo.owner}" 
-                                 class="w-10 h-10 rounded-full bg-gray-100"
+                                 class="w-11 h-11 rounded-xl bg-gray-50 flex-shrink-0"
                                  onerror="this.src='https://github.com/github.png'">
                             
                             <div class="flex-1 min-w-0">
-                                <div class="flex items-start justify-between gap-2">
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="font-semibold text-gray-900 truncate group-hover:text-primary transition">
-                                            ${repo.owner}/${repo.name}
-                                        </h3>
-                                        <p class="text-xs text-gray-500 mt-0.5">${categoryNames[repo.category] || '未分类'} · ${formatDate(repo.addedAt)}</p>
-                                    </div>
-                                    
-                                    ${repo.starred ? '<span class="text-yellow-400"><i class="fas fa-star"></i></span>' : ''}
+                                <div class="flex items-center gap-1.5 mb-0.5">
+                                    <span class="text-[10px] font-medium px-1.5 py-0.5 bg-primary/10 text-primary rounded">${categoryNames[repo.category] || '其他'}</span>
+                                    ${repo.starred ? '<span class="text-yellow-400 text-xs"><i class="fas fa-star"></i></span>' : ''}
                                 </div>
-                                
-                                ${repo.title ? `
-                                    <div class="mt-2 text-sm font-medium text-gray-800">
-                                        ${repo.title}
-                                    </div>
-                                ` : ''}
-                                
-                                ${repo.description ? `
-                                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">
-                                        ${repo.description}
-                                    </p>
-                                ` : ''}
-                                
-                                ${repo.notes ? `
-                                    <div class="mt-2 text-sm text-gray-500 bg-gray-50 rounded-lg p-2">
-                                        <i class="fas fa-sticky-note text-gray-400 mr-1"></i>
-                                        ${repo.notes}
-                                    </div>
-                                ` : ''}
-                                
-                                <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                                    ${repo.language ? `<span><i class="fas fa-code text-gray-400 mr-1"></i>${repo.language}</span>` : ''}
-                                    ${repo.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${repo.stars}</span>` : ''}
-                                </div>
+                                <h3 class="font-semibold text-gray-900 text-sm truncate group-hover:text-primary transition leading-tight">
+                                    ${repo.owner}/${repo.name}
+                                </h3>
                             </div>
                         </div>
                         
-                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition">
-                            <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
-                                    class="text-sm ${repo.starred ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition">
-                                <i class="fas ${repo.starred ? 'fa-star' : 'fa-regular fa-star'}"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); editRepo('${repo.id}')" 
-                                    class="text-sm text-gray-400 hover:text-primary transition">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
-                                    class="text-sm text-gray-400 hover:text-red-500 transition">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <!-- Content -->
+                        <div class="mt-2.5 flex-1">
+                            ${repo.title ? `
+                                <p class="text-sm text-gray-700 font-medium line-clamp-2 leading-snug">${repo.title}</p>
+                            ` : repo.description ? `
+                                <p class="text-sm text-gray-600 line-clamp-2 leading-snug">${repo.description}</p>
+                            ` : ''}
+                            
+                            ${repo.notes ? `
+                                <p class="text-xs text-gray-500 mt-1.5 line-clamp-2 bg-gray-50 rounded-lg px-2 py-1.5">${repo.notes}</p>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Footer with meta and actions -->
+                        <div class="flex items-center justify-between mt-3 pt-2.5 border-t border-gray-100">
+                            <div class="flex items-center gap-3 text-xs text-gray-400">
+                                ${repo.language ? `<span class="flex items-center gap-1"><i class="fas fa-code text-[10px]"></i>${repo.language}</span>` : ''}
+                                ${repo.stars ? `<span class="flex items-center gap-1"><i class="fas fa-star text-yellow-400 text-[10px]"></i>${repo.stars}</span>` : ''}
+                            </div>
+                            
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                                <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
+                                        class="w-7 h-7 flex items-center justify-center rounded-lg text-xs ${repo.starred ? 'text-yellow-400' : 'text-gray-400 hover:text-yellow-400'} transition"
+                                        title="${repo.starred ? '取消精选' : '标记精选'}">
+                                    <i class="fas fa-star"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
+                                        class="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-gray-400 hover:text-red-500 transition"
+                                        title="删除">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `).join('');
