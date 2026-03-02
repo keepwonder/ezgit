@@ -25,9 +25,27 @@
         .repo-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
         .category-tag { transition: all 0.2s; }
         .category-tag:hover { transform: scale(1.05); }
+        
+        /* 确保 footer 在底部 */
+        .main-content {
+            min-height: calc(100vh - 200px);
+        }
+        
+        /* 大屏适配 */
+        @media (min-width: 1920px) {
+            .hubs-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 2560px) {
+            .hubs-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-4">
@@ -59,6 +77,9 @@
             </div>
         </div>
     </header>
+
+    <!-- Main Content -->
+    <div class="main-content flex-1">
 
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-primary to-primary-light text-white py-8">
@@ -119,7 +140,7 @@
 
     <!-- Repo List -->
     <section class="max-w-6xl mx-auto px-4 pb-8">
-        <div id="repo-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div id="repo-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
             <!-- Repos will be rendered here -->
         </div>
         
@@ -603,8 +624,11 @@
         });
     </script>
 
+    </div>
+    <!-- End Main Content -->
+
     <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
+    <footer class="bg-white border-t border-gray-200">
         <div class="max-w-6xl mx-auto px-4 py-8">
             <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
