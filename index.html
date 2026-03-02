@@ -110,31 +110,43 @@
 
     <!-- Categories -->
     <section class="max-w-6xl mx-auto px-4 py-6">
-        <div class="flex flex-wrap gap-2" id="category-filters">
-            <button onclick="filterByCategory('all')" class="category-tag active px-4 py-2 rounded-full text-sm font-medium transition bg-primary text-white" data-category="all">
-                <i class="fas fa-th-large mr-1"></i> 全部
-            </button>
-            <button onclick="filterByCategory('ai')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="ai">
-                <i class="fas fa-robot mr-1"></i> AI & ML
-            </button>
-            <button onclick="filterByCategory('frontend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="frontend">
-                <i class="fas fa-desktop mr-1"></i> 前端开发
-            </button>
-            <button onclick="filterByCategory('backend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="backend">
-                <i class="fas fa-server mr-1"></i> 后端服务
-            </button>
-            <button onclick="filterByCategory('devops')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="devops">
-                <i class="fas fa-cogs mr-1"></i> DevOps
-            </button>
-            <button onclick="filterByCategory('tools')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="tools">
-                <i class="fas fa-wrench mr-1"></i> 效率工具
-            </button>
-            <button onclick="filterByCategory('learning')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="learning">
-                <i class="fas fa-graduation-cap mr-1"></i> 学习资源
-            </button>
-            <button onclick="filterByCategory('others')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="others">
-                <i class="fas fa-folder mr-1"></i> 其他
-            </button>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-wrap gap-2" id="category-filters">
+                <button onclick="filterByCategory('all')" class="category-tag active px-4 py-2 rounded-full text-sm font-medium transition bg-primary text-white" data-category="all">
+                    <i class="fas fa-th-large mr-1"></i> 全部
+                </button>
+                <button onclick="filterByCategory('ai')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="ai">
+                    <i class="fas fa-robot mr-1"></i> AI & ML
+                </button>
+                <button onclick="filterByCategory('frontend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="frontend">
+                    <i class="fas fa-desktop mr-1"></i> 前端开发
+                </button>
+                <button onclick="filterByCategory('backend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="backend">
+                    <i class="fas fa-server mr-1"></i> 后端服务
+                </button>
+                <button onclick="filterByCategory('devops')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="devops">
+                    <i class="fas fa-cogs mr-1"></i> DevOps
+                </button>
+                <button onclick="filterByCategory('tools')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="tools">
+                    <i class="fas fa-wrench mr-1"></i> 效率工具
+                </button>
+                <button onclick="filterByCategory('learning')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="learning">
+                    <i class="fas fa-graduation-cap mr-1"></i> 学习资源
+                </button>
+                <button onclick="filterByCategory('others')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="others">
+                    <i class="fas fa-folder mr-1"></i> 其他
+                </button>
+            </div>
+            
+            <!-- View Toggle -->
+            <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                <button onclick="toggleView('grid')" id="view-grid" class="view-btn active px-3 py-1.5 rounded-md text-sm transition bg-white shadow-sm text-gray-700">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button onclick="toggleView('list')" id="view-list" class="view-btn px-3 py-1.5 rounded-md text-sm transition text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
         </div>
     </section>
 
@@ -290,6 +302,7 @@
         let repos = JSON.parse(localStorage.getItem('ezgit-repos') || JSON.stringify(sampleRepos));
         let currentCategory = 'all';
         let searchQuery = '';
+        let currentView = localStorage.getItem('ezgit-view') || 'grid'; // 'grid' or 'list'
 
         // Category names
         const categoryNames = {
@@ -305,8 +318,34 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             updateStats();
+            updateViewButtons();
             renderRepos();
         });
+
+        // Toggle View
+        function toggleView(view) {
+            currentView = view;
+            localStorage.setItem('ezgit-view', view);
+            updateViewButtons();
+            renderRepos();
+        }
+
+        function updateViewButtons() {
+            const gridBtn = document.getElementById('view-grid');
+            const listBtn = document.getElementById('view-list');
+            
+            if (currentView === 'grid') {
+                gridBtn.classList.add('bg-white', 'shadow-sm', 'text-gray-700');
+                gridBtn.classList.remove('text-gray-500');
+                listBtn.classList.remove('bg-white', 'shadow-sm', 'text-gray-700');
+                listBtn.classList.add('text-gray-500');
+            } else {
+                listBtn.classList.add('bg-white', 'shadow-sm', 'text-gray-700');
+                listBtn.classList.remove('text-gray-500');
+                gridBtn.classList.remove('bg-white', 'shadow-sm', 'text-gray-700');
+                gridBtn.classList.add('text-gray-500');
+            }
+        }
 
         // Update Stats
         function updateStats() {
@@ -356,69 +395,123 @@
             
             emptyState.classList.add('hidden');
             
-            list.innerHTML = filtered.map(repo => `
-                <div class="repo-card bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-primary/30 cursor-pointer group"
-                     onclick="window.open('${repo.url}', '_blank')">
-                    <div class="flex items-start gap-3">
+            // Update container class based on view
+            if (currentView === 'list') {
+                list.className = 'flex flex-col gap-3';
+            } else {
+                list.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4';
+            }
+            
+            if (currentView === 'list') {
+                // List View
+                list.innerHTML = filtered.map(repo => `
+                    <div class="repo-card bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:border-primary/30 cursor-pointer group flex items-center gap-4"
+                         onclick="window.open('${repo.url}', '_blank')">
+                        
                         <img src="https://github.com/${repo.owner}.png" 
                              alt="${repo.owner}" 
-                             class="w-10 h-10 rounded-full bg-gray-100"
+                             class="w-10 h-10 rounded-lg bg-gray-100 flex-shrink-0"
                              onerror="this.src='https://github.com/github.png'">
                         
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1 min-w-0">
-                                    <h3 class="font-semibold text-gray-900 truncate group-hover:text-primary transition">
-                                        ${repo.owner}/${repo.name}
-                                    </h3>
-                                    <p class="text-xs text-gray-500 mt-0.5">${categoryNames[repo.category] || '未分类'} · ${formatDate(repo.addedAt)}</p>
-                                </div>
-                                
-                                ${repo.starred ? '<span class="text-yellow-400"><i class="fas fa-star"></i></span>' : ''}
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-medium px-2 py-0.5 bg-primary/10 text-primary rounded">${categoryNames[repo.category] || '其他'}</span>
+                                ${repo.starred ? '<span class="text-yellow-400"><i class="fas fa-star text-xs"></i></span>' : ''}
                             </div>
+                            
+                            <h3 class="font-medium text-gray-900 truncate group-hover:text-primary transition text-sm">
+                                ${repo.owner}/${repo.name}
+                            </h3>
                             
                             ${repo.title ? `
-                                <div class="mt-2 text-sm font-medium text-gray-800">
-                                    ${repo.title}
-                                </div>
+                                <p class="text-sm text-gray-600 truncate mt-0.5">${repo.title}</p>
                             ` : ''}
-                            
-                            ${repo.description ? `
-                                <p class="mt-1 text-sm text-gray-600 line-clamp-2">
-                                    ${repo.description}
-                                </p>
-                            ` : ''}
-                            
-                            ${repo.notes ? `
-                                <div class="mt-2 text-sm text-gray-500 bg-gray-50 rounded-lg p-2">
-                                    <i class="fas fa-sticky-note text-gray-400 mr-1"></i>
-                                    ${repo.notes}
-                                </div>
-                            ` : ''}
-                            
-                            <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
-                                ${repo.language ? `<span><i class="fas fa-code text-gray-400 mr-1"></i>${repo.language}</span>` : ''}
-                                ${repo.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${repo.stars}</span>` : ''}
-                            </div>
+                        </div>
+                        
+                        <div class="hidden sm:flex items-center gap-4 text-xs text-gray-400 flex-shrink-0">
+                            ${repo.language ? `<span class="flex items-center gap-1"><i class="fas fa-code"></i> ${repo.language}</span>` : ''}
+                            ${repo.stars ? `<span class="flex items-center gap-1"><i class="fas fa-star text-yellow-400"></i> ${repo.stars}</span>` : ''}
+                            <span>${formatDate(repo.addedAt)}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg ${repo.starred ? 'text-yellow-400 bg-yellow-50' : 'text-gray-400 hover:text-yellow-400 hover:bg-yellow-50'} transition">
+                                <i class="fas fa-star"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
-                    
-                    <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition">
-                        <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
-                                class="text-sm ${repo.starred ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition">
-                            <i class="fas ${repo.starred ? 'fa-star' : 'fa-regular fa-star'}"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); editRepo('${repo.id}')" 
-                                class="text-sm text-gray-400 hover:text-primary transition">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
-                                class="text-sm text-gray-400 hover:text-red-500 transition">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                `).join('');
+            } else {
+                // Grid View
+                list.innerHTML = filtered.map(repo => `
+                    <div class="repo-card bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-primary/30 cursor-pointer group"
+                         onclick="window.open('${repo.url}', '_blank')">
+                        <div class="flex items-start gap-3">
+                            <img src="https://github.com/${repo.owner}.png" 
+                                 alt="${repo.owner}" 
+                                 class="w-10 h-10 rounded-full bg-gray-100"
+                                 onerror="this.src='https://github.com/github.png'">
+                            
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-semibold text-gray-900 truncate group-hover:text-primary transition">
+                                            ${repo.owner}/${repo.name}
+                                        </h3>
+                                        <p class="text-xs text-gray-500 mt-0.5">${categoryNames[repo.category] || '未分类'} · ${formatDate(repo.addedAt)}</p>
+                                    </div>
+                                    
+                                    ${repo.starred ? '<span class="text-yellow-400"><i class="fas fa-star"></i></span>' : ''}
+                                </div>
+                                
+                                ${repo.title ? `
+                                    <div class="mt-2 text-sm font-medium text-gray-800">
+                                        ${repo.title}
+                                    </div>
+                                ` : ''}
+                                
+                                ${repo.description ? `
+                                    <p class="mt-1 text-sm text-gray-600 line-clamp-2">
+                                        ${repo.description}
+                                    </p>
+                                ` : ''}
+                                
+                                ${repo.notes ? `
+                                    <div class="mt-2 text-sm text-gray-500 bg-gray-50 rounded-lg p-2">
+                                        <i class="fas fa-sticky-note text-gray-400 mr-1"></i>
+                                        ${repo.notes}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                                    ${repo.language ? `<span><i class="fas fa-code text-gray-400 mr-1"></i>${repo.language}</span>` : ''}
+                                    ${repo.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${repo.stars}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
+                                    class="text-sm ${repo.starred ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition">
+                                <i class="fas ${repo.starred ? 'fa-star' : 'fa-regular fa-star'}"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); editRepo('${repo.id}')" 
+                                    class="text-sm text-gray-400 hover:text-primary transition">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
+                                    class="text-sm text-gray-400 hover:text-red-500 transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
         // Filter by Category
