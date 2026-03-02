@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EzGit - GitHub 仓库管家</title>
+    <title>EzGit - 我的 GitHub 精选仓库</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -13,12 +13,18 @@
                     colors: {
                         primary: '#059669',
                         'primary-light': '#10b981',
-                        'primary-dark': '#047857',
+                        github: '#24292f',
                     }
                 }
             }
         }
     </script>
+    <style>
+        .repo-card { transition: all 0.2s; }
+        .repo-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .category-tag { transition: all 0.2s; }
+        .category-tag:hover { transform: scale(1.05); }
+    </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
@@ -27,15 +33,24 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                        <i class="fab fa-github text-white text-xl"></i>
+                        <svg viewBox="0 0 24 24" fill="white" class="w-6 h-6">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-gray-900">EzGit</h1>
-                        <p class="text-xs text-gray-500">GitHub 仓库管家</p>
+                        <p class="text-xs text-gray-500">我的 GitHub 精选仓库</p>
                     </div>
                 </div>
+                
                 <div class="flex items-center gap-3">
-                    <button onclick="showAddModal()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="搜索仓库..." 
+                            class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-48"
+                            oninput="searchRepos()">
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    </div>
+                    <button onclick="showAddModal()" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg flex items-center gap-2 transition text-sm">
                         <i class="fas fa-plus"></i>
                         <span>添加仓库</span>
                     </button>
@@ -44,92 +59,78 @@
         </div>
     </header>
 
-    <!-- Stats Cards -->
-    <section class="max-w-6xl mx-auto px-4 py-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-gray-500 text-sm">未读</p>
-                        <p class="text-2xl font-bold text-red-500" id="count-unread">0</p>
-                    </div>
-                    <div class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-circle text-red-500"></i>
-                    </div>
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-primary to-primary-light text-white py-8">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">收藏有价值的开源项目</h2>
+                    <p class="text-white/80 text-sm">整理、分类、记录你的 GitHub 探索之旅，不再让好项目淹没在浏览历史里</p>
                 </div>
-            </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
+                
+                <div class="flex gap-6 text-center">
                     <div>
-                        <p class="text-gray-500 text-sm">已读</p>
-                        <p class="text-2xl font-bold text-green-500" id="count-read">0</p>
+                        <p class="text-3xl font-bold" id="total-count">0</p>
+                        <p class="text-white/80 text-xs">已收藏</p>
                     </div>
-                    <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-check-circle text-green-500"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm">收藏</p>
-                        <p class="text-2xl font-bold text-yellow-500" id="count-starred">0</p>
+                        <p class="text-3xl font-bold" id="category-count">0</p>
+                        <p class="text-white/80 text-xs">分类</p>
                     </div>
-                    <div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-star text-yellow-500"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-gray-500 text-sm">总计</p>
-                        <p class="text-2xl font-bold text-primary" id="count-total">0</p>
-                    </div>
-                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-database text-primary"></i>
+                        <p class="text-3xl font-bold" id="starred-count">0</p>
+                        <p class="text-white/80 text-xs">精选</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Filter Tags -->
-    <section class="max-w-6xl mx-auto px-4 pb-4">
-        <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <div class="flex flex-wrap gap-2" id="filter-tags">
-                <button onclick="filterRepos('all')" class="filter-btn active px-4 py-1.5 rounded-full text-sm font-medium transition bg-primary text-white" data-filter="all">
-                    全部
-                </button>
-                <button onclick="filterRepos('unread')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="unread">
-                    未读
-                </button>
-                <button onclick="filterRepos('read')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="read">
-                    已读
-                </button>
-                <button onclick="filterRepos('starred')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="starred">
-                    收藏
-                </button>
-                <button onclick="filterRepos('ai')" class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200" data-filter="ai">
-                    🤖 AI讨论
-                </button>
-            </div>
+    <!-- Categories -->
+    <section class="max-w-6xl mx-auto px-4 py-6">
+        <div class="flex flex-wrap gap-2" id="category-filters">
+            <button onclick="filterByCategory('all')" class="category-tag active px-4 py-2 rounded-full text-sm font-medium transition bg-primary text-white" data-category="all">
+                <i class="fas fa-th-large mr-1"></i> 全部
+            </button>
+            <button onclick="filterByCategory('ai')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="ai">
+                <i class="fas fa-robot mr-1"></i> AI & ML
+            </button>
+            <button onclick="filterByCategory('frontend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="frontend">
+                <i class="fas fa-desktop mr-1"></i> 前端开发
+            </button>
+            <button onclick="filterByCategory('backend')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="backend">
+                <i class="fas fa-server mr-1"></i> 后端服务
+            </button>
+            <button onclick="filterByCategory('devops')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="devops">
+                <i class="fas fa-cogs mr-1"></i> DevOps
+            </button>
+            <button onclick="filterByCategory('tools')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="tools">
+                <i class="fas fa-wrench mr-1"></i> 效率工具
+            </button>
+            <button onclick="filterByCategory('learning')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="learning">
+                <i class="fas fa-graduation-cap mr-1"></i> 学习资源
+            </button>
+            <button onclick="filterByCategory('others')" class="category-tag px-4 py-2 rounded-full text-sm font-medium transition bg-white text-gray-600 border border-gray-200 hover:border-primary" data-category="others">
+                <i class="fas fa-folder mr-1"></i> 其他
+            </button>
         </div>
     </section>
 
     <!-- Repo List -->
     <section class="max-w-6xl mx-auto px-4 pb-8">
-        <div id="repo-list" class="space-y-4">
+        <div id="repo-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Repos will be rendered here -->
         </div>
         
         <!-- Empty State -->
         <div id="empty-state" class="hidden text-center py-16">
             <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fab fa-github text-3xl text-gray-400"></i>
+                <svg viewBox="0 0 24 24" fill="#9ca3af" class="w-10 h-10">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">还没有记录任何仓库</h3>
-            <p class="text-gray-500 mb-4">添加你感兴趣的 GitHub 仓库，或者和 AI 讨论过的项目</p>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">还没有收藏的仓库</h3>
+            <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目，建立自己的开源知识库</p>
             <button onclick="showAddModal()" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-dark transition">
                 添加第一个仓库
             </button>
@@ -138,7 +139,7 @@
 
     <!-- Add Modal -->
     <div id="add-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold text-gray-900">添加仓库</h3>
                 <button onclick="hideAddModal()" class="text-gray-400 hover:text-gray-600">
@@ -148,26 +149,55 @@
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">GitHub URL</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">GitHub URL *</label>
                     <input type="text" id="repo-url" placeholder="https://github.com/user/repo" 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        onblur="fetchRepoInfo()">
+                    <p class="text-xs text-gray-500 mt-1">输入 URL 后会自动获取仓库信息</p>
+                </div>
+                
+                <div id="repo-preview" class="hidden bg-gray-50 rounded-lg p-4">
+                    <div class="flex items-center gap-3">
+                        <img id="preview-avatar" src="" alt="" class="w-10 h-10 rounded-full">
+                        <div class="flex-1">
+                            <p id="preview-name" class="font-medium text-gray-900"></p>
+                            <p id="preview-desc" class="text-sm text-gray-600 truncate"></p>
+                        </div>
+                    </div㹍iv class="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                        <span><i class="fas fa-star text-yellow-400 mr-1"></i> <span id="preview-stars"></span></span>
+                        <span><i class="fas fa-code mr-1"></i> <span id="preview-lang"></span></span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">分类 *</label>
+                    <select id="repo-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                        <option value="">选择分类...</option>
+                        <option value="ai">🤖 AI & 机器学习</option>
+                        <option value="frontend">💻 前端开发</option>
+                        <option value="backend">🔧 后端服务</option>
+                        <option value="devops">⚙️ DevOps & 运维</option>
+                        <option value="tools">🛠️ 效率工具</option>
+                        <option value="learning">📚 学习资源</option>
+                        <option value="others">📁 其他</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">个人评价</label>
+                    <input type="text" id="repo-title" placeholder="一句话概括这个项目的价值..." 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">标签 (用逗号分隔)</label>
-                    <input type="text" id="repo-tags" placeholder="ai, tool, javascript" 
-                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">备注</label>
-                    <textarea id="repo-notes" rows="3" placeholder="记录你的想法或讨论要点..." 
+                    <label class="block text-sm font-medium text-gray-700 mb-1">详细笔记</label>
+                    <textarea id="repo-notes" rows="3" placeholder="记录项目的亮点、使用心得、学习收获..." 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
                 </div>
                 
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" id="repo-ai" class="w-4 h-4 text-primary rounded border-gray-300">
-                    <label for="repo-ai" class="text-sm text-gray-700">和 AI 讨论过</label>
+                    <input type="checkbox" id="repo-starred" class="w-4 h-4 text-primary rounded border-gray-300">
+                    <label for="repo-starred" class="text-sm text-gray-700"><i class="fas fa-star text-yellow-400 mr-1"></i> 标记为精选</label>
                 </div>
             </div>
             
@@ -176,7 +206,7 @@
                     取消
                 </button>
                 <button onclick="addRepo()" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
-                    添加
+                    添加收藏
                 </button>
             </div>
         </div>
@@ -188,15 +218,83 @@
     </div>
 
     <script>
+        // 示例数据
+        const sampleRepos = [
+            {
+                id: '1',
+                url: 'https://github.com/dongbeixiaohuo/writing-agent',
+                owner: 'dongbeixiaohuo',
+                name: 'writing-agent',
+                description: '🚀 一个基于 Claude Code 的"去AI味"全栈写作系统',
+                language: 'Markdown',
+                stars: '2.1k',
+                category: 'ai',
+                title: 'AI写作工作流系统，反AI味设计值得借鉴',
+                notes: 'Skills + Subagents 架构设计很棒，Humanizer 去AI味功能有特色',
+                starred: true,
+                addedAt: '2026-03-02T12:00:00Z'
+            },
+            {
+                id: '2',
+                url: 'https://github.com/anthropics/anthropic-cookbook',
+                owner: 'anthropics',
+                name: 'anthropic-cookbook',
+                description: 'A collection of notebooks/recipes showcasing Anthropic API use cases',
+                language: 'Jupyter Notebook',
+                stars: '8.5k',
+                category: 'ai',
+                title: 'Claude API 官方食谱，学习 Prompt Engineering 的好材料',
+                notes: '包含大量实用示例，从基础到高级用法都有覆盖',
+                starred: true,
+                addedAt: '2026-03-01T10:00:00Z'
+            },
+            {
+                id: '3',
+                url: 'https://github.com/microsoft/vscode',
+                owner: 'microsoft',
+                name: 'vscode',
+                description: 'Visual Studio Code',
+                language: 'TypeScript',
+                stars: '162k',
+                category: 'tools',
+                title: '最流行的代码编辑器，插件生态极其丰富',
+                notes: '源码值得学习，扩展系统设计优雅',
+                starred: false,
+                addedAt: '2026-02-28T15:00:00Z'
+            }
+        ];
+
         // Data Management
-        let repos = JSON.parse(localStorage.getItem('ezgit-repos') || '[]');
-        let currentFilter = 'all';
+        let repos = JSON.parse(localStorage.getItem('ezgit-repos') || JSON.stringify(sampleRepos));
+        let currentCategory = 'all';
+        let searchQuery = '';
+
+        // Category names
+        const categoryNames = {
+            ai: 'AI & ML',
+            frontend: '前端开发',
+            backend: '后端服务',
+            devops: 'DevOps',
+            tools: '效率工具',
+            learning: '学习资源',
+            others: '其他'
+        };
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            renderRepos();
             updateStats();
+            renderRepos();
         });
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('total-count').textContent = repos.length;
+            
+            const categories = new Set(repos.map(r => r.category).filter(Boolean));
+            document.getElementById('category-count').textContent = categories.size;
+            
+            document.getElementById('starred-count').textContent = repos.filter(r => r.starred).length;
+        }
 
         // Render Repos
         function renderRepos() {
@@ -204,13 +302,29 @@
             const emptyState = document.getElementById('empty-state');
             
             let filtered = repos;
-            if (currentFilter === 'unread') filtered = repos.filter(r => r.status === 'unread');
-            else if (currentFilter === 'read') filtered = repos.filter(r => r.status === 'read');
-            else if (currentFilter === 'starred') filtered = repos.filter(r => r.starred);
-            else if (currentFilter === 'ai') filtered = repos.filter(r => r.discussedWithAI);
             
-            // Sort by date (newest first)
-            filtered.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+            // Filter by category
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(r => r.category === currentCategory);
+            }
+            
+            // Filter by search
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(r => 
+                    r.name.toLowerCase().includes(q) ||
+                    r.owner.toLowerCase().includes(q) ||
+                    r.title?.toLowerCase().includes(q) ||
+                    r.notes?.toLowerCase().includes(q) ||
+                    r.description?.toLowerCase().includes(q)
+                );
+            }
+            
+            // Sort by starred first, then by date
+            filtered.sort((a, b) => {
+                if (a.starred !== b.starred) return b.starred ? 1 : -1;
+                return new Date(b.addedAt) - new Date(a.addedAt);
+            });
             
             if (filtered.length === 0) {
                 list.innerHTML = '';
@@ -219,156 +333,93 @@
             }
             
             emptyState.classList.add('hidden');
+            
             list.innerHTML = filtered.map(repo => `
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition group">
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                <i class="fab fa-github text-gray-600 text-lg"></i>
-                            </div>
-                        </div>
+                <div class="repo-card bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:border-primary/30 cursor-pointer group"
+                     onclick="window.open('${repo.url}', '_blank')">
+                    <div class="flex items-start gap-3">
+                        <img src="https://github.com/${repo.owner}.png" 
+                             alt="${repo.owner}" 
+                             class="w-10 h-10 rounded-full bg-gray-100"
+                             onerror="this.src='https://github.com/github.png'">
                         
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 class="font-semibold text-gray-900 truncate">
-                                        <a href="${repo.url}" target="_blank" class="hover:text-primary transition">
-                                            ${repo.owner}/${repo.name}
-                                        </a>
+                            <div class="flex items-start justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-semibold text-gray-900 truncate group-hover:text-primary transition">
+                                        ${repo.owner}/${repo.name}
                                     </h3>
-                                    <p class="text-sm text-gray-500 mt-0.5">${formatDate(repo.addedAt)}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">${categoryNames[repo.category] || '未分类'} · ${formatDate(repo.addedAt)}</p>
                                 </div>
                                 
-                                <div class="flex items-center gap-2">
-                                    ${repo.discussedWithAI ? '<span class="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">🤖 AI</span>' : ''}
-                                    <span class="status-badge text-xs px-2 py-1 rounded-full ${getStatusClass(repo.status)}">
-                                        ${getStatusText(repo.status)}
-                                    </span>
-                                </div>
+                                ${repo.starred ? '<span class="text-yellow-400"><i class="fas fa-star"></i></span>' : ''}
                             </div>
                             
+                            ${repo.title ? `
+                                <div class="mt-2 text-sm font-medium text-gray-800">
+                                    ${repo.title}
+                                </div>
+                            ` : ''}
+                            
+                            ${repo.description ? `
+                                <p class="mt-1 text-sm text-gray-600 line-clamp-2">
+                                    ${repo.description}
+                                </p>
+                            ` : ''}
+                            
                             ${repo.notes ? `
-                                <div class="mt-3 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                                <div class="mt-2 text-sm text-gray-500 bg-gray-50 rounded-lg p-2">
                                     <i class="fas fa-sticky-note text-gray-400 mr-1"></i>
                                     ${repo.notes}
                                 </div>
                             ` : ''}
                             
-                            ${repo.tags.length > 0 ? `
-                                <div class="flex flex-wrap gap-1.5 mt-3">
-                                    ${repo.tags.map(tag => `
-                                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${tag}</span>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                            
-                            <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
-                                <button onclick="toggleStatus('${repo.id}')" class="text-sm text-gray-600 hover:text-primary transition flex items-center gap-1">
-                                    <i class="fas ${repo.status === 'unread' ? 'fa-check-circle' : 'fa-undo'}"></i>
-                                    ${repo.status === 'unread' ? '标记已读' : '标记未读'}
-                                </button>
-                                <span class="text-gray-300">|</span>
-                                <button onclick="toggleStar('${repo.id}')" class="text-sm ${repo.starred ? 'text-yellow-500' : 'text-gray-600 hover:text-yellow-500'} transition flex items-center gap-1">
-                                    <i class="fas ${repo.starred ? 'fa-star' : 'fa-regular fa-star'}"></i>
-                                    ${repo.starred ? '已收藏' : '收藏'}
-                                </button>
-                                <span class="text-gray-300">|</span>
-                                <button onclick="deleteRepo('${repo.id}')" class="text-sm text-gray-600 hover:text-red-500 transition flex items-center gap-1">
-                                    <i class="fas fa-trash"></i>
-                                    删除
-                                </button>
+                            <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                                ${repo.language ? `<span><i class="fas fa-code text-gray-400 mr-1"></i>${repo.language}</span>` : ''}
+                                ${repo.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${repo.stars}</span>` : ''}
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 opacity-0 group-hover:opacity-100 transition">
+                        <button onclick="event.stopPropagation(); toggleStar('${repo.id}')" 
+                                class="text-sm ${repo.starred ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'} transition">
+                            <i class="fas ${repo.starred ? 'fa-star' : 'fa-regular fa-star'}"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); editRepo('${repo.id}')" 
+                                class="text-sm text-gray-400 hover:text-primary transition">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); deleteRepo('${repo.id}')" 
+                                class="text-sm text-gray-400 hover:text-red-500 transition">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        // Update Stats
-        function updateStats() {
-            document.getElementById('count-unread').textContent = repos.filter(r => r.status === 'unread').length;
-            document.getElementById('count-read').textContent = repos.filter(r => r.status === 'read').length;
-            document.getElementById('count-starred').textContent = repos.filter(r => r.starred).length;
-            document.getElementById('count-total').textContent = repos.length;
-        }
-
-        // Filter Repos
-        function filterRepos(filter) {
-            currentFilter = filter;
+        // Filter by Category
+        function filterByCategory(category) {
+            currentCategory = category;
             
-            // Update button styles
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                if (btn.dataset.filter === filter) {
-                    btn.classList.remove('bg-gray-100', 'text-gray-600');
+            document.querySelectorAll('.category-tag').forEach(btn => {
+                if (btn.dataset.category === category) {
+                    btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
                     btn.classList.add('bg-primary', 'text-white');
                 } else {
                     btn.classList.remove('bg-primary', 'text-white');
-                    btn.classList.add('bg-gray-100', 'text-gray-600');
+                    btn.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-200');
                 }
             });
             
             renderRepos();
         }
 
-        // Add Repo
-        function addRepo() {
-            const url = document.getElementById('repo-url').value.trim();
-            const tagsInput = document.getElementById('repo-tags').value.trim();
-            const notes = document.getElementById('repo-notes').value.trim();
-            const discussedWithAI = document.getElementById('repo-ai').checked;
-            
-            if (!url) {
-                showToast('请输入 GitHub URL');
-                return;
-            }
-            
-            // Parse GitHub URL
-            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-            if (!match) {
-                showToast('无效的 GitHub URL');
-                return;
-            }
-            
-            const [, owner, name] = match;
-            
-            const repo = {
-                id: Date.now().toString(),
-                url: url,
-                owner: owner,
-                name: name.replace(/\.git$/, ''),
-                tags: tagsInput ? tagsInput.split(',').map(t => t.trim()).filter(Boolean) : [],
-                notes: notes,
-                status: 'unread',
-                starred: false,
-                discussedWithAI: discussedWithAI,
-                addedAt: new Date().toISOString()
-            };
-            
-            repos.unshift(repo);
-            saveRepos();
-            
-            hideAddModal();
+        // Search
+        function searchRepos() {
+            searchQuery = document.getElementById('search-input').value.trim();
             renderRepos();
-            updateStats();
-            
-            // Reset form
-            document.getElementById('repo-url').value = '';
-            document.getElementById('repo-tags').value = '';
-            document.getElementById('repo-notes').value = '';
-            document.getElementById('repo-ai').checked = false;
-            
-            showToast('仓库已添加');
-        }
-
-        // Toggle Status
-        function toggleStatus(id) {
-            const repo = repos.find(r => r.id === id);
-            if (repo) {
-                repo.status = repo.status === 'unread' ? 'read' : 'unread';
-                saveRepos();
-                renderRepos();
-                updateStats();
-            }
         }
 
         // Toggle Star
@@ -379,19 +430,129 @@
                 saveRepos();
                 renderRepos();
                 updateStats();
-                showToast(repo.starred ? '已收藏' : '取消收藏');
+                showToast(repo.starred ? '已标记为精选' : '已取消精选');
             }
         }
 
         // Delete Repo
         function deleteRepo(id) {
-            if (confirm('确定要删除这个仓库记录吗？')) {
+            if (confirm('确定要删除这个仓库吗？')) {
                 repos = repos.filter(r => r.id !== id);
                 saveRepos();
                 renderRepos();
                 updateStats();
                 showToast('已删除');
             }
+        }
+
+        // Edit Repo
+        function editRepo(id) {
+            const repo = repos.find(r => r.id === id);
+            if (!repo) return;
+            
+            document.getElementById('repo-url').value = repo.url;
+            document.getElementById('repo-category').value = repo.category;
+            document.getElementById('repo-title').value = repo.title || '';
+            document.getElementById('repo-notes').value = repo.notes || '';
+            document.getElementById('repo-starred').checked = repo.starred;
+            
+            showRepoPreview(repo);
+            showAddModal();
+        }
+
+        // Fetch Repo Info (模拟)
+        async function fetchRepoInfo() {
+            const url = document.getElementById('repo-url').value.trim();
+            if (!url) return;
+            
+            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+            if (!match) return;
+            
+            const [, owner, name] = match;
+            
+            // 模拟获取数据（实际应该调用 GitHub API）
+            const preview = {
+                owner,
+                name: name.replace(/\.git$/, ''),
+                description: '自动获取的描述信息...',
+                language: 'JavaScript',
+                stars: '1.2k'
+            };
+            
+            showRepoPreview(preview);
+        }
+
+        function showRepoPreview(repo) {
+            document.getElementById('repo-preview').classList.remove('hidden');
+            document.getElementById('preview-avatar').src = `https://github.com/${repo.owner}.png`;
+            document.getElementById('preview-name').textContent = `${repo.owner}/${repo.name}`;
+            document.getElementById('preview-desc').textContent = repo.description || '暂无描述';
+            document.getElementById('preview-stars').textContent = repo.stars || '0';
+            document.getElementById('preview-lang').textContent = repo.language || 'Unknown';
+        }
+
+        // Add Repo
+        function addRepo() {
+            const url = document.getElementById('repo-url').value.trim();
+            const category = document.getElementById('repo-category').value;
+            const title = document.getElementById('repo-title').value.trim();
+            const notes = document.getElementById('repo-notes').value.trim();
+            const starred = document.getElementById('repo-starred').checked;
+            
+            if (!url || !category) {
+                showToast('请填写 URL 和分类');
+                return;
+            }
+            
+            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
+            if (!match) {
+                showToast('无效的 GitHub URL');
+                return;
+            }
+            
+            const [, owner, name] = match;
+            
+            // Check if exists
+            const exists = repos.find(r => r.url === url);
+            if (exists) {
+                showToast('该仓库已存在');
+                return;
+            }
+            
+            const repo = {
+                id: Date.now().toString(),
+                url,
+                owner,
+                name: name.replace(/\.git$/, ''),
+                description: document.getElementById('preview-desc').textContent || '',
+                language: document.getElementById('preview-lang').textContent || '',
+                stars: document.getElementById('preview-stars').textContent || '',
+                category,
+                title,
+                notes,
+                starred,
+                addedAt: new Date().toISOString()
+            };
+            
+            repos.unshift(repo);
+            saveRepos();
+            
+            hideAddModal();
+            resetForm();
+            renderRepos();
+            updateStats();
+            
+            showToast('仓库已添加');
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('repo-url').value = '';
+            document.getElementById('repo-category').value = '';
+            document.getElementById('repo-title').value = '';
+            document.getElementById('repo-notes').value = '';
+            document.getElementById('repo-starred').checked = false;
+            document.getElementById('repo-preview').classList.add('hidden');
         }
 
         // Save to LocalStorage
@@ -402,11 +563,11 @@
         // Modal Functions
         function showAddModal() {
             document.getElementById('add-modal').classList.remove('hidden');
-            document.getElementById('repo-url').focus();
         }
 
         function hideAddModal() {
             document.getElementById('add-modal').classList.add('hidden');
+            resetForm();
         }
 
         // Toast
@@ -418,33 +579,15 @@
         }
 
         // Helpers
-        function getStatusClass(status) {
-            const classes = {
-                'unread': 'bg-red-100 text-red-600',
-                'read': 'bg-green-100 text-green-600',
-                'archived': 'bg-gray-100 text-gray-600'
-            };
-            return classes[status] || classes['unread'];
-        }
-
-        function getStatusText(status) {
-            const texts = {
-                'unread': '未读',
-                'read': '已读',
-                'archived': '归档'
-            };
-            return texts[status] || '未读';
-        }
-
         function formatDate(dateString) {
             const date = new Date(dateString);
             const now = new Date();
             const diff = now - date;
             
-            if (diff < 60000) return '刚刚';
-            if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
-            if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
+            if (diff < 86400000) return '今天';
+            if (diff < 172800000) return '昨天';
             if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`;
+            if (diff < 2592000000) return `${Math.floor(diff / 604800000)}周前`;
             
             return date.toLocaleDateString('zh-CN');
         }
@@ -454,7 +597,6 @@
             if (e.target.id === 'add-modal') hideAddModal();
         });
 
-        // Enter key in modal
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') hideAddModal();
         });
