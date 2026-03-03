@@ -446,9 +446,14 @@
         }
         
         // GitHub 登录
-        function login() {
-            if (GITHUB_CLIENT_ID === 'YOUR_CLIENT_ID') {
-                showToast('请先配置 GitHub OAuth App Client ID', 'warning');
+        async function login() {
+            // 如果没有配置 Client ID，使用手动输入 Token 的方式
+            if (GITHUB_CLIENT_ID === 'YOUR_CLIENT_ID' || !GITHUB_CLIENT_ID) {
+                const token = prompt('请输入 GitHub Personal Access Token（需要 gist 权限）：\n\n获取方式：\n1. 访问 https://github.com/settings/tokens\n2. 点击 Generate new token (classic)\n3. 勾选 gist 权限\n4. 生成并复制 Token');
+                
+                if (token) {
+                    await validateAndLogin(token);
+                }
                 return;
             }
             
@@ -457,6 +462,36 @@
             
             const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=gist&state=${state}`;
             window.location.href = authUrl;
+        }
+        
+        // 验证 Token 并登录
+        async function validateAndLogin(token) {
+            try {
+                showToast('正在验证...', 'info');
+                
+                const response = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    githubToken = token;
+                    currentUser = user;
+                    localStorage.setItem('github_token', token);
+                    showLoggedInUI();
+                    showToast('登录成功！', 'success');
+                    
+                    // 从 Gist 加载数据
+                    await syncFromGist();
+                } else {
+                    showToast('Token 无效，请检查', 'error');
+                }
+            } catch (error) {
+                showToast('验证失败: ' + error.message, 'error');
+            }
         }
         
         // 生成随机 state
