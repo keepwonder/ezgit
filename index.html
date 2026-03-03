@@ -1203,13 +1203,13 @@
             }
 
             // 搜索筛选
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            if (searchTerm) {
+            const searchTermLower = document.getElementById('search-input').value.toLowerCase();
+            if (searchTermLower) {
                 filteredRepos = filteredRepos.filter(r =>
-                    r.name.toLowerCase().includes(searchTerm) ||
-                    r.owner.toLowerCase().includes(searchTerm) ||
-                    (r.title || '').toLowerCase().includes(searchTerm) ||
-                    (r.description || '').toLowerCase().includes(searchTerm)
+                    r.name.toLowerCase().includes(searchTermLower) ||
+                    r.owner.toLowerCase().includes(searchTermLower) ||
+                    (r.title || '').toLowerCase().includes(searchTermLower) ||
+                    (r.description || '').toLowerCase().includes(searchTermLower)
                 );
             }
 
