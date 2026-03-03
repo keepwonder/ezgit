@@ -476,10 +476,16 @@
         let editingRepoId = null;
 
         // 懒加载配置
-        const ITEMS_PER_BATCH = 16; // 初始加载16个（4行x4列）
-        let visibleItems = ITEMS_PER_BATCH; // 当前已加载数量
+        const GRID_ITEMS_PER_BATCH = 16; // 网格视图：16个（4行x4列）
+        const LIST_ITEMS_PER_BATCH = 20; // 列表视图：20个
+        let visibleItems = GRID_ITEMS_PER_BATCH; // 当前已加载数量
         let isLoading = false; // 是否正在加载
         let showOnlyStarred = false;
+
+        // 获取当前视图的加载数量
+        function getItemsPerBatch() {
+            return currentView === 'grid' ? GRID_ITEMS_PER_BATCH : LIST_ITEMS_PER_BATCH;
+        }
 
         // 加载自定义分类
         let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
@@ -1364,7 +1370,7 @@
             if (visibleItems >= filteredRepos.length) return;
 
             isLoading = true;
-            visibleItems += ITEMS_PER_BATCH;
+            visibleItems += getItemsPerBatch();
             render();
             isLoading = false;
         }
@@ -1656,14 +1662,14 @@
 
         // 搜索
         function searchRepos() {
-            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
+            visibleItems = getItemsPerBatch(); // 重置懒加载
             render();
         }
 
         // 筛选分类
         function filterByCategory(category) {
             currentCategory = category;
-            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
+            visibleItems = getItemsPerBatch(); // 重置懒加载
 
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.category === category) {
@@ -1681,7 +1687,7 @@
         // 切换精选筛选
         function toggleStarredFilter() {
             showOnlyStarred = !showOnlyStarred;
-            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
+            visibleItems = getItemsPerBatch(); // 重置懒加载
 
             const btn = document.getElementById('filter-starred');
             const starredCount = repos.filter(r => r.starred).length;
@@ -1702,7 +1708,7 @@
         // 切换视图
         function toggleView(view) {
             currentView = view;
-            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
+            visibleItems = getItemsPerBatch(); // 重置懒加载
             localStorage.setItem('ezgit-view', view);
 
             const gridBtn = document.getElementById('view-grid');
