@@ -261,7 +261,19 @@
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg z-50"></div>
+    <div id="toast" class="hidden fixed bottom-6 right-6 z-50 transition-all duration-300 transform translate-y-2 opacity-0">
+        <div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 min-w-[280px]">
+            <div id="toast-icon" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-info text-sm"></i>
+            </div>
+            <div class="flex-1">
+                <p id="toast-message" class="text-sm font-medium"></p>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-white transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
 
     <script>
         // 示例数据
@@ -628,10 +640,50 @@
         }
 
         // 显示提示
-        function showToast(msg) {
-            toast.textContent = msg;
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            const iconEl = document.getElementById('toast-icon');
+            const msgEl = document.getElementById('toast-message');
+            
+            // 设置图标
+            const icons = {
+                success: '<i class="fas fa-check text-green-400"></i>',
+                error: '<i class="fas fa-exclamation text-red-400"></i>',
+                warning: '<i class="fas fa-exclamation-triangle text-yellow-400"></i>',
+                info: '<i class="fas fa-info text-blue-400"></i>'
+            };
+            
+            // 设置背景色
+            const bgColors = {
+                success: 'bg-green-900/90',
+                error: 'bg-red-900/90',
+                warning: 'bg-yellow-900/90',
+                info: 'bg-gray-900/90'
+            };
+            
+            iconEl.innerHTML = icons[type] || icons.info;
+            msgEl.textContent = msg;
+            
+            // 显示动画
             toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.add('hidden'), 2000);
+            toast.classList.remove('translate-y-2', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            // 自动隐藏
+            setTimeout(() => {
+                hideToast();
+            }, 3000);
+        }
+        
+        // 隐藏提示
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('translate-y-2', 'opacity-0');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 300);
         }
 
         // 添加/更新仓库
