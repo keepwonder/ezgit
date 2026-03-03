@@ -10,8 +10,10 @@
     <style>
         * { scrollbar-width: none; -ms-overflow-style: none; }
         *::-webkit-scrollbar { display: none; }
-        .repo-card { transition: all 0.2s; }
+        .repo-card { transition: all 0.2s; cursor: grab; }
         .repo-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
+        .repo-card.dragging { opacity: 0.5; cursor: grabbing; transform: scale(1.02); box-shadow: 0 20px 40px -5px rgba(0,0,0,0.2); }
+        .repo-card.drag-over { border: 2px dashed #10b981; background-color: #f0fdf4; }
         .category-tag { transition: all 0.2s; }
         .category-tag:hover { transform: scale(1.05); }
         .main-content { min-height: calc(100vh - 280px); }
@@ -432,7 +434,7 @@
             repoList.innerHTML = filtered.map(r => {
                 if (currentView === 'grid') {
                     return `
-                        <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col h-full">
+                        <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col h-full" draggable="true" data-id="${r.id}">
                             <div class="flex items-start gap-3 flex-1">
                                 <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg flex-shrink-0" onerror="this.src='https://github.com/github.png'">
                                 <div class="flex-1 min-w-0">
@@ -452,13 +454,13 @@
                                     ${r.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${r.stars}</span>` : ''}
                                 </div>
                                 <div class="flex gap-1">
-                                    <button onclick="window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
+                                    <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
                                         <i class="fas fa-pen text-xs"></i>
                                     </button>
-                                    <button onclick="window.toggleStar('${r.id}')" class="w-8 h-8 flex items-center justify-center ${r.starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500 hover:bg-yellow-50 rounded transition" title="${r.starred ? '取消精选' : '精选'}">
+                                    <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="w-8 h-8 flex items-center justify-center ${r.starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500 hover:bg-yellow-50 rounded transition" title="${r.starred ? '取消精选' : '精选'}">
                                         <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
                                     </button>
-                                    <button onclick="window.deleteRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="删除">
+                                    <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="删除">
                                         <i class="fas fa-trash text-xs"></i>
                                     </button>
                                 </div>
@@ -493,6 +495,9 @@
                     `;
                 }
             }).join('');
+            
+            // 初始化拖拽
+            initDragAndDrop();
         }
 
         // 保存
@@ -843,6 +848,76 @@
             document.getElementById('new-category-name').value = '';
         });
 
+        // 拖拽功能
+        let draggedId = null;
+
+        function initDragAndDrop() {
+            const cards = document.querySelectorAll('.repo-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('drop', handleDrop);
+                card.addEventListener('dragenter', handleDragEnter);
+                card.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedId = this.dataset.id;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', draggedId);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.repo-card').forEach(card => {
+                card.classList.remove('drag-over');
+            });
+            draggedId = null;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            if (this.dataset.id !== draggedId) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('drag-over');
+            
+            const droppedId = this.dataset.id;
+            if (draggedId === droppedId) return;
+            
+            // 找到拖拽的索引和目标索引
+            const draggedIndex = repos.findIndex(r => r.id === draggedId);
+            const droppedIndex = repos.findIndex(r => r.id === droppedId);
+            
+            if (draggedIndex === -1 || droppedIndex === -1) return;
+            
+            // 重新排序
+            const [draggedRepo] = repos.splice(draggedIndex, 1);
+            repos.splice(droppedIndex, 0, draggedRepo);
+            
+            // 保存并重新渲染
+            saveRepos();
+            render();
+            showToast('已调整顺序');
+        }
+
         // 点击遮罩关闭
         addModal.addEventListener('click', (e) => {
             if (e.target === addModal) hideAddModal();
@@ -854,6 +929,7 @@
         updateStats();
         toggleView(currentView);
         render();
+        initDragAndDrop();
     </script>
 </body>
 </html>
