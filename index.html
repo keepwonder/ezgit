@@ -407,11 +407,14 @@
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
         let editingRepoId = null;
         
-        // 分页配置
-        const ITEMS_PER_PAGE = 8; // 每页显示数量
+        // 分页配置（根据页面大小自适应）
+        let itemsPerPage = 8; // 动态计算，初始值
         let currentPage = 1; // 当前页码
         let filteredRepos = []; // 筛选后的数据
         let showOnlyStarred = false;
+
+        // 加载自定义分类
+        let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
 
         // 加载自定义分类
         let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
@@ -425,6 +428,66 @@
         
         // 合并默认和自定义分类
         let categoryNames = { ...defaultCategoryNames, ...customCategories };
+
+        // 根据视口大小计算每页显示数量
+        function calculateItemsPerPage() {
+            // 获取视口高度
+            const viewportHeight = window.innerHeight;
+            
+            // 计算可用内容区域高度（减去 header、stats、categories、footer 等）
+            const headerHeight = 72; // header 高度
+            const statsHeight = 80;  // stats 区域高度
+            const categoriesHeight = 80; // 分类筛选区域高度
+            const footerHeight = 200; // footer + 分页区域高度
+            const padding = 100; // 额外 padding
+            
+            const availableHeight = viewportHeight - headerHeight - statsHeight - categoriesHeight - footerHeight - padding;
+            
+            // 根据当前视图计算每个卡片的高度
+            const cardHeight = currentView === 'grid' ? 200 : 80; // 网格视图卡片约200px，列表视图约80px
+            const gap = 16; // gap-4 = 16px
+            
+            // 计算可以显示的行数
+            const rows = Math.floor(availableHeight / (cardHeight + gap));
+            
+            // 根据视图计算每行显示的卡片数
+            let cardsPerRow;
+            if (currentView === 'grid') {
+                // 网格视图：根据屏幕宽度计算列数
+                const containerWidth = window.innerWidth;
+                if (containerWidth >= 1280) { // xl
+                    cardsPerRow = 4;
+                } else if (containerWidth >= 1024) { // lg
+                    cardsPerRow = 3;
+                } else if (containerWidth >= 640) { // sm
+                    cardsPerRow = 2;
+                } else {
+                    cardsPerRow = 1;
+                }
+            } else {
+                cardsPerRow = 1; // 列表视图每行1个
+            }
+            
+            // 计算每页显示数量（至少4个，最多20个）
+            const calculatedItems = Math.max(4, Math.min(20, rows * cardsPerRow));
+            
+            itemsPerPage = calculatedItems;
+            return itemsPerPage;
+        }
+        
+        // 监听窗口大小变化
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const oldItemsPerPage = itemsPerPage;
+                calculateItemsPerPage();
+                // 如果每页数量变化了，重新渲染
+                if (oldItemsPerPage !== itemsPerPage) {
+                    render();
+                }
+            }, 200);
+        });
 
         // DOM 元素
         const repoList = document.getElementById('repo-list');
@@ -1152,14 +1215,14 @@
             
             emptyState.classList.add('hidden');
             
-            // 分页计算
-            const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE);
+            // 分页计算（使用动态计算的 itemsPerPage）
+            const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
             if (currentPage > totalPages) {
-                currentPage = totalPages;
+                currentPage = totalPages || 1;
             }
             
-            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
             const pageRepos = filteredRepos.slice(startIndex, endIndex);
             
             // 设置容器样式
@@ -1304,14 +1367,14 @@
             html += '</div>';
             
             // 添加统计信息
-            html += `<p class="text-sm text-gray-500 text-center mt-2">第 ${currentPage}/${totalPages} 页，共 ${totalItems} 个仓库</p>`;
+            html += `<p class="text-sm text-gray-500 text-center mt-2">第 ${currentPage}/${totalPages} 页，共 ${totalItems} 个仓库，每页 ${itemsPerPage} 个</p>`;
             
             paginationContainer.innerHTML = html;
         }
         
         // 跳转到指定页
         window.goToPage = function(page) {
-            const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE);
+            const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
             if (page < 1 || page > totalPages) return;
             
             currentPage = page;
@@ -1826,6 +1889,9 @@
 
         // 初始化
         async function init() {
+            // 初始化每页显示数量（根据页面大小自适应）
+            calculateItemsPerPage();
+            
             renderCategoryFilters();
             updateCategorySelect();
             updateStats();
