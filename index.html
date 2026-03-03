@@ -44,14 +44,14 @@
                         <p class="text-xs text-gray-500">我的 GitHub 精选仓库</p>
                     </div>
                 </div>
-                
+
                 <div class="flex items-center gap-2">
                     <div class="relative">
-                        <input type="text" id="search-input" placeholder="搜索仓库..." 
+                        <input type="text" id="search-input" placeholder="搜索仓库..."
                             class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 w-48">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                     </div>
-                    
+
                     <!-- 导入导出 -->
                     <button id="export-btn" class="w-9 h-9 flex items-center justify-center text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition" title="导出数据">
                         <i class="fas fa-download"></i>
@@ -60,7 +60,7 @@
                         <i class="fas fa-upload"></i>
                         <input type="file" id="import-file" accept=".json" class="hidden">
                     </label>
-                    
+
                     <button id="add-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition text-sm">
                         <i class="fas fa-plus"></i>
                         <span>添加</span>
@@ -87,7 +87,7 @@
                                     <p id="user-name" class="font-medium text-gray-900 truncate"></p>
                                     <p id="user-login" class="text-sm text-gray-500 truncate"></p>
                                 </div>
-                                
+
                                 <div class="px-4 py-2 border-b border-gray-100">
                                     <div class="flex items-center gap-2 text-sm">
                                         <div id="sync-status-dot" class="w-2 h-2 rounded-full bg-gray-300"></div>
@@ -159,7 +159,7 @@
                         <i class="fas fa-cubes mr-1"></i> 基础建设
                     </button>
                 </div>
-                
+
                 <!-- View Toggle & Starred Filter -->
                 <div class="flex items-center gap-2">
                     <button id="filter-starred" class="px-3 py-1.5 rounded-md text-sm text-gray-500 hover:text-yellow-500 transition flex items-center gap-1" title="只看精选">
@@ -180,7 +180,7 @@
         <!-- Repo List -->
         <section class="max-w-6xl mx-auto px-4 pb-8">
             <div id="repo-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
-            
+
             <div id="empty-state" class="hidden text-center py-16">
                 <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-inbox text-4xl text-gray-400"></i>
@@ -188,7 +188,7 @@
                 <h3 class="text-lg font-medium text-gray-900 mb-2">还没有收藏的仓库</h3>
                 <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目</p>
             </div>
-            
+
             <!-- 分页控件 -->
             <div id="pagination-container" class="mt-6"></div>
         </section>
@@ -216,7 +216,7 @@
                     <a href="https://keepwonder.top" target="_blank" class="text-gray-400 hover:text-white transition">更多项目</a>
                 </div>
             </div>
-            
+
             <!-- Divider -->
             <div class="border-t border-gray-800 pt-4">
                 <p class="text-center text-gray-500 text-sm">
@@ -235,12 +235,12 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            
+
             <div class="px-5 py-4">
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">GitHub URL <span class="text-red-500">*</span></label>
                     <div class="flex gap-2">
-                        <input type="text" id="repo-url" placeholder="https://github.com/user/repo" 
+                        <input type="text" id="repo-url" placeholder="https://github.com/user/repo"
                             class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                             onblur="window.fetchRepoInfo&&window.fetchRepoInfo()">
                         <button id="fetch-btn" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm">
@@ -248,7 +248,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <div id="repo-preview" class="hidden mb-3 bg-gray-50 rounded-lg p-3 border">
                     <div class="flex items-center gap-3">
                         <img id="preview-avatar" src="" class="w-9 h-9 rounded-lg bg-white">
@@ -262,7 +262,7 @@
                         <span><i class="fas fa-code mr-1"></i><span id="preview-lang"></span></span>
                     </div>
                 </div>
-                
+
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">分类 <span class="text-red-500">*</span></label>
                     <select id="repo-category" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -280,24 +280,24 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="mb-3">
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">一句话评价</label>
-                    <input type="text" id="repo-title" placeholder="为什么推荐这个仓库？" 
+                    <input type="text" id="repo-title" placeholder="为什么推荐这个仓库？"
                         class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
-                
+
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1.5">详细笔记</label>
                     <textarea id="repo-notes" placeholder="更多想法..." rows="3"
                         class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"></textarea>
                 </div>
-                
+
                 <div class="flex items-center gap-2 mb-4">
                     <input type="checkbox" id="repo-starred" class="w-4 h-4 text-green-600 rounded">
                     <label for="repo-starred" class="text-sm text-gray-700">标记为精选</label>
                 </div>
-                
+
                 <div class="flex gap-3">
                     <button id="cancel-btn" class="flex-1 py-2 border rounded-lg hover:bg-gray-50">取消</button>
                     <button id="save-btn" class="flex-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">添加</button>
@@ -325,7 +325,7 @@
                 <h3 class="text-lg font-bold text-gray-900">GitHub 登录</h3>
                 <p class="text-sm text-gray-500 mt-1">输入 Personal Access Token 以同步数据</p>
             </div>
-            
+
             <div class="px-6 py-4">
                 <div class="bg-blue-50 rounded-lg p-3 mb-4">
                     <p class="text-sm text-blue-800 font-medium mb-2">获取 Token 步骤：</p>
@@ -336,14 +336,14 @@
                         <li>生成并复制 Token</li>
                     </ol>
                 </div>
-                
+
                 <label class="block text-sm font-medium text-gray-700 mb-2">GitHub Token</label>
-                <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" 
+                <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx"
                     class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
                     autocomplete="off">
                 <p class="text-xs text-gray-400 mt-2">Token 仅存储在浏览器本地，不会上传到任何服务器</p>
             </div>
-            
+
             <div class="px-6 py-4 bg-gray-50 flex gap-3">
                 <button id="token-cancel" class="flex-1 py-2.5 border border-gray-300 rounded-lg hover:bg-white transition text-sm font-medium text-gray-700">取消</button>
                 <button id="token-confirm" class="flex-1 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">登录</button>
@@ -372,18 +372,18 @@
         const REDIRECT_URI = window.location.origin + window.location.pathname;
         const GIST_FILENAME = 'ezgit-data.json';
         const GIST_DESCRIPTION = 'EzGit - 我的 GitHub 精选仓库数据';
-        
+
         // GitHub OAuth 代理服务（用于交换 code 获取 token）
         // 推荐使用 https://github.com/prose/gatekeeper 或类似服务部署
         // 示例: const OAUTH_PROXY_URL = 'https://your-gatekeeper.herokuapp.com/authenticate';
         const OAUTH_PROXY_URL = '';
-        
+
         // 认证状态
         let currentUser = null;
         let githubToken = localStorage.getItem('github_token');
         let gistId = localStorage.getItem('ezgit_gist_id');
         let isSyncing = false;
-        
+
         // 示例数据
         const sampleRepos = [
             {
@@ -406,7 +406,7 @@
         let currentCategory = 'all';
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
         let editingRepoId = null;
-        
+
         // 分页配置（根据页面大小自适应）
         let itemsPerPage = 8; // 动态计算，初始值
         let currentPage = 1; // 当前页码
@@ -415,14 +415,14 @@
 
         // 加载自定义分类
         let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
-        
+
         const defaultCategoryNames = {
             tools: '效率工具',
             learning: '学习资源',
             inspiration: '参考灵感',
             infrastructure: '基础建设'
         };
-        
+
         // 合并默认和自定义分类
         let categoryNames = { ...defaultCategoryNames, ...customCategories };
 
@@ -431,15 +431,16 @@
             // 获取容器高度（仓库列表区域）
             const mainContent = document.querySelector('.main-content');
             if (!mainContent) return itemsPerPage;
-            
+
             // 获取 main-content 的可用高度
             const mainRect = mainContent.getBoundingClientRect();
-            const availableHeight = mainRect.height - 200; // 减去分页控件和一些padding
-            
-            // 根据当前视图计算每个卡片的高度
-            const cardHeight = currentView === 'grid' ? 180 : 70; // 网格视图卡片约180px，列表视图约70px
+            const availableHeight = mainRect.height - 150; // 减去分页控件和padding
+
+            // 根据当前视图计算每个卡片的高度（保守估算，确保不超出）
+            // 列表视图卡片实际高度约85-90px（包括padding和border）
+            const cardHeight = currentView === 'grid' ? 180 : 85;
             const gap = 16; // gap-4 = 16px
-            
+
             // 根据视图计算每行显示的卡片数
             let cardsPerRow;
             if (currentView === 'grid') {
@@ -457,37 +458,32 @@
             } else {
                 cardsPerRow = 1; // 列表视图每行1个
             }
-            
-            // 计算可以显示的行数（至少1行）
-            const rows = Math.max(1, Math.floor(availableHeight / (cardHeight + gap)));
-            
+
+            // 计算可以显示的行数（保守计算，留一些余地）
+            const rows = Math.max(1, Math.floor((availableHeight - 50) / (cardHeight + gap)));
+
             // 计算每页显示数量
             const calculatedItems = rows * cardsPerRow;
-            
-            itemsPerPage = calculatedItems;
+
+            // 限制范围：最少显示4个，最多显示填满页面的数量
+            itemsPerPage = Math.max(4, calculatedItems);
+
+            // 如果数据总量可以一页显示完，就显示所有
+            if (repos.length <= itemsPerPage) {
+                itemsPerPage = repos.length;
+            }
+
             return itemsPerPage;
         }
-        
-        // 重新计算分页（考虑填满页面）
-        function recalculatePagination() {
-            const oldItemsPerPage = itemsPerPage;
-            calculateItemsPerPage();
-            
-            // 如果数据总量可以一页显示完，就不分页
-            if (repos.length <= itemsPerPage) {
-                itemsPerPage = Math.max(itemsPerPage, repos.length);
-                currentPage = 1;
-            }
-            
-            return oldItemsPerPage !== itemsPerPage;
-        }
-        
+
         // 监听窗口大小变化
         let resizeTimeout;
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                if (recalculatePagination()) {
+                const oldItemsPerPage = itemsPerPage;
+                calculateItemsPerPage();
+                if (oldItemsPerPage !== itemsPerPage) {
                     render();
                 }
             }, 200);
@@ -500,7 +496,7 @@
         const toast = document.getElementById('toast');
 
         // ===== GitHub OAuth Functions =====
-        
+
         // 检查是否已登录
         function checkAuthStatus() {
             if (githubToken) {
@@ -519,17 +515,17 @@
                 showLoggedOutUI();
             }
         }
-        
+
         // 显示已登录 UI
         function showLoggedInUI() {
             document.getElementById('login-btn').classList.add('hidden');
             document.getElementById('user-menu-container').classList.remove('hidden');
             document.getElementById('cloud-sync-status').classList.remove('hidden');
-            
+
             // 设置用户头像和名称
             const avatarImg = document.getElementById('user-avatar');
             const avatarFallback = document.getElementById('user-avatar-fallback');
-            
+
             if (currentUser && currentUser.avatar_url) {
                 avatarImg.src = currentUser.avatar_url;
                 avatarImg.classList.remove('hidden');
@@ -538,13 +534,13 @@
                 avatarImg.classList.add('hidden');
                 avatarFallback.classList.remove('hidden');
             }
-            
+
             document.getElementById('user-name').textContent = currentUser?.name || currentUser?.login || 'GitHub User';
             document.getElementById('user-login').textContent = '@' + (currentUser?.login || 'unknown');
-            
+
             updateSyncStatus('synced');
         }
-        
+
         // 显示未登录 UI
         function showLoggedOutUI() {
             document.getElementById('login-btn').classList.remove('hidden');
@@ -552,7 +548,7 @@
             document.getElementById('cloud-sync-status').classList.add('hidden');
             currentUser = null;
         }
-        
+
         // GitHub 登录
         function login() {
             // 如果没有配置 Client ID，使用手动输入 Token 的方式
@@ -560,25 +556,25 @@
                 showTokenModal();
                 return;
             }
-            
+
             const state = generateRandomState();
             localStorage.setItem('github_oauth_state', state);
-            
+
             const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=gist&state=${state}`;
             window.location.href = authUrl;
         }
-        
+
         // 显示 Token 输入模态框
         function showTokenModal() {
             const modal = document.getElementById('token-modal');
             const input = document.getElementById('token-input');
             const confirmBtn = document.getElementById('token-confirm');
             const cancelBtn = document.getElementById('token-cancel');
-            
+
             modal.classList.remove('hidden');
             input.value = '';
             input.focus();
-            
+
             // 确认登录
             const handleConfirm = async () => {
                 const token = input.value.trim();
@@ -586,27 +582,27 @@
                     showToast('请输入 Token', 'warning');
                     return;
                 }
-                
+
                 hideTokenModal();
                 await validateAndLogin(token);
             };
-            
+
             // 取消
             const handleCancel = () => {
                 hideTokenModal();
             };
-            
+
             // 绑定事件
             confirmBtn.onclick = handleConfirm;
             cancelBtn.onclick = handleCancel;
-            
+
             // 回车确认
             input.onkeydown = (e) => {
                 if (e.key === 'Enter') {
                     handleConfirm();
                 }
             };
-            
+
             // 点击遮罩关闭
             modal.onclick = (e) => {
                 if (e.target === modal) {
@@ -614,25 +610,25 @@
                 }
             };
         }
-        
+
         // 隐藏 Token 模态框
         function hideTokenModal() {
             const modal = document.getElementById('token-modal');
             modal.classList.add('hidden');
         }
-        
+
         // 验证 Token 并登录
         async function validateAndLogin(token) {
             try {
                 showToast('正在验证...', 'info');
-                
+
                 const response = await fetch('https://api.github.com/user', {
                     headers: {
                         'Authorization': `token ${token}`,
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                
+
                 if (response.ok) {
                     const user = await response.json();
                     githubToken = token;
@@ -640,7 +636,7 @@
                     localStorage.setItem('github_token', token);
                     showLoggedInUI();
                     showToast('登录成功！', 'success');
-                    
+
                     // 从 Gist 加载数据
                     await syncFromGist();
                 } else {
@@ -650,34 +646,34 @@
                 showToast('验证失败: ' + error.message, 'error');
             }
         }
-        
+
         // 生成随机 state
         function generateRandomState() {
             return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         }
-        
+
         // 处理 OAuth 回调
         async function handleOAuthCallback() {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const state = urlParams.get('state');
             const savedState = localStorage.getItem('github_oauth_state');
-            
+
             if (code) {
                 // 验证 state 防止 CSRF
                 if (state !== savedState) {
                     showToast('登录验证失败，请重试', 'error');
                     return;
                 }
-                
+
                 // 清除 URL 中的 code
                 window.history.replaceState({}, document.title, window.location.pathname);
-                
+
                 // 交换 code 获取 token
                 await exchangeCodeForToken(code);
             }
         }
-        
+
         // 使用 code 交换 token
         async function exchangeCodeForToken(code) {
             if (!OAUTH_PROXY_URL) {
@@ -685,17 +681,17 @@
                 console.log('请配置 OAUTH_PROXY_URL，可以使用 https://github.com/prose/gatekeeper 部署');
                 return;
             }
-            
+
             try {
                 showToast('正在登录...', 'info');
-                
+
                 const response = await fetch(`${OAUTH_PROXY_URL}/${code}`);
                 const data = await response.json();
-                
+
                 if (data.token) {
                     githubToken = data.token;
                     localStorage.setItem('github_token', githubToken);
-                    
+
                     // 获取用户信息
                     const user = await fetchGitHubUser();
                     if (user) {
@@ -712,11 +708,11 @@
                 showToast('登录失败: ' + error.message, 'error');
             }
         }
-        
+
         // 获取 GitHub 用户信息
         async function fetchGitHubUser() {
             if (!githubToken) return null;
-            
+
             try {
                 const response = await fetch('https://api.github.com/user', {
                     headers: {
@@ -724,7 +720,7 @@
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                
+
                 if (response.ok) {
                     return await response.json();
                 } else if (response.status === 401) {
@@ -737,7 +733,7 @@
             }
             return null;
         }
-        
+
         // 退出登录
         function logout() {
             githubToken = null;
@@ -749,13 +745,13 @@
             showLoggedOutUI();
             showToast('已退出登录', 'info');
         }
-        
+
         // 切换用户菜单显示
         function toggleUserMenu() {
             const menu = document.getElementById('user-menu');
             menu.classList.toggle('hidden');
         }
-        
+
         // 点击外部关闭菜单
         function handleClickOutside(e) {
             const container = document.getElementById('auth-container');
@@ -764,53 +760,53 @@
                 menu.classList.add('hidden');
             }
         }
-        
+
         // ===== Gist Sync Functions =====
-        
+
         // 更新同步状态显示
         function updateSyncStatus(status, message = '') {
             const dot = document.getElementById('sync-status-dot');
             const text = document.getElementById('sync-status-text');
             const time = document.getElementById('sync-time');
-            
+
             const statusMap = {
                 'syncing': { color: 'bg-yellow-400', text: '同步中...', icon: 'fa-sync fa-spin' },
                 'synced': { color: 'bg-green-400', text: '已同步 ✓', icon: 'fa-check' },
                 'error': { color: 'bg-red-400', text: message || '同步失败', icon: 'fa-exclamation' },
                 'offline': { color: 'bg-gray-400', text: '未同步', icon: 'fa-cloud' }
             };
-            
+
             const s = statusMap[status] || statusMap['offline'];
             dot.className = `w-2 h-2 rounded-full ${s.color}`;
             text.textContent = s.text;
-            
+
             if (status === 'synced') {
                 time.textContent = new Date().toLocaleString('zh-CN');
             }
         }
-        
+
         // 同步到 Gist
         async function syncToGist() {
             if (!githubToken || isSyncing) return;
-            
+
             isSyncing = true;
             updateSyncStatus('syncing');
-            
+
             try {
                 const data = {
                     repos: repos,
                     customCategories: customCategories,
                     lastSync: new Date().toISOString()
                 };
-                
+
                 const files = {
                     [GIST_FILENAME]: {
                         content: JSON.stringify(data, null, 2)
                     }
                 };
-                
+
                 let response;
-                
+
                 if (gistId) {
                     // 更新现有 Gist
                     response = await fetch(`https://api.github.com/gists/${gistId}`, {
@@ -841,7 +837,7 @@
                         })
                     });
                 }
-                
+
                 if (response.ok) {
                     const gist = await response.json();
                     gistId = gist.id;
@@ -859,14 +855,14 @@
                 isSyncing = false;
             }
         }
-        
+
         // 从 Gist 加载
         async function syncFromGist() {
             if (!githubToken || isSyncing) return;
-            
+
             isSyncing = true;
             updateSyncStatus('syncing');
-            
+
             try {
                 // 如果没有 gistId，尝试查找
                 if (!gistId) {
@@ -881,7 +877,7 @@
                         return;
                     }
                 }
-                
+
                 // 获取 Gist 内容
                 const response = await fetch(`https://api.github.com/gists/${gistId}`, {
                     headers: {
@@ -889,32 +885,32 @@
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                
+
                 if (response.ok) {
                     const gist = await response.json();
                     const file = gist.files[GIST_FILENAME];
-                    
+
                     if (file && file.content) {
                         const data = JSON.parse(file.content);
-                        
+
                         // 合并数据
                         if (data.repos && Array.isArray(data.repos)) {
                             repos = data.repos;
                             localStorage.setItem('ezgit-repos', JSON.stringify(repos));
                         }
-                        
+
                         if (data.customCategories) {
                             customCategories = data.customCategories;
                             categoryNames = { ...defaultCategoryNames, ...customCategories };
                             localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
                         }
-                        
+
                         // 更新 UI
                         renderCategoryFilters();
                         updateCategorySelect();
                         updateStats();
                         render();
-                        
+
                         updateSyncStatus('synced');
                         showToast('已从云端同步', 'success');
                     }
@@ -933,7 +929,7 @@
                 isSyncing = false;
             }
         }
-        
+
         // 查找名为 ezgit-data.json 的 Gist
         async function findGistByName() {
             try {
@@ -943,7 +939,7 @@
                         'Accept': 'application/vnd.github.v3+json'
                     }
                 });
-                
+
                 if (response.ok) {
                     const gists = await response.json();
                     const found = gists.find(g => g.files[GIST_FILENAME]);
@@ -954,11 +950,11 @@
             }
             return null;
         }
-        
+
         // 保存数据（本地 + 云端）
         async function saveRepos() {
             localStorage.setItem('ezgit-repos', JSON.stringify(repos));
-            
+
             if (githubToken) {
                 const success = await syncToGist();
                 if (success) {
@@ -966,11 +962,11 @@
                 }
             }
         }
-        
+
         // 保存分类
         async function saveCategories() {
             localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
-            
+
             if (githubToken) {
                 await syncToGist();
             }
@@ -980,27 +976,27 @@
         function renderCategoryFilters() {
             const container = document.getElementById('category-filters');
             const allBtn = container.querySelector('[data-category="all"]');
-            
+
             // 清除现有分类按钮（保留"全部"按钮）
             container.querySelectorAll('.filter-btn:not([data-category="all"])').forEach(btn => btn.remove());
             container.querySelectorAll('.category-wrapper').forEach(wrapper => wrapper.remove());
-            
+
             // 添加所有分类按钮
             Object.entries(categoryNames).forEach(([key, name]) => {
                 const isCustom = customCategories[key];
                 const isActive = currentCategory === key;
-                
+
                 if (isCustom) {
                     // 自定义分类：使用 wrapper 包含按钮和删除图标
                     const wrapper = document.createElement('div');
                     wrapper.className = 'category-wrapper relative group';
-                    
+
                     const btn = document.createElement('button');
                     btn.className = `filter-btn px-4 py-2 rounded-full text-sm font-medium transition border pr-8 ${isActive ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-600 border-gray-200'}`;
                     btn.dataset.category = key;
                     btn.innerHTML = `<i class="fas fa-tag mr-1"></i> ${name}`;
                     btn.onclick = () => filterByCategory(key);
-                    
+
                     // 删除按钮
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition';
@@ -1010,7 +1006,7 @@
                         e.stopPropagation();
                         deleteCustomCategory(key, name);
                     };
-                    
+
                     wrapper.appendChild(btn);
                     wrapper.appendChild(deleteBtn);
                     container.appendChild(wrapper);
@@ -1030,33 +1026,33 @@
         function deleteCustomCategory(key, name) {
             // 检查该分类下是否有仓库
             const reposInCategory = repos.filter(r => r.category === key);
-            
+
             if (reposInCategory.length > 0) {
                 // 有仓库，提示用户
                 showToast(`该分类下有 ${reposInCategory.length} 个仓库，请先移动或删除`, 'warning');
                 return;
             }
-            
+
             // 使用自定义确认对话框
             showConfirm(`确定要删除分类"${name}"吗？`, async () => {
                 // 从自定义分类中删除
                 delete customCategories[key];
                 delete categoryNames[key];
-                
+
                 // 保存
                 await saveCategories();
-                
+
                 // 如果当前选中的是被删除的分类，重置为全部
                 if (currentCategory === key) {
                     currentCategory = 'all';
                 }
-                
+
                 // 更新UI
                 renderCategoryFilters();
                 updateCategorySelect();
                 updateStats();
                 render();
-                
+
                 showToast('分类已删除', 'success');
             });
         }
@@ -1065,23 +1061,23 @@
         function updateCategorySelect() {
             const select = document.getElementById('repo-category');
             const currentValue = select.value;
-            
+
             // 保留第一个option，重新生成其他选项
             select.innerHTML = '<option value="">选择分类...</option>';
-            
+
             Object.entries(categoryNames).forEach(([key, name]) => {
                 const option = document.createElement('option');
                 option.value = key;
                 option.textContent = name;
                 select.appendChild(option);
             });
-            
+
             // 添加"+ 添加自定义分类"选项
             const addOption = document.createElement('option');
             addOption.value = '__add_new__';
             addOption.textContent = '+ 添加自定义分类';
             select.appendChild(addOption);
-            
+
             select.value = currentValue;
         }
 
@@ -1089,73 +1085,73 @@
         async function addCustomCategory() {
             const input = document.getElementById('new-category-name');
             const name = input.value.trim();
-            
+
             if (!name) {
                 showToast('请输入分类名称', 'error');
                 return;
             }
-            
+
             // 生成唯一key
             const key = 'custom_' + Date.now();
             customCategories[key] = name;
             categoryNames[key] = name;
-            
+
             // 保存
             await saveCategories();
-            
+
             // 更新UI
             renderCategoryFilters();
             updateCategorySelect();
-            
+
             // 选中新添加的分类
             document.getElementById('repo-category').value = key;
-            
+
             // 隐藏输入框
             document.getElementById('custom-category-input').classList.add('hidden');
             input.value = '';
-            
+
             showToast('分类已添加', 'success');
         }
 
         // 自定义确认对话框
         let confirmCallback = null;
-        
+
         function showConfirm(message, onConfirm, onCancel) {
             const modal = document.getElementById('confirm-modal');
             const messageEl = document.getElementById('confirm-message');
             const okBtn = document.getElementById('confirm-ok');
             const cancelBtn = document.getElementById('confirm-cancel');
-            
+
             messageEl.textContent = message;
             confirmCallback = onConfirm;
-            
+
             modal.classList.remove('hidden');
-            
+
             // 绑定一次性事件
             const handleOk = () => {
                 modal.classList.add('hidden');
                 if (onConfirm) onConfirm();
                 cleanup();
             };
-            
+
             const handleCancel = () => {
                 modal.classList.add('hidden');
                 if (onCancel) onCancel();
                 cleanup();
             };
-            
+
             const cleanup = () => {
                 okBtn.removeEventListener('click', handleOk);
                 cancelBtn.removeEventListener('click', handleCancel);
                 modal.removeEventListener('click', handleOutsideClick);
             };
-            
+
             const handleOutsideClick = (e) => {
                 if (e.target === modal) {
                     handleCancel();
                 }
             };
-            
+
             okBtn.addEventListener('click', handleOk);
             cancelBtn.addEventListener('click', handleCancel);
             modal.addEventListener('click', handleOutsideClick);
@@ -1168,7 +1164,7 @@
             document.getElementById('category-count').textContent = categories.size;
             const starredCount = repos.filter(r => r.starred).length;
             document.getElementById('starred-count').textContent = starredCount;
-            
+
             // 更新精选按钮上的数量
             const badge = document.getElementById('starred-count-badge');
             if (badge) {
@@ -1188,60 +1184,54 @@
         function render() {
             // 筛选数据
             filteredRepos = repos;
-            
+
             // 分类筛选
             if (currentCategory !== 'all') {
                 filteredRepos = filteredRepos.filter(r => r.category === currentCategory);
             }
-            
+
             // 精选筛选
             if (showOnlyStarred) {
                 filteredRepos = filteredRepos.filter(r => r.starred);
             }
-            
+
             // 搜索筛选
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
             if (searchTerm) {
-                filteredRepos = filteredRepos.filter(r => 
+                filteredRepos = filteredRepos.filter(r =>
                     r.name.toLowerCase().includes(searchTerm) ||
                     r.owner.toLowerCase().includes(searchTerm) ||
                     (r.title || '').toLowerCase().includes(searchTerm) ||
                     (r.description || '').toLowerCase().includes(searchTerm)
                 );
             }
-            
+
             if (filteredRepos.length === 0) {
                 repoList.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 renderPagination(0);
                 return;
             }
-            
+
             emptyState.classList.add('hidden');
-            
-            // 根据当前筛选后的数据量，动态调整每页数量
-            // 如果数据可以一页显示完，就显示所有
-            if (filteredRepos.length <= itemsPerPage) {
-                itemsPerPage = Math.max(filteredRepos.length, itemsPerPage);
-            }
-            
+
             // 分页计算（使用动态计算的 itemsPerPage）
             const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
             if (currentPage > totalPages) {
                 currentPage = totalPages || 1;
             }
-            
+
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = Math.min(startIndex + itemsPerPage, filteredRepos.length);
             const pageRepos = filteredRepos.slice(startIndex, endIndex);
-            
+
             // 设置容器样式
             if (currentView === 'grid') {
                 repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
             } else {
                 repoList.className = 'flex flex-col gap-3';
             }
-            
+
             // 渲染当前页的仓库
             repoList.innerHTML = pageRepos.map(r => {
                 if (currentView === 'grid') {
@@ -1250,14 +1240,14 @@
                     return renderListCard(r);
                 }
             }).join('');
-            
+
             // 渲染分页控件
             renderPagination(filteredRepos.length, totalPages);
-            
+
             // 初始化拖拽
             initDragAndDrop();
         }
-        
+
         // 渲染网格卡片
         function renderGridCard(r) {
             return `
@@ -1274,7 +1264,7 @@
                             ${r.title ? `<p class="text-sm text-gray-600 mt-2 line-clamp-2">${r.title}</p>` : ''}
                         </div>
                     </div>
-                    
+
                     <div class="flex items-center justify-between mt-3 pt-3 border-t">
                         <div class="flex items-center gap-3 text-xs text-gray-400">
                             ${r.language ? `<span><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
@@ -1295,7 +1285,7 @@
                 </div>
             `;
         }
-        
+
         // 渲染列表卡片
         function renderListCard(r) {
             return `
@@ -1324,38 +1314,38 @@
                 </div>
             `;
         }
-        
+
         // 渲染分页控件
         function renderPagination(totalItems, totalPages) {
             const paginationContainer = document.getElementById('pagination-container');
             if (!paginationContainer) return;
-            
+
             if (totalPages <= 1) {
                 paginationContainer.innerHTML = totalItems > 0 ? `<p class="text-sm text-gray-500 text-center">共 ${totalItems} 个仓库</p>` : '';
                 return;
             }
-            
+
             let html = '<div class="flex items-center justify-center gap-2">';
-            
+
             // 上一页
             html += `<button onclick="window.goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}"><i class="fas fa-chevron-left"></i></button>`;
-            
+
             // 页码
             const maxVisiblePages = 5;
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
+
             if (endPage - startPage < maxVisiblePages - 1) {
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }
-            
+
             if (startPage > 1) {
                 html += `<button onclick="window.goToPage(1)" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">1</button>`;
                 if (startPage > 2) {
                     html += `<span class="text-gray-400">...</span>`;
                 }
             }
-            
+
             for (let i = startPage; i <= endPage; i++) {
                 if (i === currentPage) {
                     html += `<button class="px-3 py-1.5 rounded-lg text-sm bg-green-600 text-white">${i}</button>`;
@@ -1363,33 +1353,33 @@
                     html += `<button onclick="window.goToPage(${i})" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">${i}</button>`;
                 }
             }
-            
+
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) {
                     html += `<span class="text-gray-400">...</span>`;
                 }
                 html += `<button onclick="window.goToPage(${totalPages})" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">${totalPages}</button>`;
             }
-            
+
             // 下一页
             html += `<button onclick="window.goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}"><i class="fas fa-chevron-right"></i></button>`;
-            
+
             html += '</div>';
-            
+
             // 添加统计信息
             html += `<p class="text-sm text-gray-500 text-center mt-2">第 ${currentPage}/${totalPages} 页，共 ${totalItems} 个仓库，每页 ${itemsPerPage} 个</p>`;
-            
+
             paginationContainer.innerHTML = html;
         }
-        
+
         // 跳转到指定页
         window.goToPage = function(page) {
             const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
             if (page < 1 || page > totalPages) return;
-            
+
             currentPage = page;
             render();
-            
+
             // 滚动到顶部
             document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
         };
@@ -1399,7 +1389,7 @@
             const toast = document.getElementById('toast');
             const iconEl = document.getElementById('toast-icon');
             const msgEl = document.getElementById('toast-message');
-            
+
             // 设置图标
             const icons = {
                 success: '<i class="fas fa-check text-green-600"></i>',
@@ -1407,7 +1397,7 @@
                 warning: '<i class="fas fa-exclamation-triangle text-yellow-600"></i>',
                 info: '<i class="fas fa-info text-blue-600"></i>'
             };
-            
+
             // 设置图标背景色
             const bgColors = {
                 success: 'bg-green-100',
@@ -1415,30 +1405,30 @@
                 warning: 'bg-yellow-100',
                 info: 'bg-blue-100'
             };
-            
+
             iconEl.innerHTML = icons[type] || icons.info;
             iconEl.className = `w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${bgColors[type] || bgColors.info}`;
             msgEl.textContent = msg;
-            
+
             // 显示动画
             toast.classList.remove('hidden');
             requestAnimationFrame(() => {
                 toast.classList.remove('-translate-y-2', 'opacity-0');
                 toast.classList.add('translate-y-0', 'opacity-100');
             });
-            
+
             // 自动隐藏
             setTimeout(() => {
                 hideToast();
             }, 3000);
         }
-        
+
         // 隐藏提示
         function hideToast() {
             const toast = document.getElementById('toast');
             toast.classList.add('-translate-y-2', 'opacity-0');
             toast.classList.remove('translate-y-0', 'opacity-100');
-            
+
             setTimeout(() => {
                 toast.classList.add('hidden');
             }, 300);
@@ -1451,12 +1441,12 @@
             const title = document.getElementById('repo-title').value.trim();
             const notes = document.getElementById('repo-notes').value.trim();
             const starred = document.getElementById('repo-starred').checked;
-            
+
             if (!url || !category) {
                 showToast('请填写 URL 和分类', 'warning');
                 return;
             }
-            
+
             // 编辑模式
             if (editingRepoId) {
                 const repo = repos.find(r => r.id === editingRepoId);
@@ -1469,13 +1459,13 @@
                     repo.description = document.getElementById('preview-desc').textContent || '';
                     repo.language = document.getElementById('preview-lang').textContent || '';
                     repo.stars = document.getElementById('preview-stars').textContent || '';
-                    
+
                     await saveRepos();
                     updateStats();
                     render();
                     addModal.classList.add('hidden');
                     showToast('已更新', 'success');
-                    
+
                     // 重置编辑模式
                     editingRepoId = null;
                     document.getElementById('save-btn').textContent = '添加';
@@ -1483,14 +1473,14 @@
                 }
                 return;
             }
-            
+
             // 添加模式
             const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
             if (!match) {
                 showToast('无效的 GitHub URL', 'error');
                 return;
             }
-            
+
             repos.unshift({
                 id: Date.now().toString(),
                 url: url.replace(/\.git$/, ''),
@@ -1505,13 +1495,13 @@
                 starred,
                 addedAt: new Date().toISOString()
             });
-            
+
             await saveRepos();
             updateStats();
             render();
             addModal.classList.add('hidden');
             showToast('仓库已添加', 'success');
-            
+
             // 清空表单
             resetForm();
         }
@@ -1520,22 +1510,22 @@
         async function fetchRepoInfo() {
             const url = document.getElementById('repo-url').value.trim();
             if (!url) return;
-            
+
             const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
             if (!match) return;
-            
+
             const [, owner, name] = match;
             const cleanName = name.replace(/\.git$/, '');
-            
+
             // 显示基础信息（头像和名称）
             document.getElementById('preview-avatar').src = `https://github.com/${owner}.png`;
             document.getElementById('preview-name').textContent = `${owner}/${cleanName}`;
             document.getElementById('repo-preview').classList.remove('hidden');
-            
+
             try {
                 // 调用 GitHub API
                 const response = await fetch(`https://api.github.com/repos/${owner}/${cleanName}`);
-                
+
                 if (!response.ok) {
                     // 获取失败，静默跳过，显示默认信息
                     document.getElementById('preview-desc').textContent = '';
@@ -1543,14 +1533,14 @@
                     document.getElementById('preview-lang').textContent = '';
                     return;
                 }
-                
+
                 const data = await response.json();
-                
+
                 // 填充获取到的信息
                 document.getElementById('preview-desc').textContent = data.description || '';
                 document.getElementById('preview-stars').textContent = data.stargazers_count ? formatStars(data.stargazers_count) : '';
                 document.getElementById('preview-lang').textContent = data.language || '';
-                
+
             } catch (error) {
                 // 网络错误或其他异常，静默跳过
                 document.getElementById('preview-desc').textContent = '';
@@ -1558,7 +1548,7 @@
                 document.getElementById('preview-lang').textContent = '';
             }
         }
-        
+
         // 格式化 stars 数量
         function formatStars(count) {
             if (count >= 1000) {
@@ -1571,17 +1561,17 @@
         function editRepo(id) {
             const repo = repos.find(r => r.id === id);
             if (!repo) return;
-            
+
             editingRepoId = id;
             document.getElementById('repo-url').value = repo.url;
             document.getElementById('repo-category').value = repo.category;
             document.getElementById('repo-title').value = repo.title || '';
             document.getElementById('repo-notes').value = repo.notes || '';
             document.getElementById('repo-starred').checked = repo.starred;
-            
+
             fetchRepoInfo();
             addModal.classList.remove('hidden');
-            
+
             // 修改按钮文字为更新
             document.getElementById('save-btn').textContent = '更新';
         }
@@ -1590,7 +1580,7 @@
         async function toggleStar(id) {
             const repo = repos.find(r => r.id === id);
             if (!repo) return;
-            
+
             repo.starred = !repo.starred;
             await saveRepos();
             updateStats();
@@ -1650,15 +1640,15 @@
                             customCategories = data.customCategories;
                             categoryNames = { ...defaultCategoryNames, ...customCategories };
                         }
-                        
+
                         // 保存到本地和云端
                         localStorage.setItem('ezgit-repos', JSON.stringify(repos));
                         localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
-                        
+
                         if (githubToken) {
                             await syncToGist();
                         }
-                        
+
                         renderCategoryFilters();
                         updateCategorySelect();
                         updateStats();
@@ -1689,7 +1679,7 @@
         function filterByCategory(category) {
             currentCategory = category;
             currentPage = 1; // 切换分类时重置到第一页
-            
+
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.category === category) {
                     btn.classList.remove('bg-white', 'text-gray-600', 'border');
@@ -1699,7 +1689,7 @@
                     btn.classList.remove('bg-green-600', 'text-white');
                 }
             });
-            
+
             render();
         }
 
@@ -1707,10 +1697,10 @@
         function toggleStarredFilter() {
             showOnlyStarred = !showOnlyStarred;
             currentPage = 1; // 切换精选筛选时重置到第一页
-            
+
             const btn = document.getElementById('filter-starred');
             const starredCount = repos.filter(r => r.starred).length;
-            
+
             if (showOnlyStarred) {
                 btn.classList.remove('text-gray-500');
                 btn.classList.add('text-yellow-500', 'bg-yellow-50');
@@ -1720,7 +1710,7 @@
                 btn.classList.add('text-gray-500');
                 updateStats();
             }
-            
+
             render();
         }
 
@@ -1729,10 +1719,10 @@
             currentView = view;
             currentPage = 1; // 切换视图时重置到第一页
             localStorage.setItem('ezgit-view', view);
-            
+
             const gridBtn = document.getElementById('view-grid');
             const listBtn = document.getElementById('view-list');
-            
+
             if (view === 'grid') {
                 gridBtn.classList.add('bg-white', 'shadow');
                 gridBtn.classList.remove('text-gray-500');
@@ -1744,7 +1734,10 @@
                 gridBtn.classList.remove('bg-white', 'shadow');
                 gridBtn.classList.add('text-gray-500');
             }
-            
+
+            // 切换视图后重新计算每页数量
+            calculateItemsPerPage();
+
             render();
         }
 
@@ -1827,7 +1820,7 @@
 
         function initDragAndDrop() {
             const cards = document.querySelectorAll('.repo-card');
-            
+
             cards.forEach(card => {
                 card.addEventListener('dragstart', handleDragStart);
                 card.addEventListener('dragend', handleDragEnd);
@@ -1872,20 +1865,20 @@
         async function handleDrop(e) {
             e.preventDefault();
             this.classList.remove('drag-over');
-            
+
             const droppedId = this.dataset.id;
             if (draggedId === droppedId) return;
-            
+
             // 找到拖拽的索引和目标索引
             const draggedIndex = repos.findIndex(r => r.id === draggedId);
             const droppedIndex = repos.findIndex(r => r.id === droppedId);
-            
+
             if (draggedIndex === -1 || droppedIndex === -1) return;
-            
+
             // 重新排序
             const [draggedRepo] = repos.splice(draggedIndex, 1);
             repos.splice(droppedIndex, 0, draggedRepo);
-            
+
             // 保存并重新渲染
             await saveRepos();
             render();
@@ -1904,20 +1897,20 @@
             updateCategorySelect();
             updateStats();
             toggleView(currentView);
-            
+
             // 初始化每页显示数量（根据页面大小自适应）
-            recalculatePagination();
-            
+            calculateItemsPerPage();
+
             render();
             initDragAndDrop();
-            
+
             // 处理 OAuth 回调
             await handleOAuthCallback();
-            
+
             // 检查登录状态
             checkAuthStatus();
         }
-        
+
         // 启动
         init();
     </script>
