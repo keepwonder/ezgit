@@ -1603,9 +1603,12 @@
         document.getElementById('login-btn').addEventListener('click', login);
         document.getElementById('user-avatar-btn').addEventListener('click', toggleUserMenu);
         document.getElementById('logout-btn').addEventListener('click', logout);
-        document.getElementById('manual-sync-btn').addEventListener('click', () => {
-            syncFromGist();
+        document.getElementById('manual-sync-btn').addEventListener('click', async () => {
             showToast('正在同步...', 'info');
+            const success = await syncToGist();
+            if (success) {
+                showToast('已同步到云端', 'success');
+            }
         });
         document.addEventListener('click', handleClickOutside);
 
