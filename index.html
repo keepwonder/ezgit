@@ -376,7 +376,7 @@
             
             if (reposInCategory.length > 0) {
                 // 有仓库，提示用户
-                showToast(`该分类下有 ${reposInCategory.length} 个仓库，请先移动或删除`);
+                showToast(`该分类下有 ${reposInCategory.length} 个仓库，请先移动或删除`, 'warning');
                 return;
             }
             
@@ -400,7 +400,7 @@
                 updateStats();
                 render();
                 
-                showToast('分类已删除');
+                showToast('分类已删除', 'success');
             });
         }
 
@@ -434,7 +434,7 @@
             const name = input.value.trim();
             
             if (!name) {
-                showToast('请输入分类名称');
+                showToast('请输入分类名称', 'error');
                 return;
             }
             
@@ -457,7 +457,7 @@
             document.getElementById('custom-category-input').classList.add('hidden');
             input.value = '';
             
-            showToast('分类已添加');
+            showToast('分类已添加', 'success');
         }
 
         // 自定义确认对话框
@@ -695,7 +695,7 @@
             const starred = document.getElementById('repo-starred').checked;
             
             if (!url || !category) {
-                showToast('请填写 URL 和分类');
+                showToast('请填写 URL 和分类', 'warning');
                 return;
             }
             
@@ -716,7 +716,7 @@
                     updateStats();
                     render();
                     addModal.classList.add('hidden');
-                    showToast('已更新');
+                    showToast('已更新', 'success');
                     
                     // 重置编辑模式
                     editingRepoId = null;
@@ -729,7 +729,7 @@
             // 添加模式
             const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
             if (!match) {
-                showToast('无效的 GitHub URL');
+                showToast('无效的 GitHub URL', 'error');
                 return;
             }
             
@@ -752,7 +752,7 @@
             updateStats();
             render();
             addModal.classList.add('hidden');
-            showToast('仓库已添加');
+            showToast('仓库已添加', 'success');
             
             // 清空表单
             resetForm();
@@ -847,7 +847,7 @@
                 saveRepos();
                 updateStats();
                 render();
-                showToast('已删除');
+                showToast('已删除', 'success');
             });
         }
 
@@ -872,7 +872,7 @@
             a.download = `ezgit-backup-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast('数据已导出');
+            showToast('数据已导出', 'success');
         }
 
         // 导入数据
@@ -886,10 +886,10 @@
                         saveRepos();
                         updateStats();
                         render();
-                        showToast(`导入了 ${data.length} 个仓库`);
+                        showToast(`导入了 ${data.length} 个仓库`, 'success');
                     }
                 } catch {
-                    showToast('导入失败');
+                    showToast('导入失败', 'error');
                 }
             };
             reader.readAsText(file);
@@ -1089,7 +1089,7 @@
             // 保存并重新渲染
             saveRepos();
             render();
-            showToast('已调整顺序');
+            showToast('已调整顺序', 'success');
         }
 
         // 点击遮罩关闭
