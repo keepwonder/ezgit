@@ -18,6 +18,14 @@
         .category-tag:hover { transform: scale(1.05); }
         .main-content { min-height: calc(100vh - 280px); }
         html, body { overflow-x: hidden; }
+        .user-menu { transition: all 0.2s; transform-origin: top right; }
+        .user-menu.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
+        .user-menu:not(.hidden) { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .sync-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
@@ -38,22 +46,6 @@
                 </div>
                 
                 <div class="flex items-center gap-2">
-                    <!-- GitHub 登录 -->
-                    <div id="auth-section" class="flex items-center gap-2">
-                        <button id="login-btn" class="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm flex items-center gap-2 hover:bg-gray-800 transition">
-                            <i class="fab fa-github"></i>
-                            <span>登录</span>
-                        </button>
-                        <div id="user-menu" class="hidden flex items-center gap-2">
-                            <img id="user-avatar" src="" class="w-8 h-8 rounded-full border-2 border-green-500">
-                            <button id="logout-btn" class="text-gray-500 hover:text-red-500 transition text-sm" title="退出登录">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="w-px h-6 bg-gray-200 mx-1"></div>
-                    
                     <div class="relative">
                         <input type="text" id="search-input" placeholder="搜索仓库..." 
                             class="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 w-48">
@@ -73,6 +65,49 @@
                         <i class="fas fa-plus"></i>
                         <span>添加</span>
                     </button>
+
+                    <!-- GitHub 登录按钮 / 用户头像 -->
+                    <div id="auth-container" class="relative ml-2">
+                        <!-- 未登录状态 -->
+                        <button id="login-btn" class="hidden bg-gray-900 hover:bg-gray-800 text-white px-3 py-2 rounded-lg flex items-center gap-2 transition text-sm">
+                            <i class="fab fa-github"></i>
+                            <span>登录</span>
+                        </button>
+
+                        <!-- 已登录状态 -->
+                        <div id="user-menu-container" class="hidden">
+                            <button id="user-avatar-btn" class="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-200 hover:border-green-500 transition flex items-center justify-center bg-gray-100">
+                                <img id="user-avatar" src="" alt="avatar" class="w-full h-full object-cover hidden">
+                                <i id="user-avatar-fallback" class="fas fa-user text-gray-500"></i>
+                            </button>
+
+                            <!-- 下拉菜单 -->
+                            <div id="user-menu" class="user-menu hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border py-2 z-50">
+                                <div class="px-4 py-2 border-b border-gray-100">
+                                    <p id="user-name" class="font-medium text-gray-900 truncate"></p>
+                                    <p id="user-login" class="text-sm text-gray-500 truncate"></p>
+                                </div>
+                                
+                                <div class="px-4 py-2 border-b border-gray-100">
+                                    <div class="flex items-center gap-2 text-sm">
+                                        <div id="sync-status-dot" class="w-2 h-2 rounded-full bg-gray-300"></div>
+                                        <span id="sync-status-text" class="text-gray-600">未同步</span>
+                                    </div>
+                                    <p id="sync-time" class="text-xs text-gray-400 mt-1"></p>
+                                </div>
+
+                                <button id="manual-sync-btn" class="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
+                                    <i class="fas fa-sync-alt text-gray-400"></i>
+                                    <span>立即同步</span>
+                                </button>
+
+                                <button id="logout-btn" class="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2">
+                                    <i class="fas fa-sign-out-alt text-red-400"></i>
+                                    <span>退出登录</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -95,6 +130,10 @@
                     <div>
                         <p class="text-gray-400 text-sm">精选</p>
                         <p id="starred-count" class="text-3xl font-bold">0</p>
+                    </div>
+                    <div id="cloud-sync-status" class="hidden ml-auto flex items-center gap-2 px-3 py-1.5 bg-gray-800 rounded-lg">
+                        <i class="fas fa-cloud text-green-400"></i>
+                        <span class="text-sm">已同步到云端</span>
                     </div>
                 </div>
             </div>
@@ -292,6 +331,23 @@
     </div>
 
     <script>
+        // ===== GitHub OAuth & Gist Sync Configuration =====
+        const GITHUB_CLIENT_ID = 'YOUR_CLIENT_ID'; // 请替换为您的 GitHub OAuth App Client ID
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        const GIST_FILENAME = 'ezgit-data.json';
+        const GIST_DESCRIPTION = 'EzGit - 我的 GitHub 精选仓库数据';
+        
+        // GitHub OAuth 代理服务（用于交换 code 获取 token）
+        // 推荐使用 https://github.com/prose/gatekeeper 或类似服务部署
+        // 示例: const OAUTH_PROXY_URL = 'https://your-gatekeeper.herokuapp.com/authenticate';
+        const OAUTH_PROXY_URL = '';
+        
+        // 认证状态
+        let currentUser = null;
+        let githubToken = localStorage.getItem('github_token');
+        let gistId = localStorage.getItem('ezgit_gist_id');
+        let isSyncing = false;
+        
         // 示例数据
         const sampleRepos = [
             {
@@ -315,13 +371,7 @@
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
         let editingRepoId = null;
         let showOnlyStarred = false;
-        
-        // GitHub OAuth 配置
-        const GITHUB_CLIENT_ID = '';
-        const GIST_FILENAME = 'ezgit-data.json';
-        let githubToken = localStorage.getItem('github_token');
-        let githubUser = null;
-        
+
         // 加载自定义分类
         let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
         
@@ -341,6 +391,399 @@
         const addModal = document.getElementById('add-modal');
         const toast = document.getElementById('toast');
 
+        // ===== GitHub OAuth Functions =====
+        
+        // 检查是否已登录
+        function checkAuthStatus() {
+            if (githubToken) {
+                // 验证 token 是否有效
+                fetchGitHubUser().then(user => {
+                    if (user) {
+                        currentUser = user;
+                        showLoggedInUI();
+                        syncFromGist();
+                    } else {
+                        // Token 无效，清除登录状态
+                        logout();
+                    }
+                });
+            } else {
+                showLoggedOutUI();
+            }
+        }
+        
+        // 显示已登录 UI
+        function showLoggedInUI() {
+            document.getElementById('login-btn').classList.add('hidden');
+            document.getElementById('user-menu-container').classList.remove('hidden');
+            document.getElementById('cloud-sync-status').classList.remove('hidden');
+            
+            // 设置用户头像和名称
+            const avatarImg = document.getElementById('user-avatar');
+            const avatarFallback = document.getElementById('user-avatar-fallback');
+            
+            if (currentUser && currentUser.avatar_url) {
+                avatarImg.src = currentUser.avatar_url;
+                avatarImg.classList.remove('hidden');
+                avatarFallback.classList.add('hidden');
+            } else {
+                avatarImg.classList.add('hidden');
+                avatarFallback.classList.remove('hidden');
+            }
+            
+            document.getElementById('user-name').textContent = currentUser?.name || currentUser?.login || 'GitHub User';
+            document.getElementById('user-login').textContent = '@' + (currentUser?.login || 'unknown');
+            
+            updateSyncStatus('synced');
+        }
+        
+        // 显示未登录 UI
+        function showLoggedOutUI() {
+            document.getElementById('login-btn').classList.remove('hidden');
+            document.getElementById('user-menu-container').classList.add('hidden');
+            document.getElementById('cloud-sync-status').classList.add('hidden');
+            currentUser = null;
+        }
+        
+        // GitHub 登录
+        function login() {
+            if (GITHUB_CLIENT_ID === 'YOUR_CLIENT_ID') {
+                showToast('请先配置 GitHub OAuth App Client ID', 'warning');
+                return;
+            }
+            
+            const state = generateRandomState();
+            localStorage.setItem('github_oauth_state', state);
+            
+            const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=gist&state=${state}`;
+            window.location.href = authUrl;
+        }
+        
+        // 生成随机 state
+        function generateRandomState() {
+            return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        }
+        
+        // 处理 OAuth 回调
+        async function handleOAuthCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            const savedState = localStorage.getItem('github_oauth_state');
+            
+            if (code) {
+                // 验证 state 防止 CSRF
+                if (state !== savedState) {
+                    showToast('登录验证失败，请重试', 'error');
+                    return;
+                }
+                
+                // 清除 URL 中的 code
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // 交换 code 获取 token
+                await exchangeCodeForToken(code);
+            }
+        }
+        
+        // 使用 code 交换 token
+        async function exchangeCodeForToken(code) {
+            if (!OAUTH_PROXY_URL) {
+                showToast('请先配置 OAuth 代理服务', 'warning');
+                console.log('请配置 OAUTH_PROXY_URL，可以使用 https://github.com/prose/gatekeeper 部署');
+                return;
+            }
+            
+            try {
+                showToast('正在登录...', 'info');
+                
+                const response = await fetch(`${OAUTH_PROXY_URL}/${code}`);
+                const data = await response.json();
+                
+                if (data.token) {
+                    githubToken = data.token;
+                    localStorage.setItem('github_token', githubToken);
+                    
+                    // 获取用户信息
+                    const user = await fetchGitHubUser();
+                    if (user) {
+                        currentUser = user;
+                        showLoggedInUI();
+                        await syncFromGist();
+                        showToast('登录成功', 'success');
+                    }
+                } else {
+                    showToast('登录失败', 'error');
+                }
+            } catch (error) {
+                console.error('OAuth error:', error);
+                showToast('登录失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 获取 GitHub 用户信息
+        async function fetchGitHubUser() {
+            if (!githubToken) return null;
+            
+            try {
+                const response = await fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    return await response.json();
+                } else if (response.status === 401) {
+                    // Token 无效
+                    logout();
+                    return null;
+                }
+            } catch (error) {
+                console.error('Fetch user error:', error);
+            }
+            return null;
+        }
+        
+        // 退出登录
+        function logout() {
+            githubToken = null;
+            currentUser = null;
+            gistId = null;
+            localStorage.removeItem('github_token');
+            localStorage.removeItem('ezgit_gist_id');
+            localStorage.removeItem('github_oauth_state');
+            showLoggedOutUI();
+            showToast('已退出登录', 'info');
+        }
+        
+        // 切换用户菜单显示
+        function toggleUserMenu() {
+            const menu = document.getElementById('user-menu');
+            menu.classList.toggle('hidden');
+        }
+        
+        // 点击外部关闭菜单
+        function handleClickOutside(e) {
+            const container = document.getElementById('auth-container');
+            const menu = document.getElementById('user-menu');
+            if (!container.contains(e.target) && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+            }
+        }
+        
+        // ===== Gist Sync Functions =====
+        
+        // 更新同步状态显示
+        function updateSyncStatus(status, message = '') {
+            const dot = document.getElementById('sync-status-dot');
+            const text = document.getElementById('sync-status-text');
+            const time = document.getElementById('sync-time');
+            
+            const statusMap = {
+                'syncing': { color: 'bg-yellow-400', text: '同步中...', icon: 'fa-sync fa-spin' },
+                'synced': { color: 'bg-green-400', text: '已同步 ✓', icon: 'fa-check' },
+                'error': { color: 'bg-red-400', text: message || '同步失败', icon: 'fa-exclamation' },
+                'offline': { color: 'bg-gray-400', text: '未同步', icon: 'fa-cloud' }
+            };
+            
+            const s = statusMap[status] || statusMap['offline'];
+            dot.className = `w-2 h-2 rounded-full ${s.color}`;
+            text.textContent = s.text;
+            
+            if (status === 'synced') {
+                time.textContent = new Date().toLocaleString('zh-CN');
+            }
+        }
+        
+        // 同步到 Gist
+        async function syncToGist() {
+            if (!githubToken || isSyncing) return;
+            
+            isSyncing = true;
+            updateSyncStatus('syncing');
+            
+            try {
+                const data = {
+                    repos: repos,
+                    customCategories: customCategories,
+                    lastSync: new Date().toISOString()
+                };
+                
+                const files = {
+                    [GIST_FILENAME]: {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                };
+                
+                let response;
+                
+                if (gistId) {
+                    // 更新现有 Gist
+                    response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            description: GIST_DESCRIPTION,
+                            files: files
+                        })
+                    });
+                } else {
+                    // 创建新 Gist
+                    response = await fetch('https://api.github.com/gists', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `token ${githubToken}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            description: GIST_DESCRIPTION,
+                            public: false,
+                            files: files
+                        })
+                    });
+                }
+                
+                if (response.ok) {
+                    const gist = await response.json();
+                    gistId = gist.id;
+                    localStorage.setItem('ezgit_gist_id', gistId);
+                    updateSyncStatus('synced');
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Sync to gist error:', error);
+                updateSyncStatus('error', '同步失败');
+                return false;
+            } finally {
+                isSyncing = false;
+            }
+        }
+        
+        // 从 Gist 加载
+        async function syncFromGist() {
+            if (!githubToken || isSyncing) return;
+            
+            isSyncing = true;
+            updateSyncStatus('syncing');
+            
+            try {
+                // 如果没有 gistId，尝试查找
+                if (!gistId) {
+                    const foundGistId = await findGistByName();
+                    if (foundGistId) {
+                        gistId = foundGistId;
+                        localStorage.setItem('ezgit_gist_id', gistId);
+                    } else {
+                        // 没有找到 Gist，创建一个新的
+                        updateSyncStatus('offline');
+                        isSyncing = false;
+                        return;
+                    }
+                }
+                
+                // 获取 Gist 内容
+                const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const gist = await response.json();
+                    const file = gist.files[GIST_FILENAME];
+                    
+                    if (file && file.content) {
+                        const data = JSON.parse(file.content);
+                        
+                        // 合并数据
+                        if (data.repos && Array.isArray(data.repos)) {
+                            repos = data.repos;
+                            localStorage.setItem('ezgit-repos', JSON.stringify(repos));
+                        }
+                        
+                        if (data.customCategories) {
+                            customCategories = data.customCategories;
+                            categoryNames = { ...defaultCategoryNames, ...customCategories };
+                            localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+                        }
+                        
+                        // 更新 UI
+                        renderCategoryFilters();
+                        updateCategorySelect();
+                        updateStats();
+                        render();
+                        
+                        updateSyncStatus('synced');
+                        showToast('已从云端同步', 'success');
+                    }
+                } else if (response.status === 404) {
+                    // Gist 不存在了，清除 ID
+                    gistId = null;
+                    localStorage.removeItem('ezgit_gist_id');
+                    updateSyncStatus('offline');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('Sync from gist error:', error);
+                updateSyncStatus('error', '同步失败');
+            } finally {
+                isSyncing = false;
+            }
+        }
+        
+        // 查找名为 ezgit-data.json 的 Gist
+        async function findGistByName() {
+            try {
+                const response = await fetch('https://api.github.com/gists', {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const gists = await response.json();
+                    const found = gists.find(g => g.files[GIST_FILENAME]);
+                    return found ? found.id : null;
+                }
+            } catch (error) {
+                console.error('Find gist error:', error);
+            }
+            return null;
+        }
+        
+        // 保存数据（本地 + 云端）
+        async function saveRepos() {
+            localStorage.setItem('ezgit-repos', JSON.stringify(repos));
+            
+            if (githubToken) {
+                const success = await syncToGist();
+                if (success) {
+                    showToast('已同步到云端', 'success');
+                }
+            }
+        }
+        
+        // 保存分类
+        async function saveCategories() {
+            localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+            
+            if (githubToken) {
+                await syncToGist();
+            }
+        }
+
         // 渲染分类筛选按钮
         function renderCategoryFilters() {
             const container = document.getElementById('category-filters');
@@ -352,7 +795,7 @@
             
             // 添加所有分类按钮
             Object.entries(categoryNames).forEach(([key, name]) => {
-                const isCustom = customCategories[key]; // 是否是自定义分类
+                const isCustom = customCategories[key];
                 const isActive = currentCategory === key;
                 
                 if (isCustom) {
@@ -403,13 +846,13 @@
             }
             
             // 使用自定义确认对话框
-            showConfirm(`确定要删除分类"${name}"吗？`, () => {
+            showConfirm(`确定要删除分类"${name}"吗？`, async () => {
                 // 从自定义分类中删除
                 delete customCategories[key];
                 delete categoryNames[key];
                 
-                // 保存到 localStorage
-                localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+                // 保存
+                await saveCategories();
                 
                 // 如果当前选中的是被删除的分类，重置为全部
                 if (currentCategory === key) {
@@ -451,7 +894,7 @@
         }
 
         // 添加自定义分类
-        function addCustomCategory() {
+        async function addCustomCategory() {
             const input = document.getElementById('new-category-name');
             const name = input.value.trim();
             
@@ -465,8 +908,8 @@
             customCategories[key] = name;
             categoryNames[key] = name;
             
-            // 保存到localStorage
-            localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+            // 保存
+            await saveCategories();
             
             // 更新UI
             renderCategoryFilters();
@@ -656,15 +1099,6 @@
             initDragAndDrop();
         }
 
-        // 保存
-        function saveRepos() {
-            localStorage.setItem('ezgit-repos', JSON.stringify(repos));
-            // 如果已登录，自动同步到 Gist
-            if (isLoggedIn()) {
-                syncToGist();
-            }
-        }
-
         // 显示提示
         function showToast(msg, type = 'info') {
             const toast = document.getElementById('toast');
@@ -713,7 +1147,7 @@
         }
 
         // 添加/更新仓库
-        function addRepo() {
+        async function addRepo() {
             const url = document.getElementById('repo-url').value.trim();
             const category = document.getElementById('repo-category').value;
             const title = document.getElementById('repo-title').value.trim();
@@ -738,7 +1172,7 @@
                     repo.language = document.getElementById('preview-lang').textContent || '';
                     repo.stars = document.getElementById('preview-stars').textContent || '';
                     
-                    saveRepos();
+                    await saveRepos();
                     updateStats();
                     render();
                     addModal.classList.add('hidden');
@@ -774,7 +1208,7 @@
                 addedAt: new Date().toISOString()
             });
             
-            saveRepos();
+            await saveRepos();
             updateStats();
             render();
             addModal.classList.add('hidden');
@@ -840,7 +1274,7 @@
             const repo = repos.find(r => r.id === id);
             if (!repo) return;
             
-            editingRepoId = id; // 设置编辑模式
+            editingRepoId = id;
             document.getElementById('repo-url').value = repo.url;
             document.getElementById('repo-category').value = repo.category;
             document.getElementById('repo-title').value = repo.title || '';
@@ -855,12 +1289,12 @@
         }
 
         // 切换精选
-        function toggleStar(id) {
+        async function toggleStar(id) {
             const repo = repos.find(r => r.id === id);
             if (!repo) return;
             
             repo.starred = !repo.starred;
-            saveRepos();
+            await saveRepos();
             updateStats();
             render();
             showToast(repo.starred ? '已标记为精选' : '已取消精选');
@@ -868,9 +1302,9 @@
 
         // 删除仓库
         function deleteRepo(id) {
-            showConfirm('确定要删除这个仓库吗？', () => {
+            showConfirm('确定要删除这个仓库吗？', async () => {
                 repos = repos.filter(r => r.id !== id);
-                saveRepos();
+                await saveRepos();
                 updateStats();
                 render();
                 showToast('已删除', 'success');
@@ -891,7 +1325,12 @@
 
         // 导出数据
         function exportData() {
-            const blob = new Blob([JSON.stringify(repos, null, 2)], {type: 'application/json'});
+            const data = {
+                repos: repos,
+                customCategories: customCategories,
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -902,14 +1341,35 @@
         }
 
         // 导入数据
-        function importData(file) {
+        async function importData(file) {
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = async (e) => {
                 try {
                     const data = JSON.parse(e.target.result);
-                    if (Array.isArray(data)) {
+                    if (data.repos && Array.isArray(data.repos)) {
+                        repos = data.repos;
+                        if (data.customCategories) {
+                            customCategories = data.customCategories;
+                            categoryNames = { ...defaultCategoryNames, ...customCategories };
+                        }
+                        
+                        // 保存到本地和云端
+                        localStorage.setItem('ezgit-repos', JSON.stringify(repos));
+                        localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+                        
+                        if (githubToken) {
+                            await syncToGist();
+                        }
+                        
+                        renderCategoryFilters();
+                        updateCategorySelect();
+                        updateStats();
+                        render();
+                        showToast(`导入了 ${data.repos.length} 个仓库`, 'success');
+                    } else if (Array.isArray(data)) {
+                        // 兼容旧格式
                         repos = [...data, ...repos];
-                        saveRepos();
+                        await saveRepos();
                         updateStats();
                         render();
                         showToast(`导入了 ${data.length} 个仓库`, 'success');
@@ -957,7 +1417,6 @@
             } else {
                 btn.classList.remove('text-yellow-500', 'bg-yellow-50');
                 btn.classList.add('text-gray-500');
-                // 取消筛选时重新调用updateStats来更新正确的徽章样式
                 updateStats();
             }
             
@@ -989,14 +1448,14 @@
 
         // 显示/隐藏模态框
         function showAddModal() {
-            editingRepoId = null; // 重置编辑模式
+            editingRepoId = null;
             document.getElementById('save-btn').textContent = '添加';
             resetForm();
             addModal.classList.remove('hidden');
         }
 
         function hideAddModal() {
-            editingRepoId = null; // 重置编辑模式
+            editingRepoId = null;
             document.getElementById('save-btn').textContent = '添加';
             addModal.classList.add('hidden');
             resetForm();
@@ -1019,6 +1478,16 @@
             if (e.target.files[0]) importData(e.target.files[0]);
         });
         document.getElementById('search-input').addEventListener('input', searchRepos);
+
+        // GitHub 登录相关事件
+        document.getElementById('login-btn').addEventListener('click', login);
+        document.getElementById('user-avatar-btn').addEventListener('click', toggleUserMenu);
+        document.getElementById('logout-btn').addEventListener('click', logout);
+        document.getElementById('manual-sync-btn').addEventListener('click', () => {
+            syncFromGist();
+            showToast('正在同步...', 'info');
+        });
+        document.addEventListener('click', handleClickOutside);
 
         // 分类筛选事件
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -1095,7 +1564,7 @@
             this.classList.remove('drag-over');
         }
 
-        function handleDrop(e) {
+        async function handleDrop(e) {
             e.preventDefault();
             this.classList.remove('drag-over');
             
@@ -1113,7 +1582,7 @@
             repos.splice(droppedIndex, 0, draggedRepo);
             
             // 保存并重新渲染
-            saveRepos();
+            await saveRepos();
             render();
             showToast('已调整顺序', 'success');
         }
@@ -1123,250 +1592,24 @@
             if (e.target === addModal) hideAddModal();
         });
 
-        // ==================== GitHub OAuth & Gist Sync ====================
-        
-        // 检查是否已登录
-        function isLoggedIn() {
-            return !!githubToken;
-        }
-        
-        // 更新登录状态 UI
-        function updateAuthUI() {
-            const loginBtn = document.getElementById('login-btn');
-            const userMenu = document.getElementById('user-menu');
-            const userAvatar = document.getElementById('user-avatar');
-            
-            if (isLoggedIn() && githubUser) {
-                loginBtn.classList.add('hidden');
-                userMenu.classList.remove('hidden');
-                userAvatar.src = githubUser.avatar_url;
-            } else {
-                loginBtn.classList.remove('hidden');
-                userMenu.classList.add('hidden');
-            }
-        }
-        
-        // GitHub 登录
-        function loginWithGitHub() {
-            if (!GITHUB_CLIENT_ID) {
-                showToast('请先配置 GitHub OAuth App', 'warning');
-                return;
-            }
-            
-            const redirectUri = window.location.origin + window.location.pathname;
-            const scope = 'gist';
-            const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
-            
-            window.location.href = authUrl;
-        }
-        
-        // 处理 OAuth 回调
-        async function handleOAuthCallback() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            
-            if (code) {
-                showToast('正在登录...', 'info');
-                
-                // 注意：纯前端应用需要后端服务来交换 code 获取 token
-                // 这里使用手动输入 token 的方式作为替代方案
-                const token = prompt('请输入 GitHub Personal Access Token（需要 gist 权限）：');
-                
-                if (token) {
-                    githubToken = token;
-                    localStorage.setItem('github_token', token);
-                    
-                    // 获取用户信息
-                    try {
-                        const response = await fetch('https://api.github.com/user', {
-                            headers: { 'Authorization': `token ${token}` }
-                        });
-                        
-                        if (response.ok) {
-                            githubUser = await response.json();
-                            updateAuthUI();
-                            showToast('登录成功！', 'success');
-                            
-                            // 从 Gist 加载数据
-                            await loadFromGist();
-                            
-                            // 清除 URL 参数
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                        } else {
-                            showToast('登录失败，请检查 Token', 'error');
-                            logout();
-                        }
-                    } catch (error) {
-                        showToast('登录失败: ' + error.message, 'error');
-                        logout();
-                    }
-                }
-            }
-        }
-        
-        // 退出登录
-        function logout() {
-            githubToken = null;
-            githubUser = null;
-            localStorage.removeItem('github_token');
-            updateAuthUI();
-            showToast('已退出登录', 'info');
-        }
-        
-        // 保存到 Gist
-        async function syncToGist() {
-            if (!isLoggedIn()) return;
-            
-            try {
-                showToast('正在同步...', 'info');
-                
-                // 先查找是否已有 ezgit-data.json 的 Gist
-                const gistsResponse = await fetch('https://api.github.com/gists', {
-                    headers: { 'Authorization': `token ${githubToken}` }
-                });
-                
-                if (!gistsResponse.ok) throw new Error('获取 Gists 失败');
-                
-                const gists = await gistsResponse.json();
-                const existingGist = gists.find(g => g.files && g.files[GIST_FILENAME]);
-                
-                const data = {
-                    description: 'EzGit 数据同步',
-                    public: false,
-                    files: {
-                        [GIST_FILENAME]: {
-                            content: JSON.stringify({
-                                repos: repos,
-                                customCategories: customCategories,
-                                version: '1.0',
-                                updatedAt: new Date().toISOString()
-                            }, null, 2)
-                        }
-                    }
-                };
-                
-                let response;
-                if (existingGist) {
-                    // 更新现有 Gist
-                    response = await fetch(`https://api.github.com/gists/${existingGist.id}`, {
-                        method: 'PATCH',
-                        headers: {
-                            'Authorization': `token ${githubToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                } else {
-                    // 创建新 Gist
-                    response = await fetch('https://api.github.com/gists', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `token ${githubToken}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    });
-                }
-                
-                if (response.ok) {
-                    showToast('已同步到云端', 'success');
-                } else {
-                    throw new Error('同步失败');
-                }
-            } catch (error) {
-                showToast('同步失败: ' + error.message, 'error');
-            }
-        }
-        
-        // 从 Gist 加载
-        async function loadFromGist() {
-            if (!isLoggedIn()) return;
-            
-            try {
-                showToast('正在从云端加载...', 'info');
-                
-                const response = await fetch('https://api.github.com/gists', {
-                    headers: { 'Authorization': `token ${githubToken}` }
-                });
-                
-                if (!response.ok) throw new Error('获取 Gists 失败');
-                
-                const gists = await response.json();
-                const ezgitGist = gists.find(g => g.files && g.files[GIST_FILENAME]);
-                
-                if (ezgitGist) {
-                    const fileUrl = ezgitGist.files[GIST_FILENAME].raw_url;
-                    const dataResponse = await fetch(fileUrl);
-                    
-                    if (dataResponse.ok) {
-                        const data = await dataResponse.json();
-                        
-                        if (data.repos) {
-                            repos = data.repos;
-                            localStorage.setItem('ezgit-repos', JSON.stringify(repos));
-                        }
-                        
-                        if (data.customCategories) {
-                            customCategories = data.customCategories;
-                            localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
-                        }
-                        
-                        renderCategoryFilters();
-                        updateCategorySelect();
-                        render();
-                        updateStats();
-                        showToast('已从云端同步数据', 'success');
-                    }
-                } else {
-                    // 没有找到 Gist，将本地数据上传到云端
-                    await syncToGist();
-                }
-            } catch (error) {
-                showToast('从云端加载失败: ' + error.message, 'error');
-            }
-        }
-        
-        // 绑定登录相关事件
-        document.getElementById('login-btn').addEventListener('click', loginWithGitHub);
-        document.getElementById('logout-btn').addEventListener('click', logout);
-        
-        // ==================== 初始化 ====================
-        
-        // 检查 OAuth 回调
-        handleOAuthCallback();
-        
-        // 获取用户信息（如果已登录）
-        async function initAuth() {
-            if (isLoggedIn()) {
-                try {
-                    const response = await fetch('https://api.github.com/user', {
-                        headers: { 'Authorization': `token ${githubToken}` }
-                    });
-                    
-                    if (response.ok) {
-                        githubUser = await response.json();
-                        updateAuthUI();
-                        // 从 Gist 加载数据
-                        await loadFromGist();
-                    } else {
-                        // Token 无效
-                        logout();
-                    }
-                } catch (error) {
-                    console.error('获取用户信息失败:', error);
-                }
-            }
-            updateAuthUI();
-        }
-        
         // 初始化
-        renderCategoryFilters();
-        updateCategorySelect();
-        updateStats();
-        toggleView(currentView);
-        render();
-        initDragAndDrop();
-        initAuth();
+        async function init() {
+            renderCategoryFilters();
+            updateCategorySelect();
+            updateStats();
+            toggleView(currentView);
+            render();
+            initDragAndDrop();
+            
+            // 处理 OAuth 回调
+            await handleOAuthCallback();
+            
+            // 检查登录状态
+            checkAuthStatus();
+        }
+        
+        // 启动
+        init();
     </script>
 </body>
 </html>
