@@ -16,21 +16,39 @@
         .repo-card.drag-over { border: 2px dashed #10b981; background-color: #f0fdf4; }
         .category-tag { transition: all 0.2s; }
         .category-tag:hover { transform: scale(1.05); }
-        /* 固定布局 */
-        body {
+
+        /* 固定布局 - 页面整体不可滚动 */
+        html, body {
+            height: 100%;
             overflow: hidden;
         }
 
-        .main-content {
+        body {
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 72px); /* 减去 header */
+        }
+
+        /* Header 固定 */
+        header {
+            flex-shrink: 0;
+        }
+
+        /* Stats Hero 固定 */
+        .stats-section {
+            flex-shrink: 0;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
             min-height: auto;
         }
 
         /* 分类筛选区域固定 */
-        #category-filters {
+        .categories-section {
             flex-shrink: 0;
         }
 
@@ -38,16 +56,26 @@
         #repo-list {
             flex: 1;
             overflow-y: auto;
-            padding: 0 1rem;
+            padding: 0;
+        }
+
+        /* 列表视图时占满宽度 */
+        #repo-list.flex-col {
+            padding: 0;
         }
 
         /* 加载更多按钮 */
         #load-more-btn {
             padding: 10px;
             text-align: center;
+            flex-shrink: 0;
         }
 
-        html, body { overflow-x: hidden; }
+        /* Footer 固定 */
+        footer {
+            flex-shrink: 0;
+        }
+
         .user-menu { transition: all 0.2s; transform-origin: top right; }
         .user-menu.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
         .user-menu:not(.hidden) { opacity: 1; transform: scale(1); pointer-events: auto; }
@@ -58,7 +86,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col">
+<body class="bg-gray-50 flex flex-col">
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-4 py-4">
@@ -146,7 +174,7 @@
     <!-- Main Content -->
     <div class="main-content flex-1">
         <!-- Stats Hero -->
-        <section class="bg-gray-900 text-white py-6">
+        <section class="stats-section bg-gray-900 text-white py-6">
             <div class="max-w-6xl mx-auto px-4">
                 <div class="flex items-center gap-8">
                     <div>
@@ -170,7 +198,7 @@
         </section>
 
         <!-- Categories -->
-        <section class="max-w-6xl mx-auto px-4 py-6">
+        <section class="categories-section max-w-6xl mx-auto px-4 py-6">
             <div class="flex flex-wrap items-center justify-between gap-4">
                 <div class="flex flex-wrap gap-2" id="category-filters">
                     <button data-category="all" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-green-600 text-white">
