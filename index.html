@@ -1249,9 +1249,18 @@
                 }
             }).join('');
             
+            // 清除之前的搜索提示
+            const existingSearchInfo = document.querySelector('.search-info');
+            if (existingSearchInfo) {
+                existingSearchInfo.remove();
+            }
+            
             // 插入搜索提示（在卡片下方）
             if (searchInfo) {
-                repoList.insertAdjacentHTML('afterend', searchInfo);
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'search-info text-sm text-gray-500 mb-4 px-4';
+                searchDiv.innerHTML = `搜索 "${searchTerm}" 找到 ${filteredRepos.length} 个结果`;
+                repoList.parentNode.insertBefore(searchDiv, repoList.nextSibling);
             }
 
             // 显示或隐藏"加载更多"按钮
