@@ -238,23 +238,25 @@
         <!-- Repo List -->
         <section class="flex-1 overflow-hidden flex flex-col max-w-6xl mx-auto w-full px-4">
             <div id="repo-list" class="flex-1 overflow-y-auto">
-            </div>
-
-            <div id="empty-state" class="hidden text-center py-16">
-                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-inbox text-4xl text-gray-400"></i>
-                </div>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">还没有收藏的仓库</h3>
-                <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目</p>
-            </div>
-
-            <!-- 加载更多按钮 -->
-            <div id="load-more-btn" class="hidden py-4 text-center">
-                <button onclick="loadMore()" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm transition">
-                    <i class="fas fa-chevron-down mr-1"></i> 加载更多
-                </button>
+                <!-- 动态内容 -->
             </div>
         </section>
+        
+        <!-- 空状态（在 repo-list 外部，初始隐藏） -->
+        <div id="empty-state" class="hidden text-center py-16 flex-1">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-inbox text-4xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">还没有收藏的仓库</h3>
+            <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目</p>
+        </div>
+
+        <!-- 加载更多按钮（在 repo-list 外部） -->
+        <div id="load-more-btn" class="hidden py-4 text-center flex-shrink-0 max-w-6xl mx-auto w-full px-4">
+            <button onclick="loadMore()" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm transition">
+                <i class="fas fa-chevron-down mr-1"></i> 加载更多
+            </button>
+        </div>
     </div>
 
     <!-- Footer -->
