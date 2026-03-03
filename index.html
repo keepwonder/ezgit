@@ -1222,19 +1222,26 @@
 
             emptyState.classList.add('hidden');
 
+            // 搜索结果提示
+            const searchTerm = document.getElementById('search-input').value.trim();
+            let searchInfo = '';
+            if (searchTerm) {
+                searchInfo = `<div class="text-sm text-gray-500 mb-4">搜索 "${searchTerm}" 找到 ${filteredRepos.length} 个结果</div>`;
+            }
+
             // 懒加载：只渲染前 visibleItems 个
             const reposToRender = filteredRepos.slice(0, visibleItems);
 
             // 设置容器样式
             if (currentView === 'grid') {
-                // 使用 auto-fit 让网格自动适应，卡片不会拉伸
-                repoList.className = 'grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4';
+                // 使用固定列数，卡片顶部对齐不拉伸
+                repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 content-start';
             } else {
                 repoList.className = 'flex flex-col gap-3';
             }
 
             // 渲染仓库
-            repoList.innerHTML = reposToRender.map(r => {
+            repoList.innerHTML = searchInfo + reposToRender.map(r => {
                 if (currentView === 'grid') {
                     return renderGridCard(r);
                 } else {
@@ -1259,8 +1266,8 @@
         // 渲染网格卡片
         function renderGridCard(r) {
             return `
-                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col h-full" draggable="true" data-id="${r.id}">
-                    <div class="flex items-start gap-3 flex-1">
+                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col" draggable="true" data-id="${r.id}">
+                    <div class="flex items-start gap-3">
                         <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg flex-shrink-0" onerror="this.src='https://github.com/github.png'">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-1">
