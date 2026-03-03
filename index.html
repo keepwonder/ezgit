@@ -269,6 +269,7 @@
         let repos = JSON.parse(localStorage.getItem('ezgit-repos') || JSON.stringify(sampleRepos));
         let currentCategory = 'all';
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
+        let editingRepoId = null; // 当前正在编辑的仓库ID
 
         // 加载自定义分类
         let customCategories = JSON.parse(localStorage.getItem('ezgit-categories') || '{}');
@@ -477,7 +478,7 @@
             setTimeout(() => toast.classList.add('hidden'), 2000);
         }
 
-        // 添加仓库
+        // 添加/更新仓库
         function addRepo() {
             const url = document.getElementById('repo-url').value.trim();
             const category = document.getElementById('repo-category').value;
@@ -490,6 +491,30 @@
                 return;
             }
             
+            // 编辑模式
+            if (editingRepoId) {
+                const repo = repos.find(r => r.id === editingRepoId);
+                if (repo) {
+                    repo.category = category;
+                    repo.title = title;
+                    repo.notes = notes;
+                    repo.starred = starred;
+                    
+                    saveRepos();
+                    updateStats();
+                    render();
+                    addModal.classList.add('hidden');
+                    showToast('已更新');
+                    
+                    // 重置编辑模式
+                    editingRepoId = null;
+                    document.getElementById('save-btn').textContent = '添加';
+                    resetForm();
+                }
+                return;
+            }
+            
+            // 添加模式
             const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
             if (!match) {
                 showToast('无效的 GitHub URL');
@@ -518,12 +543,7 @@
             showToast('仓库已添加');
             
             // 清空表单
-            document.getElementById('repo-url').value = '';
-            document.getElementById('repo-category').value = '';
-            document.getElementById('repo-title').value = '';
-            document.getElementById('repo-notes').value = '';
-            document.getElementById('repo-starred').checked = false;
-            document.getElementById('repo-preview').classList.add('hidden');
+            resetForm();
         }
 
         // 获取仓库信息
@@ -550,6 +570,7 @@
             const repo = repos.find(r => r.id === id);
             if (!repo) return;
             
+            editingRepoId = id; // 设置编辑模式
             document.getElementById('repo-url').value = repo.url;
             document.getElementById('repo-category').value = repo.category;
             document.getElementById('repo-title').value = repo.title || '';
@@ -559,26 +580,8 @@
             fetchRepoInfo();
             addModal.classList.remove('hidden');
             
-            // 修改保存按钮行为为更新
-            const saveBtn = document.getElementById('save-btn');
-            saveBtn.textContent = '更新';
-            saveBtn.onclick = () => {
-                repo.category = document.getElementById('repo-category').value;
-                repo.title = document.getElementById('repo-title').value.trim();
-                repo.notes = document.getElementById('repo-notes').value.trim();
-                repo.starred = document.getElementById('repo-starred').checked;
-                
-                saveRepos();
-                updateStats();
-                render();
-                addModal.classList.add('hidden');
-                showToast('已更新');
-                
-                // 恢复添加模式
-                saveBtn.textContent = '添加';
-                saveBtn.onclick = addRepo;
-                resetForm();
-            };
+            // 修改按钮文字为更新
+            document.getElementById('save-btn').textContent = '更新';
         }
 
         // 切换精选
@@ -695,13 +698,15 @@
 
         // 显示/隐藏模态框
         function showAddModal() {
-            addModal.classList.remove('hidden');
+            editingRepoId = null; // 重置编辑模式
             document.getElementById('save-btn').textContent = '添加';
-            document.getElementById('save-btn').onclick = addRepo;
             resetForm();
+            addModal.classList.remove('hidden');
         }
 
         function hideAddModal() {
+            editingRepoId = null; // 重置编辑模式
+            document.getElementById('save-btn').textContent = '添加';
             addModal.classList.add('hidden');
             resetForm();
         }
