@@ -476,7 +476,7 @@
         let editingRepoId = null;
 
         // 懒加载配置
-        const ITEMS_PER_BATCH = 12; // 每次加载12个
+        const ITEMS_PER_BATCH = 16; // 初始加载16个（4行x4列）
         let visibleItems = ITEMS_PER_BATCH; // 当前已加载数量
         let isLoading = false; // 是否正在加载
         let showOnlyStarred = false;
