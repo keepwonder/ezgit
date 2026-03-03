@@ -316,8 +316,8 @@
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="hidden fixed bottom-6 right-6 z-50 transition-all duration-300 transform translate-y-2 opacity-0">
-        <div class="bg-gray-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 min-w-[280px]">
+    <div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform -translate-y-2 opacity-0">
+        <div class="bg-gray-900/95 backdrop-blur-sm text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 min-w-[320px] border border-gray-700/50">
             <div id="toast-icon" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
                 <i class="fas fa-info text-sm"></i>
             </div>
@@ -1126,8 +1126,10 @@
             
             // 显示动画
             toast.classList.remove('hidden');
-            toast.classList.remove('translate-y-2', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
+            requestAnimationFrame(() => {
+                toast.classList.remove('-translate-y-2', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
             
             // 自动隐藏
             setTimeout(() => {
@@ -1138,7 +1140,7 @@
         // 隐藏提示
         function hideToast() {
             const toast = document.getElementById('toast');
-            toast.classList.add('translate-y-2', 'opacity-0');
+            toast.classList.add('-translate-y-2', 'opacity-0');
             toast.classList.remove('translate-y-0', 'opacity-100');
             
             setTimeout(() => {
