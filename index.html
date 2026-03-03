@@ -108,8 +108,8 @@
                 
                 <!-- View Toggle & Starred Filter -->
                 <div class="flex items-center gap-2">
-                    <button id="filter-starred" class="px-3 py-1.5 rounded-md text-sm text-gray-500 hover:text-yellow-500 transition" title="只看精选">
-                        <i class="far fa-star"></i> 精选
+                    <button id="filter-starred" class="px-3 py-1.5 rounded-md text-sm text-gray-500 hover:text-yellow-500 transition flex items-center gap-1" title="只看精选">
+                        <i class="far fa-star"></i> 精选 <span id="starred-count-badge" class="bg-gray-200 text-gray-600 text-xs px-1.5 py-0.5 rounded-full"></span>
                     </button>
                     <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
                         <button id="view-grid" class="view-btn px-3 py-1.5 rounded-md text-sm bg-white shadow">
@@ -376,7 +376,22 @@
             document.getElementById('total-count').textContent = repos.length;
             const categories = new Set(repos.map(r => r.category).filter(Boolean));
             document.getElementById('category-count').textContent = categories.size;
-            document.getElementById('starred-count').textContent = repos.filter(r => r.starred).length;
+            const starredCount = repos.filter(r => r.starred).length;
+            document.getElementById('starred-count').textContent = starredCount;
+            
+            // 更新精选按钮上的数量
+            const badge = document.getElementById('starred-count-badge');
+            if (badge) {
+                badge.textContent = starredCount;
+                // 如果有精选，显示黄色背景
+                if (starredCount > 0) {
+                    badge.classList.remove('bg-gray-200', 'text-gray-600');
+                    badge.classList.add('bg-yellow-100', 'text-yellow-600');
+                } else {
+                    badge.classList.remove('bg-yellow-100', 'text-yellow-600');
+                    badge.classList.add('bg-gray-200', 'text-gray-600');
+                }
+            }
         }
 
         // 渲染
@@ -728,14 +743,17 @@
             showOnlyStarred = !showOnlyStarred;
             
             const btn = document.getElementById('filter-starred');
+            const starredCount = repos.filter(r => r.starred).length;
+            
             if (showOnlyStarred) {
                 btn.classList.remove('text-gray-500');
                 btn.classList.add('text-yellow-500', 'bg-yellow-50');
-                btn.innerHTML = '<i class="fas fa-star"></i> 精选';
+                btn.innerHTML = `<i class="fas fa-star"></i> 精选 <span class="bg-yellow-200 text-yellow-700 text-xs px-1.5 py-0.5 rounded-full">${starredCount}</span>`;
             } else {
                 btn.classList.remove('text-yellow-500', 'bg-yellow-50');
                 btn.classList.add('text-gray-500');
-                btn.innerHTML = '<i class="far fa-star"></i> 精选';
+                const badgeClass = starredCount > 0 ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-600';
+                btn.innerHTML = `<i class="far fa-star"></i> 精选 <span class="${badgeClass} text-xs px-1.5 py-0.5 rounded-full">${starredCount}</span>`;
             }
             
             render();
