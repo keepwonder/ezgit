@@ -57,6 +57,7 @@
             flex: 1;
             overflow-y: auto;
             padding: 0;
+            align-content: flex-start;
         }
 
         /* 列表视图时占满宽度 */
@@ -1234,8 +1235,8 @@
 
             // 设置容器样式
             if (currentView === 'grid') {
-                // 使用固定列数，卡片顶部对齐不拉伸
-                repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
+                // 使用固定列数，卡片高度由内容决定
+                repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start';
             } else {
                 repoList.className = 'flex flex-col gap-3';
             }
