@@ -434,11 +434,11 @@
 
             // 获取 main-content 的可用高度
             const mainRect = mainContent.getBoundingClientRect();
-            const availableHeight = mainRect.height - 150; // 减去分页控件和padding
+            const availableHeight = mainRect.height - 120; // 减去分页控件和padding
 
-            // 根据当前视图计算每个卡片的高度（保守估算，确保不超出）
-            // 列表视图卡片实际高度约85-90px（包括padding和border）
-            const cardHeight = currentView === 'grid' ? 180 : 85;
+            // 根据当前视图计算每个卡片的高度
+            // 网格视图卡片约180px，列表视图卡片约75px（更紧凑的估算）
+            const cardHeight = currentView === 'grid' ? 180 : 75;
             const gap = 16; // gap-4 = 16px
 
             // 根据视图计算每行显示的卡片数
@@ -459,13 +459,13 @@
                 cardsPerRow = 1; // 列表视图每行1个
             }
 
-            // 计算可以显示的行数（保守计算，留一些余地）
-            const rows = Math.max(1, Math.floor((availableHeight - 50) / (cardHeight + gap)));
+            // 计算可以显示的行数（稍微激进一些，填满页面）
+            const rows = Math.max(1, Math.floor((availableHeight + 20) / (cardHeight + gap)));
 
             // 计算每页显示数量
             const calculatedItems = rows * cardsPerRow;
 
-            // 限制范围：最少显示4个，最多显示填满页面的数量
+            // 限制范围：最少显示4个
             itemsPerPage = Math.max(4, calculatedItems);
 
             // 如果数据总量可以一页显示完，就显示所有
