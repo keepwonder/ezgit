@@ -16,7 +16,37 @@
         .repo-card.drag-over { border: 2px dashed #10b981; background-color: #f0fdf4; }
         .category-tag { transition: all 0.2s; }
         .category-tag:hover { transform: scale(1.05); }
-        .main-content { min-height: calc(100vh - 280px); }
+        /* 固定布局 */
+        body {
+            overflow: hidden;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 72px); /* 减去 header */
+            overflow: hidden;
+            min-height: auto;
+        }
+
+        /* 分类筛选区域固定 */
+        #category-filters {
+            flex-shrink: 0;
+        }
+
+        /* 卡片区域可滚动 */
+        #repo-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 1rem;
+        }
+
+        /* 加载更多按钮 */
+        #load-more-btn {
+            padding: 10px;
+            text-align: center;
+        }
+
         html, body { overflow-x: hidden; }
         .user-menu { transition: all 0.2s; transform-origin: top right; }
         .user-menu.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
@@ -189,8 +219,12 @@
                 <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目</p>
             </div>
 
-            <!-- 分页控件 -->
-            <div id="pagination-container" class="mt-6"></div>
+            <!-- 加载更多按钮 -->
+            <div id="load-more-btn" class="hidden py-4 text-center">
+                <button onclick="loadMore()" class="px-6 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm transition">
+                    <i class="fas fa-chevron-down mr-1"></i> 加载更多
+                </button>
+            </div>
         </section>
     </div>
 
@@ -407,10 +441,10 @@
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
         let editingRepoId = null;
 
-        // 分页配置（根据页面大小自适应）
-        let itemsPerPage = 8; // 动态计算，初始值
-        let currentPage = 1; // 当前页码
-        let filteredRepos = []; // 筛选后的数据
+        // 懒加载配置
+        const ITEMS_PER_BATCH = 12; // 每次加载12个
+        let visibleItems = ITEMS_PER_BATCH; // 当前已加载数量
+        let isLoading = false; // 是否正在加载
         let showOnlyStarred = false;
 
         // 加载自定义分类
@@ -426,68 +460,8 @@
         // 合并默认和自定义分类
         let categoryNames = { ...defaultCategoryNames, ...customCategories };
 
-        // 根据视口大小计算每页显示数量
-        function calculateItemsPerPage() {
-            // 获取容器高度（仓库列表区域）
-            const mainContent = document.querySelector('.main-content');
-            if (!mainContent) return itemsPerPage;
-
-            // 获取 main-content 的可用高度
-            const mainRect = mainContent.getBoundingClientRect();
-            const availableHeight = mainRect.height - 120; // 减去分页控件和padding
-
-            // 根据当前视图计算每个卡片的高度
-            // 网格视图卡片约180px，列表视图卡片约75px（更紧凑的估算）
-            const cardHeight = currentView === 'grid' ? 180 : 75;
-            const gap = 16; // gap-4 = 16px
-
-            // 根据视图计算每行显示的卡片数
-            let cardsPerRow;
-            if (currentView === 'grid') {
-                // 网格视图：根据屏幕宽度计算列数
-                const containerWidth = window.innerWidth;
-                if (containerWidth >= 1280) { // xl
-                    cardsPerRow = 4;
-                } else if (containerWidth >= 1024) { // lg
-                    cardsPerRow = 3;
-                } else if (containerWidth >= 640) { // sm
-                    cardsPerRow = 2;
-                } else {
-                    cardsPerRow = 1;
-                }
-            } else {
-                cardsPerRow = 1; // 列表视图每行1个
-            }
-
-            // 计算可以显示的行数（稍微激进一些，填满页面）
-            const rows = Math.max(1, Math.floor((availableHeight + 20) / (cardHeight + gap)));
-
-            // 计算每页显示数量
-            const calculatedItems = rows * cardsPerRow;
-
-            // 限制范围：最少显示4个
-            itemsPerPage = Math.max(4, calculatedItems);
-
-            // 如果数据总量可以一页显示完，就显示所有
-            if (repos.length <= itemsPerPage) {
-                itemsPerPage = repos.length;
-            }
-
-            return itemsPerPage;
-        }
-
-        // 监听窗口大小变化
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                const oldItemsPerPage = itemsPerPage;
-                calculateItemsPerPage();
-                if (oldItemsPerPage !== itemsPerPage) {
-                    render();
-                }
-            }, 200);
-        });
+        // 筛选后的仓库列表
+        let filteredRepos = [];
 
         // DOM 元素
         const repoList = document.getElementById('repo-list');
@@ -1209,21 +1183,14 @@
             if (filteredRepos.length === 0) {
                 repoList.innerHTML = '';
                 emptyState.classList.remove('hidden');
-                renderPagination(0);
+                document.getElementById('load-more-btn').classList.add('hidden');
                 return;
             }
 
             emptyState.classList.add('hidden');
 
-            // 分页计算（使用动态计算的 itemsPerPage）
-            const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
-            if (currentPage > totalPages) {
-                currentPage = totalPages || 1;
-            }
-
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = Math.min(startIndex + itemsPerPage, filteredRepos.length);
-            const pageRepos = filteredRepos.slice(startIndex, endIndex);
+            // 懒加载：只渲染前 visibleItems 个
+            const reposToRender = filteredRepos.slice(0, visibleItems);
 
             // 设置容器样式
             if (currentView === 'grid') {
@@ -1232,8 +1199,8 @@
                 repoList.className = 'flex flex-col gap-3';
             }
 
-            // 渲染当前页的仓库
-            repoList.innerHTML = pageRepos.map(r => {
+            // 渲染仓库
+            repoList.innerHTML = reposToRender.map(r => {
                 if (currentView === 'grid') {
                     return renderGridCard(r);
                 } else {
@@ -1241,8 +1208,15 @@
                 }
             }).join('');
 
-            // 渲染分页控件
-            renderPagination(filteredRepos.length, totalPages);
+            // 显示或隐藏"加载更多"按钮
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            if (visibleItems >= filteredRepos.length) {
+                loadMoreBtn.classList.add('hidden');
+            } else {
+                loadMoreBtn.classList.remove('hidden');
+                loadMoreBtn.querySelector('button').innerHTML = `
+                    <i class="fas fa-chevron-down mr-1"></i> 加载更多 (${filteredRepos.length - visibleItems} 个)`;
+            }
 
             // 初始化拖拽
             initDragAndDrop();
@@ -1315,74 +1289,29 @@
             `;
         }
 
-        // 渲染分页控件
-        function renderPagination(totalItems, totalPages) {
-            const paginationContainer = document.getElementById('pagination-container');
-            if (!paginationContainer) return;
+        // 初始化懒加载
+        function initLazyLoad() {
+            const repoList = document.getElementById('repo-list');
+            repoList.addEventListener('scroll', () => {
+                if (isLoading) return;
 
-            if (totalPages <= 1) {
-                paginationContainer.innerHTML = totalItems > 0 ? `<p class="text-sm text-gray-500 text-center">共 ${totalItems} 个仓库</p>` : '';
-                return;
-            }
-
-            let html = '<div class="flex items-center justify-center gap-2">';
-
-            // 上一页
-            html += `<button onclick="window.goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}"><i class="fas fa-chevron-left"></i></button>`;
-
-            // 页码
-            const maxVisiblePages = 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-            if (endPage - startPage < maxVisiblePages - 1) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-
-            if (startPage > 1) {
-                html += `<button onclick="window.goToPage(1)" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">1</button>`;
-                if (startPage > 2) {
-                    html += `<span class="text-gray-400">...</span>`;
+                const { scrollTop, scrollHeight, clientHeight } = repoList;
+                if (scrollTop + clientHeight >= scrollHeight - 100) {
+                    // 接近底部，加载更多
+                    loadMore();
                 }
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                if (i === currentPage) {
-                    html += `<button class="px-3 py-1.5 rounded-lg text-sm bg-green-600 text-white">${i}</button>`;
-                } else {
-                    html += `<button onclick="window.goToPage(${i})" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">${i}</button>`;
-                }
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    html += `<span class="text-gray-400">...</span>`;
-                }
-                html += `<button onclick="window.goToPage(${totalPages})" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">${totalPages}</button>`;
-            }
-
-            // 下一页
-            html += `<button onclick="window.goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}"><i class="fas fa-chevron-right"></i></button>`;
-
-            html += '</div>';
-
-            // 添加统计信息
-            html += `<p class="text-sm text-gray-500 text-center mt-2">第 ${currentPage}/${totalPages} 页，共 ${totalItems} 个仓库，每页 ${itemsPerPage} 个</p>`;
-
-            paginationContainer.innerHTML = html;
+            });
         }
 
-        // 跳转到指定页
-        window.goToPage = function(page) {
-            const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
-            if (page < 1 || page > totalPages) return;
+        // 加载更多
+        function loadMore() {
+            if (visibleItems >= filteredRepos.length) return;
 
-            currentPage = page;
+            isLoading = true;
+            visibleItems += ITEMS_PER_BATCH;
             render();
-
-            // 滚动到顶部
-            document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
-        };
+            isLoading = false;
+        }
 
         // 显示提示
         function showToast(msg, type = 'info') {
@@ -1671,14 +1600,14 @@
 
         // 搜索
         function searchRepos() {
-            currentPage = 1; // 搜索时重置到第一页
+            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
             render();
         }
 
         // 筛选分类
         function filterByCategory(category) {
             currentCategory = category;
-            currentPage = 1; // 切换分类时重置到第一页
+            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
 
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.category === category) {
@@ -1696,7 +1625,7 @@
         // 切换精选筛选
         function toggleStarredFilter() {
             showOnlyStarred = !showOnlyStarred;
-            currentPage = 1; // 切换精选筛选时重置到第一页
+            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
 
             const btn = document.getElementById('filter-starred');
             const starredCount = repos.filter(r => r.starred).length;
@@ -1717,7 +1646,7 @@
         // 切换视图
         function toggleView(view) {
             currentView = view;
-            currentPage = 1; // 切换视图时重置到第一页
+            visibleItems = ITEMS_PER_BATCH; // 重置懒加载
             localStorage.setItem('ezgit-view', view);
 
             const gridBtn = document.getElementById('view-grid');
@@ -1734,9 +1663,6 @@
                 gridBtn.classList.remove('bg-white', 'shadow');
                 gridBtn.classList.add('text-gray-500');
             }
-
-            // 切换视图后重新计算每页数量
-            calculateItemsPerPage();
 
             render();
         }
@@ -1761,6 +1687,7 @@
         window.toggleStar = toggleStar;
         window.deleteRepo = deleteRepo;
         window.fetchRepoInfo = fetchRepoInfo;
+        window.loadMore = loadMore;
 
         // 事件绑定
         document.getElementById('add-btn').addEventListener('click', showAddModal);
@@ -1898,11 +1825,9 @@
             updateStats();
             toggleView(currentView);
 
-            // 初始化每页显示数量（根据页面大小自适应）
-            calculateItemsPerPage();
-
             render();
             initDragAndDrop();
+            initLazyLoad(); // 初始化懒加载
 
             // 处理 OAuth 回调
             await handleOAuthCallback();
