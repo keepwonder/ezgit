@@ -315,6 +315,39 @@
         </div>
     </div>
 
+    <!-- Token Input Modal -->
+    <div id="token-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900">GitHub 登录</h3>
+                <p class="text-sm text-gray-500 mt-1">输入 Personal Access Token 以同步数据</p>
+            </div>
+            
+            <div class="px-6 py-4">
+                <div class="bg-blue-50 rounded-lg p-3 mb-4">
+                    <p class="text-sm text-blue-800 font-medium mb-2">获取 Token 步骤：</p>
+                    <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                        <li>访问 <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-blue-900">github.com/settings/tokens</a></li>
+                        <li>点击 Generate new token (classic)</li>
+                        <li>勾选 <strong>gist</strong> 权限</li>
+                        <li>生成并复制 Token</li>
+                    </ol>
+                </div>
+                
+                <label class="block text-sm font-medium text-gray-700 mb-2">GitHub Token</label>
+                <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" 
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    autocomplete="off">
+                <p class="text-xs text-gray-400 mt-2">Token 仅存储在浏览器本地，不会上传到任何服务器</p>
+            </div>
+            
+            <div class="px-6 py-4 bg-gray-50 flex gap-3">
+                <button id="token-cancel" class="flex-1 py-2.5 border border-gray-300 rounded-lg hover:bg-white transition text-sm font-medium text-gray-700">取消</button>
+                <button id="token-confirm" class="flex-1 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">登录</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform -translate-y-2 opacity-0">
         <div class="bg-white shadow-xl flex items-center gap-3 min-w-[320px] rounded-lg border border-gray-200 px-4 py-3">
@@ -446,14 +479,10 @@
         }
         
         // GitHub 登录
-        async function login() {
+        function login() {
             // 如果没有配置 Client ID，使用手动输入 Token 的方式
             if (GITHUB_CLIENT_ID === 'YOUR_CLIENT_ID' || !GITHUB_CLIENT_ID) {
-                const token = prompt('请输入 GitHub Personal Access Token（需要 gist 权限）：\n\n获取方式：\n1. 访问 https://github.com/settings/tokens\n2. 点击 Generate new token (classic)\n3. 勾选 gist 权限\n4. 生成并复制 Token');
-                
-                if (token) {
-                    await validateAndLogin(token);
-                }
+                showTokenModal();
                 return;
             }
             
@@ -462,6 +491,59 @@
             
             const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=gist&state=${state}`;
             window.location.href = authUrl;
+        }
+        
+        // 显示 Token 输入模态框
+        function showTokenModal() {
+            const modal = document.getElementById('token-modal');
+            const input = document.getElementById('token-input');
+            const confirmBtn = document.getElementById('token-confirm');
+            const cancelBtn = document.getElementById('token-cancel');
+            
+            modal.classList.remove('hidden');
+            input.value = '';
+            input.focus();
+            
+            // 确认登录
+            const handleConfirm = async () => {
+                const token = input.value.trim();
+                if (!token) {
+                    showToast('请输入 Token', 'warning');
+                    return;
+                }
+                
+                hideTokenModal();
+                await validateAndLogin(token);
+            };
+            
+            // 取消
+            const handleCancel = () => {
+                hideTokenModal();
+            };
+            
+            // 绑定事件
+            confirmBtn.onclick = handleConfirm;
+            cancelBtn.onclick = handleCancel;
+            
+            // 回车确认
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    handleConfirm();
+                }
+            };
+            
+            // 点击遮罩关闭
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    handleCancel();
+                }
+            };
+        }
+        
+        // 隐藏 Token 模态框
+        function hideTokenModal() {
+            const modal = document.getElementById('token-modal');
+            modal.classList.add('hidden');
         }
         
         // 验证 Token 并登录
