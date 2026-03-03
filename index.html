@@ -1235,8 +1235,8 @@
 
             // 设置容器样式
             if (currentView === 'grid') {
-                // 使用固定列数，卡片高度由内容决定
-                repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-start';
+                // 使用固定列数，卡片高度一致
+                repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
             } else {
                 repoList.className = 'flex flex-col gap-3';
             }
@@ -1281,8 +1281,8 @@
         // 渲染网格卡片
         function renderGridCard(r) {
             return `
-                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col" draggable="true" data-id="${r.id}">
-                    <div class="flex items-start gap-3">
+                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col h-full" draggable="true" data-id="${r.id}">
+                    <div class="flex items-start gap-3 flex-1">
                         <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg flex-shrink-0" onerror="this.src='https://github.com/github.png'">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 mb-1">
@@ -1291,14 +1291,14 @@
                             </div>
                             <a href="${r.url}" target="_blank" class="font-medium text-gray-900 hover:text-green-600 truncate block">${r.owner}/${r.name}</a>
                             ${r.description ? `<p class="text-xs text-gray-500 mt-1 truncate">${r.description}</p>` : ''}
-                            ${r.title ? `<p class="text-sm text-gray-600 mt-2 line-clamp-2">${r.title}</p>` : ''}
+                            ${r.title ? `<p class="text-sm text-gray-600 mt-2 line-clamp-2">${r.title}</p>` : '<p class="text-sm text-gray-400 mt-2">&nbsp;</p>'}
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between mt-3 pt-3 border-t">
                         <div class="flex items-center gap-3 text-xs text-gray-400">
-                            ${r.language ? `<span><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
-                            ${r.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${r.stars}</span>` : ''}
+                            ${r.language ? `<span><i class="fas fa-code mr-1"></i>${r.language}</span>` : '<span>&nbsp;</span>'}
+                            ${r.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${r.stars}</span>` : '<span>&nbsp;</span>'}
                         </div>
                         <div class="flex gap-1">
                             <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
