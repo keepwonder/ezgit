@@ -198,38 +198,40 @@
         </section>
 
         <!-- Categories -->
-        <section class="categories-section max-w-6xl mx-auto px-4 py-6">
-            <div class="flex flex-wrap items-center justify-between gap-4">
-                <div class="flex flex-wrap gap-2" id="category-filters">
-                    <button data-category="all" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-green-600 text-white">
-                        <i class="fas fa-th-large mr-1"></i> 全部
-                    </button>
-                    <button data-category="tools" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-wrench mr-1"></i> 效率工具
-                    </button>
-                    <button data-category="learning" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-graduation-cap mr-1"></i> 学习资源
-                    </button>
-                    <button data-category="inspiration" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-lightbulb mr-1"></i> 参考灵感
-                    </button>
-                    <button data-category="infrastructure" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
-                        <i class="fas fa-cubes mr-1"></i> 基础建设
-                    </button>
-                </div>
+        <section class="categories-section">
+            <div class="max-w-6xl mx-auto px-4 py-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex flex-wrap gap-2" id="category-filters">
+                        <button data-category="all" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-green-600 text-white">
+                            <i class="fas fa-th-large mr-1"></i> 全部
+                        </button>
+                        <button data-category="tools" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
+                            <i class="fas fa-wrench mr-1"></i> 效率工具
+                        </button>
+                        <button data-category="learning" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
+                            <i class="fas fa-graduation-cap mr-1"></i> 学习资源
+                        </button>
+                        <button data-category="inspiration" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
+                            <i class="fas fa-lightbulb mr-1"></i> 参考灵感
+                        </button>
+                        <button data-category="infrastructure" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
+                            <i class="fas fa-cubes mr-1"></i> 基础建设
+                        </button>
+                    </div>
 
-                <!-- View Toggle & Starred Filter -->
-                <div class="flex items-center gap-2">
-                    <button id="filter-starred" class="px-3 py-1.5 rounded-md text-sm text-gray-500 hover:text-yellow-500 transition flex items-center gap-1" title="只看精选">
-                        <i class="far fa-star"></i> 精选 <span id="starred-count-badge" class="bg-gray-200 text-gray-600 text-xs px-1.5 py-0.5 rounded-full"></span>
-                    </button>
-                    <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
-                        <button id="view-grid" class="view-btn px-3 py-1.5 rounded-md text-sm bg-white shadow">
-                            <i class="fas fa-th-large"></i>
+                    <!-- View Toggle & Starred Filter -->
+                    <div class="flex items-center gap-2">
+                        <button id="filter-starred" class="px-3 py-1.5 rounded-md text-sm text-gray-500 hover:text-yellow-500 transition flex items-center gap-1" title="只看精选">
+                            <i class="far fa-star"></i> 精选 <span id="starred-count-badge" class="bg-gray-200 text-gray-600 text-xs px-1.5 py-0.5 rounded-full"></span>
                         </button>
-                        <button id="view-list" class="view-btn px-3 py-1.5 rounded-md text-sm text-gray-500">
-                            <i class="fas fa-list"></i>
-                        </button>
+                        <div class="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                            <button id="view-grid" class="view-btn px-3 py-1.5 rounded-md text-sm bg-white shadow">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button id="view-list" class="view-btn px-3 py-1.5 rounded-md text-sm text-gray-500">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
