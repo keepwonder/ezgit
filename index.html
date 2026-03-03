@@ -248,6 +248,18 @@
         </div>
     </div>
 
+    <!-- Custom Confirm Dialog -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl w-full max-w-sm shadow-2xl p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">确认操作</h3>
+            <p id="confirm-message" class="text-gray-600 mb-6"></p>
+            <div class="flex gap-3">
+                <button id="confirm-cancel" class="flex-1 py-2 border rounded-lg hover:bg-gray-50 transition">取消</button>
+                <button id="confirm-ok" class="flex-1 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">确定</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="hidden fixed bottom-4 right-4 bg-gray-900 text-white px-4 py-2 rounded-lg z-50"></div>
 
@@ -356,30 +368,28 @@
                 return;
             }
             
-            // 确认删除
-            if (!confirm(`确定要删除分类"${name}"吗？`)) {
-                return;
-            }
-            
-            // 从自定义分类中删除
-            delete customCategories[key];
-            delete categoryNames[key];
-            
-            // 保存到 localStorage
-            localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
-            
-            // 如果当前选中的是被删除的分类，重置为全部
-            if (currentCategory === key) {
-                currentCategory = 'all';
-            }
-            
-            // 更新UI
-            renderCategoryFilters();
-            updateCategorySelect();
-            updateStats();
-            render();
-            
-            showToast('分类已删除');
+            // 使用自定义确认对话框
+            showConfirm(`确定要删除分类"${name}"吗？`, () => {
+                // 从自定义分类中删除
+                delete customCategories[key];
+                delete categoryNames[key];
+                
+                // 保存到 localStorage
+                localStorage.setItem('ezgit-categories', JSON.stringify(customCategories));
+                
+                // 如果当前选中的是被删除的分类，重置为全部
+                if (currentCategory === key) {
+                    currentCategory = 'all';
+                }
+                
+                // 更新UI
+                renderCategoryFilters();
+                updateCategorySelect();
+                updateStats();
+                render();
+                
+                showToast('分类已删除');
+            });
         }
 
         // 更新分类下拉框
@@ -436,6 +446,50 @@
             input.value = '';
             
             showToast('分类已添加');
+        }
+
+        // 自定义确认对话框
+        let confirmCallback = null;
+        
+        function showConfirm(message, onConfirm, onCancel) {
+            const modal = document.getElementById('confirm-modal');
+            const messageEl = document.getElementById('confirm-message');
+            const okBtn = document.getElementById('confirm-ok');
+            const cancelBtn = document.getElementById('confirm-cancel');
+            
+            messageEl.textContent = message;
+            confirmCallback = onConfirm;
+            
+            modal.classList.remove('hidden');
+            
+            // 绑定一次性事件
+            const handleOk = () => {
+                modal.classList.add('hidden');
+                if (onConfirm) onConfirm();
+                cleanup();
+            };
+            
+            const handleCancel = () => {
+                modal.classList.add('hidden');
+                if (onCancel) onCancel();
+                cleanup();
+            };
+            
+            const cleanup = () => {
+                okBtn.removeEventListener('click', handleOk);
+                cancelBtn.removeEventListener('click', handleCancel);
+                modal.removeEventListener('click', handleOutsideClick);
+            };
+            
+            const handleOutsideClick = (e) => {
+                if (e.target === modal) {
+                    handleCancel();
+                }
+            };
+            
+            okBtn.addEventListener('click', handleOk);
+            cancelBtn.addEventListener('click', handleCancel);
+            modal.addEventListener('click', handleOutsideClick);
         }
 
         // 更新统计
@@ -736,13 +790,13 @@
 
         // 删除仓库
         function deleteRepo(id) {
-            if (!confirm('确定要删除这个仓库吗？')) return;
-            
-            repos = repos.filter(r => r.id !== id);
-            saveRepos();
-            updateStats();
-            render();
-            showToast('已删除');
+            showConfirm('确定要删除这个仓库吗？', () => {
+                repos = repos.filter(r => r.id !== id);
+                saveRepos();
+                updateStats();
+                render();
+                showToast('已删除');
+            });
         }
 
         // 重置表单
