@@ -428,24 +428,17 @@
 
         // 根据视口大小计算每页显示数量
         function calculateItemsPerPage() {
-            // 获取视口高度
-            const viewportHeight = window.innerHeight;
+            // 获取容器高度（仓库列表区域）
+            const mainContent = document.querySelector('.main-content');
+            if (!mainContent) return itemsPerPage;
             
-            // 计算可用内容区域高度（减去 header、stats、categories、footer 等）
-            const headerHeight = 72; // header 高度
-            const statsHeight = 80;  // stats 区域高度
-            const categoriesHeight = 80; // 分类筛选区域高度
-            const footerHeight = 200; // footer + 分页区域高度
-            const padding = 100; // 额外 padding
-            
-            const availableHeight = viewportHeight - headerHeight - statsHeight - categoriesHeight - footerHeight - padding;
+            // 获取 main-content 的可用高度
+            const mainRect = mainContent.getBoundingClientRect();
+            const availableHeight = mainRect.height - 200; // 减去分页控件和一些padding
             
             // 根据当前视图计算每个卡片的高度
-            const cardHeight = currentView === 'grid' ? 200 : 80; // 网格视图卡片约200px，列表视图约80px
+            const cardHeight = currentView === 'grid' ? 180 : 70; // 网格视图卡片约180px，列表视图约70px
             const gap = 16; // gap-4 = 16px
-            
-            // 计算可以显示的行数
-            const rows = Math.floor(availableHeight / (cardHeight + gap));
             
             // 根据视图计算每行显示的卡片数
             let cardsPerRow;
@@ -465,11 +458,28 @@
                 cardsPerRow = 1; // 列表视图每行1个
             }
             
-            // 计算每页显示数量（至少4个，最多20个）
-            const calculatedItems = Math.max(4, Math.min(20, rows * cardsPerRow));
+            // 计算可以显示的行数（至少1行）
+            const rows = Math.max(1, Math.floor(availableHeight / (cardHeight + gap)));
+            
+            // 计算每页显示数量
+            const calculatedItems = rows * cardsPerRow;
             
             itemsPerPage = calculatedItems;
             return itemsPerPage;
+        }
+        
+        // 重新计算分页（考虑填满页面）
+        function recalculatePagination() {
+            const oldItemsPerPage = itemsPerPage;
+            calculateItemsPerPage();
+            
+            // 如果数据总量可以一页显示完，就不分页
+            if (repos.length <= itemsPerPage) {
+                itemsPerPage = Math.max(itemsPerPage, repos.length);
+                currentPage = 1;
+            }
+            
+            return oldItemsPerPage !== itemsPerPage;
         }
         
         // 监听窗口大小变化
@@ -477,10 +487,7 @@
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                const oldItemsPerPage = itemsPerPage;
-                calculateItemsPerPage();
-                // 如果每页数量变化了，重新渲染
-                if (oldItemsPerPage !== itemsPerPage) {
+                if (recalculatePagination()) {
                     render();
                 }
             }, 200);
@@ -1212,6 +1219,12 @@
             
             emptyState.classList.add('hidden');
             
+            // 根据当前筛选后的数据量，动态调整每页数量
+            // 如果数据可以一页显示完，就显示所有
+            if (filteredRepos.length <= itemsPerPage) {
+                itemsPerPage = Math.max(filteredRepos.length, itemsPerPage);
+            }
+            
             // 分页计算（使用动态计算的 itemsPerPage）
             const totalPages = Math.ceil(filteredRepos.length / itemsPerPage);
             if (currentPage > totalPages) {
@@ -1219,7 +1232,7 @@
             }
             
             const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredRepos.length);
             const pageRepos = filteredRepos.slice(startIndex, endIndex);
             
             // 设置容器样式
@@ -1886,13 +1899,15 @@
 
         // 初始化
         async function init() {
-            // 初始化每页显示数量（根据页面大小自适应）
-            calculateItemsPerPage();
-            
+            // 先渲染一次以获取正确的布局
             renderCategoryFilters();
             updateCategorySelect();
             updateStats();
             toggleView(currentView);
+            
+            // 初始化每页显示数量（根据页面大小自适应）
+            recalculatePagination();
+            
             render();
             initDragAndDrop();
             
