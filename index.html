@@ -188,6 +188,9 @@
                 <h3 class="text-lg font-medium text-gray-900 mb-2">还没有收藏的仓库</h3>
                 <p class="text-gray-500 mb-4">添加你发现的有价值的 GitHub 项目</p>
             </div>
+            
+            <!-- 分页控件 -->
+            <div id="pagination-container" class="mt-6"></div>
         </section>
     </div>
 
@@ -403,6 +406,11 @@
         let currentCategory = 'all';
         let currentView = localStorage.getItem('ezgit-view') || 'grid';
         let editingRepoId = null;
+        
+        // 分页配置
+        const ITEMS_PER_PAGE = 8; // 每页显示数量
+        let currentPage = 1; // 当前页码
+        let filteredRepos = []; // 筛选后的数据
         let showOnlyStarred = false;
 
         // 加载自定义分类
@@ -1111,110 +1119,207 @@
 
         // 渲染
         function render() {
-            let filtered = repos;
+            // 筛选数据
+            filteredRepos = repos;
             
             // 分类筛选
             if (currentCategory !== 'all') {
-                filtered = filtered.filter(r => r.category === currentCategory);
+                filteredRepos = filteredRepos.filter(r => r.category === currentCategory);
             }
             
             // 精选筛选
             if (showOnlyStarred) {
-                filtered = filtered.filter(r => r.starred);
+                filteredRepos = filteredRepos.filter(r => r.starred);
             }
             
             // 搜索筛选
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
             if (searchTerm) {
-                filtered = filtered.filter(r => 
+                filteredRepos = filteredRepos.filter(r => 
                     r.name.toLowerCase().includes(searchTerm) ||
                     r.owner.toLowerCase().includes(searchTerm) ||
-                    (r.title || '').toLowerCase().includes(searchTerm)
+                    (r.title || '').toLowerCase().includes(searchTerm) ||
+                    (r.description || '').toLowerCase().includes(searchTerm)
                 );
             }
             
-            if (filtered.length === 0) {
+            if (filteredRepos.length === 0) {
                 repoList.innerHTML = '';
                 emptyState.classList.remove('hidden');
+                renderPagination(0);
                 return;
             }
             
             emptyState.classList.add('hidden');
             
+            // 分页计算
+            const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE);
+            if (currentPage > totalPages) {
+                currentPage = totalPages;
+            }
+            
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const pageRepos = filteredRepos.slice(startIndex, endIndex);
+            
+            // 设置容器样式
             if (currentView === 'grid') {
                 repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4';
             } else {
                 repoList.className = 'flex flex-col gap-3';
             }
             
-            repoList.innerHTML = filtered.map(r => {
+            // 渲染当前页的仓库
+            repoList.innerHTML = pageRepos.map(r => {
                 if (currentView === 'grid') {
-                    return `
-                        <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col h-full" draggable="true" data-id="${r.id}">
-                            <div class="flex items-start gap-3 flex-1">
-                                <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg flex-shrink-0" onerror="this.src='https://github.com/github.png'">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${categoryNames[r.category] || r.category}</span>
-                                        ${r.starred ? '<i class="fas fa-star text-yellow-400"></i>' : ''}
-                                    </div>
-                                    <a href="${r.url}" target="_blank" class="font-medium text-gray-900 hover:text-green-600 truncate block">${r.owner}/${r.name}</a>
-                                    ${r.description ? `<p class="text-xs text-gray-500 mt-1 truncate">${r.description}</p>` : ''}
-                                    ${r.title ? `<p class="text-sm text-gray-600 mt-2 line-clamp-2">${r.title}</p>` : ''}
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between mt-3 pt-3 border-t">
-                                <div class="flex items-center gap-3 text-xs text-gray-400">
-                                    ${r.language ? `<span><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
-                                    ${r.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${r.stars}</span>` : ''}
-                                </div>
-                                <div class="flex gap-1">
-                                    <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
-                                        <i class="fas fa-pen text-xs"></i>
-                                    </button>
-                                    <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="w-8 h-8 flex items-center justify-center ${r.starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500 hover:bg-yellow-50 rounded transition" title="${r.starred ? '取消精选' : '精选'}">
-                                        <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
-                                    </button>
-                                    <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="删除">
-                                        <i class="fas fa-trash text-xs"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    return renderGridCard(r);
                 } else {
-                    return `
-                        <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex items-center gap-4" draggable="true" data-id="${r.id}">
-                            <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg" onerror="this.src='https://github.com/github.png'">
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${categoryNames[r.category] || r.category}</span>
-                                    ${r.starred ? '<i class="fas fa-star text-yellow-400"></i>' : ''}
-                                    <a href="${r.url}" target="_blank" class="font-medium text-gray-900 hover:text-green-600 truncate">${r.owner}/${r.name}</a>
-                                </div>
-                                ${r.title ? `<p class="text-sm text-gray-600 mt-1">${r.title}</p>` : ''}
-                            </div>
-                            <div class="flex items-center gap-1">
-                                ${r.language ? `<span class="text-xs text-gray-400 mr-2"><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
-                                <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
-                                    <i class="fas fa-pen text-xs"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="w-8 h-8 flex items-center justify-center ${r.starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500 hover:bg-yellow-50 rounded transition" title="${r.starred ? '取消精选' : '精选'}">
-                                    <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="删除">
-                                    <i class="fas fa-trash text-xs"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
+                    return renderListCard(r);
                 }
             }).join('');
+            
+            // 渲染分页控件
+            renderPagination(filteredRepos.length, totalPages);
             
             // 初始化拖拽
             initDragAndDrop();
         }
+        
+        // 渲染网格卡片
+        function renderGridCard(r) {
+            return `
+                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex flex-col h-full" draggable="true" data-id="${r.id}">
+                    <div class="flex items-start gap-3 flex-1">
+                        <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg flex-shrink-0" onerror="this.src='https://github.com/github.png'">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${categoryNames[r.category] || r.category}</span>
+                                ${r.starred ? '<i class="fas fa-star text-yellow-400"></i>' : ''}
+                            </div>
+                            <a href="${r.url}" target="_blank" class="font-medium text-gray-900 hover:text-green-600 truncate block">${r.owner}/${r.name}</a>
+                            ${r.description ? `<p class="text-xs text-gray-500 mt-1 truncate">${r.description}</p>` : ''}
+                            ${r.title ? `<p class="text-sm text-gray-600 mt-2 line-clamp-2">${r.title}</p>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mt-3 pt-3 border-t">
+                        <div class="flex items-center gap-3 text-xs text-gray-400">
+                            ${r.language ? `<span><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
+                            ${r.stars ? `<span><i class="fas fa-star text-yellow-400 mr-1"></i>${r.stars}</span>` : ''}
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
+                                <i class="fas fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="w-8 h-8 flex items-center justify-center ${r.starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500 hover:bg-yellow-50 rounded transition" title="${r.starred ? '取消精选' : '精选'}">
+                                <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="删除">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 渲染列表卡片
+        function renderListCard(r) {
+            return `
+                <div class="repo-card bg-white p-4 rounded-xl shadow-sm border flex items-center gap-4" draggable="true" data-id="${r.id}">
+                    <img src="https://github.com/${r.owner}.png" class="w-10 h-10 rounded-lg" onerror="this.src='https://github.com/github.png'">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">${categoryNames[r.category] || r.category}</span>
+                            ${r.starred ? '<i class="fas fa-star text-yellow-400"></i>' : ''}
+                            <a href="${r.url}" target="_blank" class="font-medium text-gray-900 hover:text-green-600 truncate">${r.owner}/${r.name}</a>
+                        </div>
+                        ${r.title ? `<p class="text-sm text-gray-600 mt-1">${r.title}</p>` : ''}
+                    </div>
+                    <div class="flex items-center gap-1">
+                        ${r.language ? `<span class="text-xs text-gray-400 mr-2"><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
+                        <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="编辑">
+                            <i class="fas fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="w-8 h-8 flex items-center justify-center ${r.starred ? 'text-yellow-500' : 'text-gray-400'} hover:text-yellow-500 hover:bg-yellow-50 rounded transition" title="${r.starred ? '取消精选' : '精选'}">
+                            <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="删除">
+                            <i class="fas fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 渲染分页控件
+        function renderPagination(totalItems, totalPages) {
+            const paginationContainer = document.getElementById('pagination-container');
+            if (!paginationContainer) return;
+            
+            if (totalPages <= 1) {
+                paginationContainer.innerHTML = totalItems > 0 ? `<p class="text-sm text-gray-500 text-center">共 ${totalItems} 个仓库</p>` : '';
+                return;
+            }
+            
+            let html = '<div class="flex items-center justify-center gap-2">';
+            
+            // 上一页
+            html += `<button onclick="window.goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm ${currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}"><i class="fas fa-chevron-left"></i></button>`;
+            
+            // 页码
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            if (startPage > 1) {
+                html += `<button onclick="window.goToPage(1)" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">1</button>`;
+                if (startPage > 2) {
+                    html += `<span class="text-gray-400">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                if (i === currentPage) {
+                    html += `<button class="px-3 py-1.5 rounded-lg text-sm bg-green-600 text-white">${i}</button>`;
+                } else {
+                    html += `<button onclick="window.goToPage(${i})" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">${i}</button>`;
+                }
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    html += `<span class="text-gray-400">...</span>`;
+                }
+                html += `<button onclick="window.goToPage(${totalPages})" class="px-3 py-1.5 rounded-lg border text-sm bg-white text-gray-700 hover:bg-gray-50">${totalPages}</button>`;
+            }
+            
+            // 下一页
+            html += `<button onclick="window.goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border text-sm ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}"><i class="fas fa-chevron-right"></i></button>`;
+            
+            html += '</div>';
+            
+            // 添加统计信息
+            html += `<p class="text-sm text-gray-500 text-center mt-2">第 ${currentPage}/${totalPages} 页，共 ${totalItems} 个仓库</p>`;
+            
+            paginationContainer.innerHTML = html;
+        }
+        
+        // 跳转到指定页
+        window.goToPage = function(page) {
+            const totalPages = Math.ceil(filteredRepos.length / ITEMS_PER_PAGE);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            render();
+            
+            // 滚动到顶部
+            document.querySelector('.main-content').scrollIntoView({ behavior: 'smooth' });
+        };
 
         // 显示提示
         function showToast(msg, type = 'info') {
@@ -1503,12 +1608,14 @@
 
         // 搜索
         function searchRepos() {
+            currentPage = 1; // 搜索时重置到第一页
             render();
         }
 
         // 筛选分类
         function filterByCategory(category) {
             currentCategory = category;
+            currentPage = 1; // 切换分类时重置到第一页
             
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.category === category) {
@@ -1526,6 +1633,7 @@
         // 切换精选筛选
         function toggleStarredFilter() {
             showOnlyStarred = !showOnlyStarred;
+            currentPage = 1; // 切换精选筛选时重置到第一页
             
             const btn = document.getElementById('filter-starred');
             const starredCount = repos.filter(r => r.starred).length;
@@ -1546,6 +1654,7 @@
         // 切换视图
         function toggleView(view) {
             currentView = view;
+            currentPage = 1; // 切换视图时重置到第一页
             localStorage.setItem('ezgit-view', view);
             
             const gridBtn = document.getElementById('view-grid');
