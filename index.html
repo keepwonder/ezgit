@@ -752,8 +752,8 @@
             } else {
                 btn.classList.remove('text-yellow-500', 'bg-yellow-50');
                 btn.classList.add('text-gray-500');
-                const badgeClass = starredCount > 0 ? 'bg-yellow-100 text-yellow-600' : 'bg-gray-200 text-gray-600';
-                btn.innerHTML = `<i class="far fa-star"></i> 精选 <span class="${badgeClass} text-xs px-1.5 py-0.5 rounded-full">${starredCount}</span>`;
+                // 取消筛选时重新调用updateStats来更新正确的徽章样式
+                updateStats();
             }
             
             render();
