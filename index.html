@@ -499,6 +499,10 @@
                     repo.title = title;
                     repo.notes = notes;
                     repo.starred = starred;
+                    // 从预览区域获取 GitHub API 数据
+                    repo.description = document.getElementById('preview-desc').textContent || '';
+                    repo.language = document.getElementById('preview-lang').textContent || '';
+                    repo.stars = document.getElementById('preview-stars').textContent || '';
                     
                     saveRepos();
                     updateStats();
