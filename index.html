@@ -101,9 +101,6 @@
                     <button data-category="infrastructure" class="filter-btn px-4 py-2 rounded-full text-sm font-medium bg-white text-gray-600 border border-gray-200">
                         <i class="fas fa-cubes mr-1"></i> 基础建设
                     </button>
-                    <button id="add-category-btn" class="px-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-500 border border-dashed border-gray-300 hover:bg-gray-200 hover:text-gray-700 transition">
-                        <i class="fas fa-plus mr-1"></i> 添加分类
-                    </button>
                 </div>
                 
                 <!-- View Toggle & Starred Filter -->
@@ -299,9 +296,9 @@
         // 渲染分类筛选按钮
         function renderCategoryFilters() {
             const container = document.getElementById('category-filters');
-            const addBtn = document.getElementById('add-category-btn');
+            const allBtn = container.querySelector('[data-category="all"]');
             
-            // 清除现有分类按钮（保留"全部"和添加按钮）
+            // 清除现有分类按钮（保留"全部"按钮）
             container.querySelectorAll('.filter-btn:not([data-category="all"])').forEach(btn => btn.remove());
             
             // 添加所有分类按钮
@@ -311,7 +308,7 @@
                 btn.dataset.category = key;
                 btn.innerHTML = `<i class="fas fa-tag mr-1"></i> ${name}`;
                 btn.onclick = () => filterByCategory(key);
-                container.insertBefore(btn, addBtn);
+                container.appendChild(btn);
             });
         }
 
@@ -839,13 +836,7 @@
             }
         });
 
-        // 添加分类按钮事件
-        document.getElementById('add-category-btn').addEventListener('click', () => {
-            addModal.classList.remove('hidden');
-            document.getElementById('custom-category-input').classList.remove('hidden');
-            document.getElementById('new-category-name').focus();
-        });
-
+        // 保存自定义分类
         document.getElementById('save-category-btn').addEventListener('click', addCustomCategory);
         document.getElementById('cancel-category-btn').addEventListener('click', () => {
             document.getElementById('custom-category-input').classList.add('hidden');
