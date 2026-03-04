@@ -1224,6 +1224,11 @@
                 repoList.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 document.getElementById('load-more-btn').classList.add('hidden');
+                // 清除搜索提示
+                const existingSearchInfo = document.querySelector('.search-info');
+                if (existingSearchInfo) {
+                    existingSearchInfo.remove();
+                }
                 return;
             }
 
