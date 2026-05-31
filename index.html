@@ -287,6 +287,97 @@
         .user-menu.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
         .user-menu:not(.hidden) { opacity: 1; transform: scale(1); pointer-events: auto; }
 
+        .modal-backdrop {
+            background: rgba(21, 23, 19, 0.48);
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background:
+                linear-gradient(90deg, rgba(21, 23, 19, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(21, 23, 19, 0.03) 1px, transparent 1px),
+                #fffdf8;
+            background-size: 42px 42px;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-header,
+        .modal-footer {
+            border-color: var(--line);
+        }
+
+        .field-label {
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .required-mark {
+            color: var(--clay);
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(252, 250, 245, 0.78);
+            color: var(--ink);
+            font-size: 14px;
+            transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+        }
+
+        .form-input::placeholder {
+            color: rgba(98, 104, 95, 0.62);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(4, 122, 85, 0.52);
+            background: var(--paper-soft);
+            box-shadow: 0 0 0 3px rgba(4, 122, 85, 0.1);
+        }
+
+        .secondary-action,
+        .danger-action {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(252, 250, 245, 0.78);
+            color: var(--ink);
+            font-weight: 900;
+            transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        .secondary-action:hover {
+            transform: translateY(-1px);
+            border-color: rgba(4, 122, 85, 0.36);
+            background: var(--paper-soft);
+        }
+
+        .danger-action {
+            border-color: rgba(143, 77, 53, 0.34);
+            background: rgba(143, 77, 53, 0.08);
+            color: var(--clay);
+        }
+
+        .danger-action:hover {
+            background: rgba(143, 77, 53, 0.14);
+        }
+
+        .note-panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(4, 122, 85, 0.07);
+            color: var(--emerald-strong);
+        }
+
+        .checkbox-control {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--emerald);
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
@@ -541,45 +632,48 @@
     </footer>
 
     <!-- Add Modal -->
-    <div id="add-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl max-h-[85vh] overflow-y-auto">
-            <div class="px-5 py-4 border-b flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-900">添加仓库</h3>
-                <button id="close-modal" class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100">
+    <div id="add-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-panel w-full max-w-md max-h-[85vh] overflow-y-auto">
+            <div class="modal-header px-5 py-4 border-b flex items-center justify-between">
+                <div>
+                    <p class="label-mono">Repository</p>
+                    <h3 class="text-lg font-black">添加仓库</h3>
+                </div>
+                <button id="close-modal" class="icon-button w-8 h-8 flex items-center justify-center" title="关闭">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <div class="px-5 py-4">
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">GitHub URL <span class="text-red-500">*</span></label>
+                    <label class="field-label block mb-1.5">GitHub URL <span class="required-mark">*</span></label>
                     <div class="flex gap-2">
                         <input type="text" id="repo-url" placeholder="https://github.com/user/repo"
-                            class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                            class="form-input flex-1 px-3 py-2"
                             onblur="window.fetchRepoInfo&&window.fetchRepoInfo()">
-                        <button id="fetch-btn" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm">
+                        <button id="fetch-btn" class="secondary-action px-3 py-2 text-sm" title="获取仓库信息">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </div>
 
-                <div id="repo-preview" class="hidden mb-3 bg-gray-50 rounded-lg p-3 border">
+                <div id="repo-preview" class="note-panel hidden mb-3 p-3">
                     <div class="flex items-center gap-3">
-                        <img id="preview-avatar" src="" class="w-9 h-9 rounded-lg bg-white">
+                        <img id="preview-avatar" src="" class="repo-avatar w-9 h-9">
                         <div class="flex-1 min-w-0">
-                            <p id="preview-name" class="font-medium text-sm truncate"></p>
-                            <p id="preview-desc" class="text-xs text-gray-500 truncate"></p>
+                            <p id="preview-name" class="font-black text-sm truncate"></p>
+                            <p id="preview-desc" class="text-xs truncate" style="color: var(--muted);"></p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                        <span><i class="fas fa-star text-yellow-400 mr-1"></i><span id="preview-stars"></span></span>
+                    <div class="card-meta flex items-center gap-3 mt-2">
+                        <span><i class="fas fa-star mr-1" style="color: var(--amber);"></i><span id="preview-stars"></span></span>
                         <span><i class="fas fa-code mr-1"></i><span id="preview-lang"></span></span>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">分类 <span class="text-red-500">*</span></label>
-                    <select id="repo-category" class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <label class="field-label block mb-1.5">分类 <span class="required-mark">*</span></label>
+                    <select id="repo-category" class="form-input px-3 py-2">
                         <option value="">选择分类...</option>
                         <option value="tools">🔧 效率工具</option>
                         <option value="learning">📚 学习资源</option>
@@ -588,62 +682,64 @@
                     </select>
                     <div id="custom-category-input" class="hidden mt-2">
                         <div class="flex gap-2">
-                            <input type="text" id="new-category-name" placeholder="分类名称" class="flex-1 px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <button id="save-category-btn" class="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700">添加</button>
-                            <button id="cancel-category-btn" class="px-3 py-2 bg-gray-100 text-gray-600 text-sm rounded-lg hover:bg-gray-200">取消</button>
+                            <input type="text" id="new-category-name" placeholder="分类名称" class="form-input flex-1 px-3 py-2">
+                            <button id="save-category-btn" class="text-button primary-action px-3 py-2 text-sm">添加</button>
+                            <button id="cancel-category-btn" class="secondary-action px-3 py-2 text-sm">取消</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">一句话评价</label>
+                    <label class="field-label block mb-1.5">一句话评价</label>
                     <input type="text" id="repo-title" placeholder="为什么推荐这个仓库？"
-                        class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        class="form-input px-3 py-2">
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">详细笔记</label>
+                    <label class="field-label block mb-1.5">详细笔记</label>
                     <textarea id="repo-notes" placeholder="更多想法..." rows="3"
-                        class="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"></textarea>
+                        class="form-input px-3 py-2 resize-none"></textarea>
                 </div>
 
                 <div class="flex items-center gap-2 mb-4">
-                    <input type="checkbox" id="repo-starred" class="w-4 h-4 text-green-600 rounded">
-                    <label for="repo-starred" class="text-sm text-gray-700">标记为精选</label>
+                    <input type="checkbox" id="repo-starred" class="checkbox-control">
+                    <label for="repo-starred" class="text-sm font-bold" style="color: var(--muted);">标记为精选</label>
                 </div>
 
                 <div class="flex gap-3">
-                    <button id="cancel-btn" class="flex-1 py-2 border rounded-lg hover:bg-gray-50">取消</button>
-                    <button id="save-btn" class="flex-1 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">添加</button>
+                    <button id="cancel-btn" class="secondary-action flex-1 py-2">取消</button>
+                    <button id="save-btn" class="text-button primary-action flex-1 py-2">添加</button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Custom Confirm Dialog -->
-    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl w-full max-w-sm shadow-2xl p-6">
-            <h3 class="text-lg font-bold text-gray-900 mb-2">确认操作</h3>
-            <p id="confirm-message" class="text-gray-600 mb-6"></p>
+    <div id="confirm-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-panel w-full max-w-sm p-6">
+            <p class="label-mono">Confirm</p>
+            <h3 class="text-lg font-black mb-2">确认操作</h3>
+            <p id="confirm-message" class="text-sm mb-6" style="color: var(--muted);"></p>
             <div class="flex gap-3">
-                <button id="confirm-cancel" class="flex-1 py-2 border rounded-lg hover:bg-gray-50 transition">取消</button>
-                <button id="confirm-ok" class="flex-1 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">确定</button>
+                <button id="confirm-cancel" class="secondary-action flex-1 py-2">取消</button>
+                <button id="confirm-ok" class="danger-action flex-1 py-2">确定</button>
             </div>
         </div>
     </div>
 
     <!-- Token Input Modal -->
-    <div id="token-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl w-full max-w-md shadow-2xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900">GitHub 登录</h3>
-                <p class="text-sm text-gray-500 mt-1">输入 Personal Access Token 以同步数据</p>
+    <div id="token-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-panel w-full max-w-md overflow-hidden">
+            <div class="modal-header px-6 py-4 border-b">
+                <p class="label-mono">GitHub Sync</p>
+                <h3 class="text-lg font-black">GitHub 登录</h3>
+                <p class="text-sm mt-1" style="color: var(--muted);">输入 Personal Access Token 以同步数据</p>
             </div>
 
             <div class="px-6 py-4">
-                <div class="bg-blue-50 rounded-lg p-3 mb-4">
-                    <p class="text-sm text-blue-800 font-medium mb-2">获取 Token 步骤：</p>
-                    <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
+                <div class="note-panel p-3 mb-4">
+                    <p class="text-sm font-black mb-2">获取 Token 步骤：</p>
+                    <ol class="text-sm space-y-1 list-decimal list-inside">
                         <li>访问 <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-blue-900">github.com/settings/tokens</a></li>
                         <li>点击 Generate new token (classic)</li>
                         <li>勾选 <strong>gist</strong> 权限</li>
@@ -651,16 +747,16 @@
                     </ol>
                 </div>
 
-                <label class="block text-sm font-medium text-gray-700 mb-2">GitHub Token</label>
+                <label class="field-label block mb-2">GitHub Token</label>
                 <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx"
-                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm"
+                    class="form-input px-4 py-2.5"
                     autocomplete="off">
-                <p class="text-xs text-gray-400 mt-2">Token 仅存储在浏览器本地，不会上传到任何服务器</p>
+                <p class="label-mono mt-2 normal-case" style="text-transform: none;">Token 仅存储在浏览器本地，不会上传到任何服务器</p>
             </div>
 
-            <div class="px-6 py-4 bg-gray-50 flex gap-3">
-                <button id="token-cancel" class="flex-1 py-2.5 border border-gray-300 rounded-lg hover:bg-white transition text-sm font-medium text-gray-700">取消</button>
-                <button id="token-confirm" class="flex-1 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">登录</button>
+            <div class="modal-footer px-6 py-4 border-t flex gap-3">
+                <button id="token-cancel" class="secondary-action flex-1 py-2.5 text-sm">取消</button>
+                <button id="token-confirm" class="text-button primary-action flex-1 py-2.5 text-sm">登录</button>
             </div>
         </div>
     </div>
