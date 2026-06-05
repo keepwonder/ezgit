@@ -3,6 +3,34 @@ import { kv } from '@vercel/kv';
 // 简单的 token 验证
 const API_TOKEN = process.env.ezgit_API_TOKEN || 'ezgit-secret-token-2026';
 
+function parseGitHubRepo(url) {
+  if (!url || typeof url !== 'string') return null;
+
+  const normalizedUrl = url.trim().replace(/^git@github\.com:/i, 'https://github.com/');
+  const match = normalizedUrl.match(/^(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/?#\s]+)\/([^\/?#\s]+)/i);
+  if (!match) return null;
+
+  const owner = match[1];
+  const name = match[2].replace(/\.git$/i, '');
+  if (!owner || !name) return null;
+
+  return {
+    owner,
+    name,
+    url: `https://github.com/${owner}/${name}`,
+    key: `${owner}/${name}`.toLowerCase()
+  };
+}
+
+function getRepoKey(repo) {
+  if (repo.owner && repo.name) {
+    return `${repo.owner}/${repo.name.replace(/\.git$/i, '')}`.toLowerCase();
+  }
+
+  const parsedRepo = parseGitHubRepo(repo.url);
+  return parsedRepo ? parsedRepo.key : '';
+}
+
 export default async function handler(req, res) {
   // 设置 CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -35,17 +63,25 @@ export default async function handler(req, res) {
       }
       
       case 'POST': {
+        const parsedRepo = parseGitHubRepo(req.body?.url);
+        if (!parsedRepo) {
+          return res.status(400).json({ error: 'Invalid GitHub URL' });
+        }
+
         // 添加新仓库
         const newRepo = {
           id: Date.now().toString(),
           ...req.body,
+          url: parsedRepo.url,
+          owner: parsedRepo.owner,
+          name: parsedRepo.name,
           addedAt: new Date().toISOString()
         };
         
         const existing = await kv.get(key) || [];
         
         // 检查是否已存在
-        const exists = existing.find(r => r.url === newRepo.url);
+        const exists = existing.find(r => getRepoKey(r) === parsedRepo.key);
         if (exists) {
           return res.status(409).json({ error: 'Repository already exists', repo: exists });
         }

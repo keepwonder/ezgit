@@ -1780,10 +1780,25 @@
                 return;
             }
 
+            const parsedRepo = parseGitHubRepo(url);
+            if (!parsedRepo) {
+                showToast('无效的 GitHub URL', 'error');
+                return;
+            }
+
+            const duplicateRepo = repos.find(r => r.id !== editingRepoId && getRepoKey(r) === parsedRepo.key);
+            if (duplicateRepo) {
+                showToast(`仓库已存在：${duplicateRepo.owner}/${duplicateRepo.name}`, 'warning');
+                return;
+            }
+
             // 编辑模式
             if (editingRepoId) {
                 const repo = repos.find(r => r.id === editingRepoId);
                 if (repo) {
+                    repo.url = parsedRepo.url;
+                    repo.owner = parsedRepo.owner;
+                    repo.name = parsedRepo.name;
                     repo.category = category;
                     repo.title = title;
                     repo.notes = notes;
@@ -1808,17 +1823,11 @@
             }
 
             // 添加模式
-            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-            if (!match) {
-                showToast('无效的 GitHub URL', 'error');
-                return;
-            }
-
             repos.unshift({
                 id: Date.now().toString(),
-                url: url.replace(/\.git$/, ''),
-                owner: match[1],
-                name: match[2].replace(/\.git$/, ''),
+                url: parsedRepo.url,
+                owner: parsedRepo.owner,
+                name: parsedRepo.name,
                 description: document.getElementById('preview-desc').textContent || '',
                 language: document.getElementById('preview-lang').textContent || '',
                 stars: document.getElementById('preview-stars').textContent || '',
@@ -1839,16 +1848,41 @@
             resetForm();
         }
 
+        function parseGitHubRepo(url) {
+            const normalizedUrl = url.trim().replace(/^git@github\.com:/i, 'https://github.com/');
+            const match = normalizedUrl.match(/^(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/?#\s]+)\/([^\/?#\s]+)/i);
+            if (!match) return null;
+
+            const owner = match[1];
+            const name = match[2].replace(/\.git$/i, '');
+            if (!owner || !name) return null;
+
+            return {
+                owner,
+                name,
+                url: `https://github.com/${owner}/${name}`,
+                key: `${owner}/${name}`.toLowerCase()
+            };
+        }
+
+        function getRepoKey(repo) {
+            if (repo.owner && repo.name) {
+                return `${repo.owner}/${repo.name.replace(/\.git$/i, '')}`.toLowerCase();
+            }
+
+            const parsedRepo = repo.url ? parseGitHubRepo(repo.url) : null;
+            return parsedRepo ? parsedRepo.key : '';
+        }
+
         // 获取仓库信息
         async function fetchRepoInfo() {
             const url = document.getElementById('repo-url').value.trim();
             if (!url) return;
 
-            const match = url.match(/github\.com\/([^\/]+)\/([^\/]+)/);
-            if (!match) return;
+            const parsedRepo = parseGitHubRepo(url);
+            if (!parsedRepo) return;
 
-            const [, owner, name] = match;
-            const cleanName = name.replace(/\.git$/, '');
+            const { owner, name: cleanName } = parsedRepo;
 
             // 显示基础信息（头像和名称）
             document.getElementById('preview-avatar').src = `https://github.com/${owner}.png`;
