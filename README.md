@@ -4,7 +4,9 @@
 
 一款简洁优雅的 GitHub 仓库收藏与管理工具，帮助你整理、分类和追踪有价值的开源项目。
 
-🌐 **在线体验**: https://ezgit.keepwonder.top
+🌐 **在线体验**: https://ezgit.kiang.website
+
+> 原域名 `ezgit.keepwonder.top` 已弃用，主域名统一迁移到 `kiang.website`。Vercel 项目 `prj_QLuxLuJWoXdsgIaQdehfQSHIbXZl`，Cloudflare CNAME 指向 Vercel。
 
 ---
 
@@ -73,12 +75,17 @@
 
 ```
 ezgit/
-├── index.html          # 主页面
+├── index.html              # 主页面（单文件 HTML + Tailwind + Vanilla JS）
 ├── data/
-│   └── repos.json      # 默认仓库数据
+│   └── repos.json          # 默认仓库数据
 ├── api/
-│   └── repos.js        # API 接口（预留）
-└── README.md           # 项目说明
+│   └── repos.js            # Vercel Serverless Function（预留，未接入前端）
+├── ezgit-cloud-sync.js     # GitHub Gist 同步逻辑
+├── ezgit-integration.js    # GitHub OAuth / 集成
+├── github-collector.js     # 仓库信息采集
+├── package.json            # @vercel/kv 依赖（给 api/repos.js 用）
+├── vercel.json             # Vercel 构建配置
+└── README.md               # 项目说明
 ```
 
 ---
@@ -88,7 +95,9 @@ ezgit/
 - **前端**: HTML5 + Tailwind CSS + Vanilla JavaScript
 - **样式**: Tailwind CSS CDN
 - **图标**: Font Awesome 6
-- **部署**: Vercel
+- **部署**: Vercel + Cloudflare
+- **云端同步**: GitHub Gist API
+- **视觉系统**: Kiang（`--paper:#f7f2e8` / `--emerald:#047a55`）
 
 ---
 
@@ -121,4 +130,4 @@ MIT License © 2026 Kiang
 
 ---
 
-Made with ❤️ by [Kiang](https://keepwonder.top)
+Made with ❤️ by [Kiang](https://kiang.website)
