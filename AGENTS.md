@@ -5,13 +5,13 @@
 
 ## 0. 一句话定位
 
-个人 GitHub 仓库收藏与管理工具（单文件 HTML + Tailwind CDN + Vanilla JS）。数据目前存在浏览器 `localStorage`，云端同步走 GitHub Gist API。**已部署**到 Vercel。
+个人 GitHub 仓库收藏与管理工具（单文件 HTML + 内联 CSS/JS + Vanilla JS，零外部 CDN）。数据目前存在浏览器 `localStorage`，云端同步走 GitHub Gist API。**已部署**到 Vercel。视觉体系与主站 / EzTutorial 对齐（白纸面、衬线标题、emerald、4/8 律、深浅色）。
 
 ## 1. 项目结构
 
 ```
 ezgit/
-├── index.html              # 单文件前端（~2273 行，UI + 逻辑全在内）
+├── index.html              # 单文件前端（UI + 逻辑 + 内联 SVG sprite）
 ├── api/
 │   └── repos.js            # Vercel Serverless Function（预留，目前前端未调用）
 ├── data/
@@ -30,6 +30,7 @@ ezgit/
 | 项 | 状态 |
 | --- | --- |
 | 前端 | ✅ 已部署，https://ezgit.kiang.website 可访问 |
+| 视觉 | ✅ 已对齐主站 / EzTutorial（白纸面 + emerald + 深浅色） |
 | 后端 API | ⚠️ 预留，未接入前端 |
 | Vercel KV | ⚠️ 未绑定（如果未来启用 api/repos.js 需要） |
 | Git 集成 | ✅ 已连 `keepwonder/ezgit`，`main` 自动部署 |
@@ -79,9 +80,12 @@ git push
 
 | Key | 内容 |
 | --- | --- |
-| `ezgit_categories` | 自定义分类 |
-| `ezgit_repos` | 收藏的仓库列表 |
-| `ezgit_settings` | 用户设置 |
+| `ezgit-categories` | 自定义分类 |
+| `ezgit-repos` | 收藏的仓库列表 |
+| `ezgit-view` | 列表 / 网格视图偏好 |
+| `ezgit_gist_id` | 当前 Gist ID |
+| `github_token` | GitHub Token（仅浏览器本地） |
+| `kiang-theme` | 手动主题（light / dark，与主站共用键名） |
 
 **不要改 key 名**，否则用户数据丢失。
 
@@ -106,7 +110,7 @@ git push
 
 ## 6. 不要做的事
 
-- ❌ 直接 `file://` 打开 `index.html`（Tailwind CDN 可能 CORS 失败）
+- ❌ 直接 `file://` 打开 `index.html`（OAuth / Gist / 头像请求在 file:// 下不可靠）
 - ❌ 把 GitHub Token 写进代码或 commit
 - ❌ 改 localStorage key 名（丢数据）
 - ❌ 启用 `api/repos.js` 但不改 fallback token（安全漏洞）
@@ -133,5 +137,5 @@ vercel deploy --prod --yes --non-interactive < /dev/null
 
 - **上游**：依赖 GitHub API（用户 token）
 - **下游**：主页 `site/projects.json` 有 ezgit 条目（截图/链接）
-- **风格**：Kiang 视觉系统（米色调）
+- **风格**：Kiang 视觉系统（白纸面 + emerald，与主站 / EzTutorial 同源）
 - **注意**：和 `ezgit-remote` 这个旧目录名无关——目录已改名为 `ezgit`，与仓名一致

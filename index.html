@@ -3,57 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EzGit - 我的 GitHub 精选仓库</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='64' rx='12' fill='%23151713'/%3E%3Cg transform='translate(12 12) scale(1.6667)' fill='%23fcfaf5'%3E%3Cpath d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/g%3E%3C/svg%3E">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        // 尽早应用保存的主题，避免首屏闪白（与主站共用 kiang-theme 约定）
+        (function () {
+            try {
+                var saved = localStorage.getItem('kiang-theme');
+                if (saved === 'dark' || saved === 'light') {
+                    document.documentElement.setAttribute('data-theme', saved);
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <title>EzGit · 我的 GitHub 仓库索引</title>
+    <meta name="description" content="EzGit 是一个本地优先的 GitHub 仓库收藏夹：按分类归档、写下评价、拖拽排序，可选同步到私有 Gist。">
+    <link rel="canonical" href="https://ezgit.kiang.website/">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='64' height='64' rx='12' fill='%23151713'/%3E%3Cg transform='translate(12 12) scale(1.6667)' fill='%23ffffff'%3E%3Cpath d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/g%3E%3C/svg%3E">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#12140f" media="(prefers-color-scheme: dark)">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="EzGit">
+    <meta property="og:title" content="EzGit · 我的 GitHub 仓库索引">
+    <meta property="og:description" content="把值得收藏的 GitHub 仓库整理成自己的索引：分类、精选、评价、Gist 同步。">
+    <meta property="og:url" content="https://ezgit.kiang.website/">
+    <meta property="og:image" content="https://kiang.website/og/ezgit.jpg">
+    <meta property="og:locale" content="zh_CN">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="EzGit · 我的 GitHub 仓库索引">
+    <meta name="twitter:description" content="把值得收藏的 GitHub 仓库整理成自己的索引。">
+    <meta name="twitter:image" content="https://kiang.website/og/ezgit.jpg">
+
+    <link rel="preconnect" href="https://github.com">
+    <link rel="preconnect" href="https://avatars.githubusercontent.com">
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "EzGit",
+            "url": "https://ezgit.kiang.website/",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Web",
+            "description": "本地优先的 GitHub 仓库收藏夹，支持分类、精选、拖拽排序与 Gist 同步。",
+            "author": { "@type": "Person", "name": "Kiang", "url": "https://kiang.website/" }
+        }
+    </script>
+
     <style>
+        /* ============================================================
+           EzGit · 视觉体系与 kiang.website / EzTutorial 对齐
+           - 4 角色字色 / 4 档字号 / 3 档字重 / 4 档圆角 / 8 档间距
+           - 断点 980 / 640，白纸面，emerald 单一品牌色
+           - 暗色跟随系统，可用 header 按钮覆盖（kiang-theme）
+           ============================================================ */
+
         :root {
-            --paper: #f7f2e8;
-            --paper-soft: #fcfaf5;
+            color-scheme: light;
+
+            /* 字色 token */
             --ink: #151713;
             --muted: #62685f;
             --line: rgba(21, 23, 19, 0.14);
             --emerald: #047a55;
             --emerald-strong: #035f43;
             --amber: #bd6b1b;
-            --clay: #8f4d35;
-            --mist: #dfe7df;
-            --shadow: 0 22px 70px rgba(43, 36, 24, 0.14);
-            --radius: 8px;
-            --max: 1160px;
+            --on-image: #ffffff;
+            --mist: #f1f1ef;
+
+            /* 面 */
+            --paper: #ffffff;
+            --surface: #ffffff;
+            --surface-blur: rgba(255, 255, 255, 0.86);
+            --overlay: rgba(21, 23, 19, 0.48);
+            --hover: rgba(21, 23, 19, 0.04);
+            --emerald-wash: rgba(4, 122, 85, 0.08);
+            --shadow-lift: 0 2px 4px rgba(43, 36, 24, 0.05), 0 12px 32px rgba(43, 36, 24, 0.1);
+            --shadow-deep: 0 4px 8px rgba(43, 36, 24, 0.05), 0 24px 56px rgba(43, 36, 24, 0.13);
+
+            /* 字族（与主站同源） */
+            --font-display: Georgia, "Times New Roman", "Songti SC", serif;
+            --font-body: "Avenir Next", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            --font-mono: "SF Mono", Menlo, Consolas, monospace;
+
+            /* 字号：4 档 */
+            --fs-display: clamp(36px, 5.4vw, 56px);
+            --fs-title: clamp(22px, 2.4vw, 26px);
+            --fs-body: 16px;
+            --fs-meta: 13px;
+
+            /* 字重：3 档 */
+            --fw-regular: 400;
+            --fw-medium: 500;
+            --fw-bold: 700;
+
+            /* 行高：4 档 */
+            --lh-tight: 1.05;
+            --lh-snug: 1.25;
+            --lh-normal: 1.5;
+            --lh-relaxed: 1.7;
+
+            /* 字距：3 档 */
+            --ls-normal: 0;
+            --ls-wide: 0.04em;
+            --ls-xwide: 0.08em;
+
+            /* 圆角：4 档 */
+            --r-sm: 6px;
+            --r-md: 10px;
+            --r-lg: 16px;
+            --r-pill: 999px;
+
+            /* 间距：8 档 */
+            --sp-3xs: 2px;
+            --sp-2xs: 4px;
+            --sp-xs: 8px;
+            --sp-sm: 12px;
+            --sp-md: 16px;
+            --sp-lg: 24px;
+            --sp-xl: 32px;
+            --sp-2xl: 48px;
+            --sp-3xl: 72px;
+
+            /* 容器 */
+            --shell-max: 984px;
         }
 
-        * {
+        [data-theme="dark"] {
+            color-scheme: dark;
+            --paper: #12140f;
+            --surface: #12140f;
+            --surface-blur: rgba(18, 20, 15, 0.88);
+            --ink: #e8eae2;
+            --muted: #9ba093;
+            --line: rgba(232, 234, 226, 0.16);
+            --emerald: #3fbb85;
+            --emerald-strong: #5ed19c;
+            --amber: #e0954a;
+            --mist: #23261e;
+            --hover: rgba(232, 234, 226, 0.07);
+            --emerald-wash: rgba(63, 187, 133, 0.14);
+            --overlay: rgba(0, 0, 0, 0.62);
+            --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
+            --shadow-deep: 0 4px 8px rgba(0, 0, 0, 0.34), 0 24px 56px rgba(0, 0, 0, 0.5);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                color-scheme: dark;
+                --paper: #12140f;
+                --surface: #12140f;
+                --surface-blur: rgba(18, 20, 15, 0.88);
+                --ink: #e8eae2;
+                --muted: #9ba093;
+                --line: rgba(232, 234, 226, 0.16);
+                --emerald: #3fbb85;
+                --emerald-strong: #5ed19c;
+                --amber: #e0954a;
+                --mist: #23261e;
+                --hover: rgba(232, 234, 226, 0.07);
+                --emerald-wash: rgba(63, 187, 133, 0.14);
+                --overlay: rgba(0, 0, 0, 0.62);
+                --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
+                --shadow-deep: 0 4px 8px rgba(0, 0, 0, 0.34), 0 24px 56px rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
         }
-        *::-webkit-scrollbar { display: none; }
 
-        html, body {
-            height: 100%;
-            overflow: hidden;
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
+            margin: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: var(--paper);
             color: var(--ink);
-            background:
-                linear-gradient(90deg, rgba(21, 23, 19, 0.045) 1px, transparent 1px),
-                linear-gradient(180deg, rgba(21, 23, 19, 0.035) 1px, transparent 1px),
-                var(--paper);
-            background-size: 42px 42px;
-            font-family:
-                ui-sans-serif,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                "PingFang SC",
-                "Hiragino Sans GB",
-                "Microsoft YaHei",
-                sans-serif;
+            font-family: var(--font-body);
+            font-size: var(--fs-body);
+            font-weight: var(--fw-regular);
+            line-height: var(--lh-normal);
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin: 0;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
         button,
@@ -61,722 +211,2011 @@
         select,
         textarea {
             font: inherit;
+            color: inherit;
         }
 
-        header,
-        .stats-section,
-        .categories-section,
-        footer {
-            flex-shrink: 0;
+        button {
+            cursor: pointer;
         }
 
-        .site-header {
-            border-bottom: 1px solid var(--line);
-            background: rgba(247, 242, 232, 0.88);
-            backdrop-filter: blur(18px);
+        img {
+            display: block;
+            max-width: 100%;
+        }
+
+        ::selection {
+            background: var(--emerald-wash);
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--emerald);
+            outline-offset: 2px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            flex: none;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .icon.is-filled {
+            fill: currentColor;
+            stroke: none;
         }
 
         .shell {
-            width: min(var(--max), calc(100% - 48px));
-            margin: 0 auto;
+            width: 100%;
+            max-width: var(--shell-max);
+            margin-inline: auto;
+            padding-inline: var(--sp-xl);
+        }
+
+        .eyebrow {
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-medium);
+            line-height: var(--lh-normal);
+            letter-spacing: var(--ls-xwide);
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .skip-link {
+            position: absolute;
+            left: var(--sp-md);
+            top: var(--sp-md);
+            z-index: 100;
+            padding: var(--sp-xs) var(--sp-sm);
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--paper);
+            color: var(--ink);
+            font-size: var(--fs-meta);
+            transform: translateY(-200%);
+        }
+
+        .skip-link:focus-visible {
+            transform: none;
+        }
+
+        /* ===== Header ===== */
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-blur);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-md);
+            min-height: 64px;
+            padding-block: var(--sp-sm);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-sm);
+            flex: none;
+            border-radius: var(--r-md);
         }
 
         .brand-mark {
-            width: 38px;
-            height: 38px;
-            border: 1px solid var(--ink);
-            border-radius: var(--radius);
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            flex: none;
+            border-radius: var(--r-md);
             background: var(--ink);
-            color: var(--paper-soft);
+            color: var(--paper);
+        }
+
+        .brand-mark .icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .brand-name {
+            font-family: var(--font-display);
+            font-size: var(--fs-body);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-snug);
+            letter-spacing: var(--ls-normal);
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 268px;
+            margin-left: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--paper);
+            transition: border-color 160ms ease, box-shadow 160ms ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px var(--emerald-wash);
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            left: 10px;
+            width: 15px;
+            height: 15px;
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .search-box input {
+            width: 100%;
+            min-width: 0;
+            padding: var(--sp-xs) var(--sp-2xl) var(--sp-xs) var(--sp-xl);
+            border: 0;
+            background: transparent;
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
+            color: var(--ink);
+            outline: none;
+        }
+
+        .search-box input::placeholder {
+            color: var(--muted);
+        }
+
+        .search-kbd {
+            position: absolute;
+            right: 8px;
+            padding: 1px 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-snug);
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            flex: none;
+        }
+
+        /* ===== Buttons ===== */
+
+        .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: var(--sp-xs);
+            min-height: 36px;
+            padding: var(--sp-xs) var(--sp-sm);
+            border: 1px solid transparent;
+            border-radius: var(--r-md);
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-medium);
+            line-height: var(--lh-snug);
+            white-space: nowrap;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
         }
 
-        .search-control {
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(252, 250, 245, 0.72);
-            color: var(--ink);
-            transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
-        }
-
-        .search-control:focus-within {
-            border-color: rgba(4, 122, 85, 0.46);
-            background: var(--paper-soft);
-            box-shadow: 0 0 0 3px rgba(4, 122, 85, 0.09);
-        }
-
-        .icon-button,
-        .text-button,
-        .view-btn,
-        .filter-btn,
-        .repo-action,
-        .load-more-action {
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(252, 250, 245, 0.7);
-            color: var(--ink);
-            font-weight: 800;
-            transition: transform 160ms ease, background 160ms ease, border-color 160ms ease, color 160ms ease;
-        }
-
-        .icon-button:hover,
-        .text-button:hover,
-        .view-btn:hover,
-        .filter-btn:hover,
-        .repo-action:hover,
-        .load-more-action:hover {
+        .btn:hover {
             transform: translateY(-1px);
-            border-color: rgba(4, 122, 85, 0.36);
-            background: var(--paper-soft);
         }
 
-        .primary-action {
-            border-color: var(--ink);
+        .btn:active {
+            transform: none;
+        }
+
+        .btn-primary {
             background: var(--ink);
-            color: var(--paper-soft);
+            border-color: var(--ink);
+            color: var(--paper);
         }
 
-        .primary-action:hover {
+        .btn-primary:hover {
             background: var(--emerald-strong);
-            color: var(--paper-soft);
+            border-color: var(--emerald-strong);
         }
 
-        .index-panel {
-            border-bottom: 1px solid var(--line);
-            background: rgba(252, 250, 245, 0.64);
+        .btn-outline {
+            background: var(--paper);
+            border-color: var(--line);
+            color: var(--ink);
         }
 
-        .index-stat {
-            border-right: 1px solid var(--line);
-            min-width: 132px;
+        .btn-outline:hover {
+            border-color: var(--emerald);
+            color: var(--emerald);
         }
 
-        .index-stat:last-child {
-            border-right: 0;
+        .btn .icon {
+            width: 15px;
+            height: 15px;
         }
 
-        .index-label,
-        .card-meta,
-        .label-mono {
+        .icon-btn {
+            width: 28px;
+            height: 28px;
+            display: inline-grid;
+            place-items: center;
+            flex: none;
+            border: 1px solid transparent;
+            border-radius: var(--r-sm);
+            background: transparent;
             color: var(--muted);
-            font-family: "SF Mono", Menlo, Consolas, monospace;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0;
-            text-transform: uppercase;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
         }
 
-        .workspace-copy {
-            color: #343a33;
-            font-weight: 700;
+        .icon-btn:hover {
+            border-color: var(--line);
+            background: var(--mist);
+            color: var(--ink);
         }
 
-        .main-content {
-            flex: 1;
+        .icon-btn .icon {
+            width: 15px;
+            height: 15px;
+        }
+
+        .icon-btn.is-danger:hover {
+            color: var(--amber);
+        }
+
+        .theme-toggle {
+            width: 36px;
+            height: 36px;
+            display: inline-grid;
+            place-items: center;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            background: var(--paper);
+            color: var(--muted);
+            transition: border-color 160ms ease, color 160ms ease;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--emerald);
+            color: var(--emerald);
+        }
+
+        .theme-toggle .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .theme-toggle .icon-sun {
+            display: none;
+        }
+
+        [data-theme="dark"] .theme-toggle .icon-sun {
+            display: block;
+        }
+
+        [data-theme="dark"] .theme-toggle .icon-moon {
+            display: none;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+                display: block;
+            }
+
+            :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+                display: none;
+            }
+        }
+
+        /* ===== 账户菜单 ===== */
+
+        .auth-container {
+            position: relative;
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-height: auto;
+            align-items: center;
         }
 
-        .categories-section {
+        .avatar-btn {
+            width: 36px;
+            height: 36px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--mist);
+            color: var(--muted);
+            padding: 0;
+        }
+
+        .avatar-btn:hover {
+            border-color: var(--emerald);
+        }
+
+        .avatar-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .user-menu {
+            position: absolute;
+            top: calc(100% + var(--sp-xs));
+            right: 0;
+            z-index: 60;
+            width: 248px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--paper);
+            box-shadow: var(--shadow-lift);
+        }
+
+        .user-menu-head {
+            padding: var(--sp-sm) var(--sp-md);
             border-bottom: 1px solid var(--line);
-            background: rgba(247, 242, 232, 0.72);
+        }
+
+        .user-name {
+            font-size: var(--fs-body);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-snug);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-login {
+            font-size: var(--fs-meta);
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            padding: var(--sp-sm) var(--sp-md);
+            border-bottom: 1px solid var(--line);
+            font-size: var(--fs-meta);
+            color: var(--muted);
+        }
+
+        .sync-dot {
+            width: 6px;
+            height: 6px;
+            flex: none;
+            border-radius: var(--r-pill);
+            background: var(--muted);
+        }
+
+        .sync-dot.is-syncing {
+            background: var(--amber);
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .sync-dot.is-synced {
+            background: var(--emerald);
+        }
+
+        .sync-dot.is-error {
+            background: var(--amber);
+        }
+
+        .sync-dot.is-offline {
+            background: var(--muted);
+        }
+
+        .sync-time {
+            margin-top: var(--sp-3xs);
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            color: var(--muted);
+        }
+
+        .menu-item {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            padding: var(--sp-xs) var(--sp-md);
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            text-align: left;
+            transition: background 160ms ease, color 160ms ease;
+        }
+
+        .menu-item:hover {
+            background: var(--hover);
+            color: var(--ink);
+        }
+
+        .menu-item .icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .menu-item.is-danger:hover {
+            color: var(--amber);
+        }
+
+        /* ===== Hero ===== */
+
+        .hero {
+            padding-top: var(--sp-3xl);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 280px;
+            gap: var(--sp-2xl);
+            align-items: end;
+            padding-bottom: var(--sp-xl);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .hero-title {
+            max-width: 15em;
+            margin-top: var(--sp-sm);
+            font-family: var(--font-display);
+            font-size: var(--fs-display);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-tight);
+            letter-spacing: var(--ls-normal);
+            text-wrap: balance;
+        }
+
+        .hero-title em {
+            font-style: normal;
+            color: var(--emerald-strong);
+        }
+
+        .hero-lead {
+            max-width: 34em;
+            margin-top: var(--sp-lg);
+            color: var(--muted);
+            line-height: var(--lh-relaxed);
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--sp-sm);
+            margin-top: var(--sp-lg);
+        }
+
+        .hero-note {
+            font-size: var(--fs-meta);
+            color: var(--muted);
+        }
+
+        .stats-card {
+            display: grid;
+            align-self: end;
+            padding: var(--sp-md);
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: var(--sp-md);
+            padding-block: var(--sp-sm);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .stat-row:first-child {
+            padding-top: 0;
+        }
+
+        .stat-row:last-child {
+            padding-bottom: 0;
+            border-bottom: 0;
+        }
+
+        .stat-label {
+            font-size: var(--fs-meta);
+            color: var(--muted);
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: var(--fs-title);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-tight);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stat-value.is-meta {
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-medium);
+            color: var(--muted);
+        }
+
+        /* ===== Library ===== */
+
+        .library {
+            padding-top: var(--sp-2xl);
+        }
+
+        .library-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: var(--sp-md);
+            margin-bottom: var(--sp-md);
+        }
+
+        .library-title {
+            display: flex;
+            align-items: baseline;
+            gap: var(--sp-xs);
+            font-family: var(--font-display);
+            font-size: var(--fs-title);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-snug);
+        }
+
+        .library-count {
+            font-family: var(--font-body);
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-regular);
+            color: var(--muted);
+        }
+
+        .library-tools {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--sp-xs);
+        }
+
+        .cloud-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-3xs);
+            padding: var(--sp-3xs) var(--sp-xs);
+            border: 1px solid var(--emerald);
+            border-radius: var(--r-pill);
+            background: var(--emerald-wash);
+            color: var(--emerald-strong);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-snug);
+            white-space: nowrap;
+        }
+
+        .cloud-badge .icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .segmented {
+            display: inline-flex;
+            gap: var(--sp-3xs);
+            padding: var(--sp-3xs);
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--paper);
+        }
+
+        .view-btn {
+            width: 30px;
+            height: 26px;
+            display: inline-grid;
+            place-items: center;
+            border: 0;
+            border-radius: var(--r-sm);
+            background: transparent;
+            color: var(--muted);
+            transition: background 160ms ease, color 160ms ease;
+        }
+
+        .view-btn:hover {
+            color: var(--ink);
+        }
+
+        .view-btn.is-active {
+            background: var(--mist);
+            color: var(--ink);
+        }
+
+        .view-btn .icon {
+            width: 15px;
+            height: 15px;
+        }
+
+        .category-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--sp-xs);
+            padding-bottom: var(--sp-md);
+            border-bottom: 1px solid var(--line);
         }
 
         .filter-btn {
-            min-height: 38px;
-            padding: 0 14px;
-            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-3xs);
+            min-height: 30px;
+            padding: var(--sp-3xs) var(--sp-sm);
+            border: 1px solid var(--line);
+            border-radius: var(--r-pill);
+            background: var(--paper);
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-medium);
+            line-height: var(--lh-snug);
+            white-space: nowrap;
+            transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--emerald);
+            color: var(--emerald);
         }
 
         .filter-btn.is-active {
             border-color: var(--ink);
             background: var(--ink);
-            color: var(--paper-soft);
+            color: var(--paper);
         }
 
-        .view-btn.is-active,
-        #filter-starred.is-active {
+        .filter-btn .icon {
+            width: 13px;
+            height: 13px;
+        }
+
+        .starred-filter.is-active {
             border-color: var(--emerald);
-            background: rgba(4, 122, 85, 0.1);
+            background: var(--emerald-wash);
             color: var(--emerald-strong);
         }
 
-        #repo-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 0 24px;
-            align-content: flex-start;
+        .badge-count {
+            min-width: 16px;
+            padding-inline: var(--sp-3xs);
+            border-radius: var(--r-pill);
+            background: var(--mist);
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-snug);
+            text-align: center;
+        }
+
+        .badge-count.has-count {
+            background: var(--emerald-wash);
+            color: var(--emerald-strong);
+        }
+
+        .filter-btn.is-active .badge-count {
+            background: rgba(255, 255, 255, 0.16);
+            color: var(--paper);
+        }
+
+        .category-item {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .category-item .filter-btn {
+            padding-right: var(--sp-lg);
+        }
+
+        .category-remove {
+            position: absolute;
+            top: 50%;
+            right: var(--sp-3xs);
+            width: 18px;
+            height: 18px;
+            display: grid;
+            place-items: center;
+            transform: translateY(-50%);
+            border: 0;
+            border-radius: var(--r-pill);
+            background: transparent;
+            color: var(--muted);
+            opacity: 0;
+            transition: opacity 160ms ease, background 160ms ease, color 160ms ease;
+        }
+
+        .category-item:hover .category-remove,
+        .category-remove:focus-visible {
+            opacity: 1;
+        }
+
+        .category-remove:hover {
+            background: var(--hover);
+            color: var(--amber);
+        }
+
+        .category-remove .icon {
+            width: 11px;
+            height: 11px;
+        }
+
+        .repo-list {
+            margin-top: var(--sp-md);
+        }
+
+        .repo-list.is-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: var(--sp-md);
+        }
+
+        .repo-list.is-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-xs);
         }
 
         .repo-card {
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(255, 253, 248, 0.78);
-            cursor: grab;
             min-width: 0;
-            transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+            border: 1px solid var(--line);
+            border-radius: var(--r-lg);
+            background: var(--surface);
+            transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
         }
 
         .repo-card:hover {
+            border-color: var(--emerald);
+            box-shadow: var(--shadow-lift);
             transform: translateY(-2px);
-            border-color: rgba(4, 122, 85, 0.42);
-            background: #fffdf8;
-            box-shadow: var(--shadow);
+        }
+
+        .repo-card.is-grid {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: var(--sp-md);
+            cursor: grab;
+        }
+
+        .repo-card.is-list {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+            padding: var(--sp-sm) var(--sp-md);
+            cursor: grab;
         }
 
         .repo-card.dragging {
-            opacity: 0.55;
+            opacity: 0.5;
             cursor: grabbing;
-            transform: scale(1.01);
+            transform: scale(0.99);
         }
 
         .repo-card.drag-over {
-            border: 1px dashed var(--emerald);
-            background: rgba(4, 122, 85, 0.08);
+            border-color: var(--emerald);
+            border-style: dashed;
+            background: var(--emerald-wash);
+        }
+
+        .repo-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--sp-sm);
+            flex: 1;
+            min-width: 0;
         }
 
         .repo-avatar {
+            width: 32px;
+            height: 32px;
+            flex: none;
             border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: var(--paper-soft);
+            border-radius: var(--r-sm);
+            background: var(--mist);
+            object-fit: cover;
+        }
+
+        .repo-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .repo-head {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            min-width: 0;
         }
 
         .category-chip {
+            flex: none;
+            padding: 0 var(--sp-xs);
             border: 1px solid var(--line);
-            border-radius: 999px;
-            background: rgba(252, 250, 245, 0.72);
+            border-radius: var(--r-pill);
             color: var(--muted);
-            font-size: 11px;
-            font-weight: 900;
+            font-size: var(--fs-meta);
+            line-height: var(--lh-snug);
+            white-space: nowrap;
         }
 
-        .repo-title-link {
-            color: var(--ink);
-            font-weight: 900;
-        }
-
-        .repo-title-link:hover {
+        .repo-star {
+            width: 12px;
+            height: 12px;
+            flex: none;
             color: var(--emerald);
         }
 
-        .footer-bar {
+        .repo-name {
+            display: block;
+            margin-top: var(--sp-2xs);
+            overflow: hidden;
+            color: var(--ink);
+            font-size: var(--fs-body);
+            font-weight: var(--fw-medium);
+            line-height: var(--lh-snug);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            transition: color 160ms ease;
+        }
+
+        .repo-name:hover {
+            color: var(--emerald);
+        }
+
+        .repo-owner {
+            color: var(--muted);
+            font-weight: var(--fw-regular);
+        }
+
+        .repo-desc {
+            display: -webkit-box;
+            margin-top: var(--sp-3xs);
+            overflow: hidden;
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .repo-note {
+            display: -webkit-box;
+            margin-top: var(--sp-xs);
+            overflow: hidden;
+            color: var(--ink);
+            font-size: var(--fs-body);
+            line-height: var(--lh-snug);
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .repo-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--sp-xs);
+            margin-top: var(--sp-sm);
+            padding-top: var(--sp-sm);
             border-top: 1px solid var(--line);
-            background: rgba(21, 23, 19, 0.96);
-            color: rgba(252, 250, 245, 0.74);
         }
 
-        #load-more-btn {
-            padding: 10px;
-            text-align: center;
-            flex-shrink: 0;
+        .repo-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+            min-width: 0;
+            overflow: hidden;
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-snug);
+            white-space: nowrap;
         }
 
-        .user-menu {
+        .repo-meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-2xs);
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .repo-meta-item .icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .repo-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-3xs);
+            flex: none;
+        }
+
+        .repo-card.is-list .repo-main {
+            flex: 1;
+        }
+
+        .repo-card.is-list .repo-head {
+            gap: var(--sp-xs);
+        }
+
+        .repo-card.is-list .repo-name {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        .repo-card.is-list .repo-note,
+        .repo-card.is-list .repo-desc {
+            display: block;
+            margin-top: var(--sp-3xs);
+            overflow: hidden;
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .repo-card.is-list .repo-meta {
+            flex: none;
+        }
+
+        .search-info {
+            padding-top: var(--sp-sm);
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
+        }
+
+        .load-more {
+            display: flex;
+            justify-content: center;
+            padding-top: var(--sp-xl);
+        }
+
+        .empty-state {
+            margin-top: var(--sp-md);
+            padding: var(--sp-3xl) var(--sp-lg);
             border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: #fffdf8;
-            box-shadow: var(--shadow);
-            transition: all 0.2s;
-            transform-origin: top right;
+            border-radius: var(--r-lg);
+            text-align: center;
         }
 
-        .user-menu.hidden { opacity: 0; transform: scale(0.95); pointer-events: none; }
-        .user-menu:not(.hidden) { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .empty-icon {
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            margin: 0 auto var(--sp-md);
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--mist);
+            color: var(--muted);
+        }
+
+        .empty-icon .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .empty-title {
+            font-family: var(--font-display);
+            font-size: var(--fs-title);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-snug);
+        }
+
+        .empty-copy {
+            margin-top: var(--sp-xs);
+            color: var(--muted);
+        }
+
+        .empty-action {
+            margin-top: var(--sp-lg);
+        }
+
+        /* ===== Footer ===== */
+
+        .site-footer {
+            margin-top: var(--sp-3xl);
+            border-top: 1px solid var(--line);
+        }
+
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--sp-md);
+            padding-block: var(--sp-lg);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            color: var(--muted);
+            font-size: var(--fs-meta);
+        }
+
+        .footer-mark {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            flex: none;
+            border: 1px solid var(--line);
+            border-radius: var(--r-sm);
+            color: var(--ink);
+        }
+
+        .footer-mark .icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .footer-brand strong {
+            color: var(--ink);
+            font-weight: var(--fw-medium);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--sp-md);
+            color: var(--muted);
+            font-size: var(--fs-meta);
+        }
+
+        .footer-links a,
+        .footer-links button,
+        .footer-links label {
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
+            cursor: pointer;
+            transition: color 160ms ease;
+        }
+
+        .footer-links a:hover,
+        .footer-links button:hover,
+        .footer-links label:hover {
+            color: var(--emerald);
+        }
+
+        .footer-copy {
+            color: var(--muted);
+        }
+
+        /* ===== Modal ===== */
 
         .modal-backdrop {
-            background: rgba(21, 23, 19, 0.48);
-            backdrop-filter: blur(3px);
+            position: fixed;
+            inset: 0;
+            z-index: 70;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--sp-md);
+            background: var(--overlay);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         .modal-panel {
+            width: 100%;
+            max-width: 480px;
+            max-height: 85vh;
+            overflow-y: auto;
             border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background:
-                linear-gradient(90deg, rgba(21, 23, 19, 0.035) 1px, transparent 1px),
-                linear-gradient(180deg, rgba(21, 23, 19, 0.03) 1px, transparent 1px),
-                #fffdf8;
-            background-size: 42px 42px;
-            box-shadow: var(--shadow);
+            border-radius: var(--r-lg);
+            background: var(--paper);
+            box-shadow: var(--shadow-deep);
         }
 
-        .modal-header,
-        .modal-footer {
-            border-color: var(--line);
+        .modal-panel.is-sm {
+            max-width: 400px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: var(--sp-md);
+            padding: var(--sp-lg);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .modal-title {
+            margin-top: var(--sp-3xs);
+            font-family: var(--font-display);
+            font-size: var(--fs-title);
+            font-weight: var(--fw-bold);
+            line-height: var(--lh-snug);
+        }
+
+        .modal-body {
+            padding: var(--sp-lg);
+        }
+
+        .field {
+            margin-bottom: var(--sp-md);
         }
 
         .field-label {
-            color: var(--ink);
-            font-size: 13px;
-            font-weight: 900;
+            display: block;
+            margin-bottom: var(--sp-2xs);
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-medium);
+            line-height: var(--lh-normal);
         }
 
         .required-mark {
-            color: var(--clay);
+            color: var(--amber);
         }
 
-        .form-input {
+        .input,
+        .select,
+        .textarea {
             width: 100%;
+            min-height: 38px;
+            padding: var(--sp-xs) var(--sp-sm);
             border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(252, 250, 245, 0.78);
+            border-radius: var(--r-md);
+            background: var(--paper);
             color: var(--ink);
-            font-size: 14px;
-            transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+            font-size: var(--fs-body);
+            line-height: var(--lh-normal);
+            transition: border-color 160ms ease, box-shadow 160ms ease;
         }
 
-        .form-input::placeholder {
-            color: rgba(98, 104, 95, 0.62);
+        .input::placeholder,
+        .textarea::placeholder {
+            color: var(--muted);
+            opacity: 0.72;
         }
 
-        .form-input:focus {
+        .input:focus,
+        .select:focus,
+        .textarea:focus {
             outline: none;
-            border-color: rgba(4, 122, 85, 0.52);
-            background: var(--paper-soft);
-            box-shadow: 0 0 0 3px rgba(4, 122, 85, 0.1);
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px var(--emerald-wash);
         }
 
-        .secondary-action,
-        .danger-action {
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(252, 250, 245, 0.78);
-            color: var(--ink);
-            font-weight: 900;
-            transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        .textarea {
+            resize: vertical;
+            min-height: 76px;
         }
 
-        .secondary-action:hover {
-            transform: translateY(-1px);
-            border-color: rgba(4, 122, 85, 0.36);
-            background: var(--paper-soft);
+        .input-row {
+            display: flex;
+            align-items: stretch;
+            gap: var(--sp-xs);
         }
 
-        .danger-action {
-            border-color: rgba(143, 77, 53, 0.34);
-            background: rgba(143, 77, 53, 0.08);
-            color: var(--clay);
+        .input-row .input {
+            flex: 1;
+            min-width: 0;
         }
 
-        .danger-action:hover {
-            background: rgba(143, 77, 53, 0.14);
+        .field-note {
+            margin-top: var(--sp-2xs);
+            color: var(--muted);
+            font-size: var(--fs-meta);
         }
 
         .note-panel {
+            padding: var(--sp-sm);
             border: 1px solid var(--line);
-            border-radius: var(--radius);
-            background: rgba(4, 122, 85, 0.07);
-            color: var(--emerald-strong);
+            border-radius: var(--r-md);
+            background: var(--mist);
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
         }
 
-        .checkbox-control {
+        .note-panel strong {
+            color: var(--ink);
+            font-weight: var(--fw-medium);
+        }
+
+        .note-panel ol {
+            margin: var(--sp-2xs) 0 0;
+            padding-left: var(--sp-md);
+        }
+
+        .note-panel a {
+            color: var(--emerald);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .repo-preview {
+            margin-bottom: var(--sp-md);
+            padding: var(--sp-sm);
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--mist);
+        }
+
+        .repo-preview-head {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+        }
+
+        .repo-preview-name {
+            min-width: 0;
+            overflow: hidden;
+            font-size: var(--fs-meta);
+            font-weight: var(--fw-medium);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .repo-preview-desc {
+            min-width: 0;
+            overflow: hidden;
+            color: var(--muted);
+            font-size: var(--fs-meta);
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .repo-preview-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+            margin-top: var(--sp-xs);
+            color: var(--muted);
+            font-family: var(--font-mono);
+            font-size: var(--fs-meta);
+        }
+
+        .repo-preview-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--sp-2xs);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-xs);
+            margin-bottom: var(--sp-md);
+            color: var(--muted);
+            font-size: var(--fs-meta);
+        }
+
+        .checkbox-row input {
             width: 16px;
             height: 16px;
             accent-color: var(--emerald);
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .modal-actions {
+            display: flex;
+            gap: var(--sp-sm);
+            margin-top: var(--sp-lg);
+            padding-top: var(--sp-md);
+            border-top: 1px solid var(--line);
         }
 
-        @media (max-width: 760px) {
+        .modal-actions .btn {
+            flex: 1;
+        }
+
+        /* ===== Toast ===== */
+
+        .toast {
+            position: fixed;
+            top: var(--sp-lg);
+            left: 50%;
+            z-index: 90;
+            width: max-content;
+            max-width: calc(100vw - var(--sp-xl));
+            transform: translate(-50%, -8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 200ms ease, transform 200ms ease;
+        }
+
+        .toast.is-visible {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+
+        .toast-inner {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-sm);
+            min-width: 280px;
+            padding: var(--sp-sm) var(--sp-md);
+            border: 1px solid var(--line);
+            border-radius: var(--r-md);
+            background: var(--paper);
+            box-shadow: var(--shadow-lift);
+        }
+
+        .toast-icon {
+            width: 28px;
+            height: 28px;
+            display: grid;
+            place-items: center;
+            flex: none;
+            border-radius: var(--r-pill);
+            background: var(--mist);
+            color: var(--muted);
+        }
+
+        .toast-icon .icon {
+            width: 15px;
+            height: 15px;
+        }
+
+        .toast-icon.is-success {
+            background: var(--emerald-wash);
+            color: var(--emerald-strong);
+        }
+
+        .toast-icon.is-warning,
+        .toast-icon.is-error {
+            background: rgba(189, 107, 27, 0.12);
+            color: var(--amber);
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: var(--fs-meta);
+            line-height: var(--lh-normal);
+            color: var(--ink);
+        }
+
+        .toast-close {
+            display: grid;
+            place-items: center;
+            border: 0;
+            background: transparent;
+            color: var(--muted);
+        }
+
+        .toast-close:hover {
+            color: var(--ink);
+        }
+
+        .toast-close .icon {
+            width: 13px;
+            height: 13px;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.45;
+            }
+        }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .hero-copy > * {
+                animation: rise 480ms ease both;
+            }
+
+            .hero-copy > :nth-child(2) {
+                animation-delay: 60ms;
+            }
+
+            .hero-copy > :nth-child(3) {
+                animation-delay: 120ms;
+            }
+
+            .hero-copy > :nth-child(4) {
+                animation-delay: 180ms;
+            }
+
+            .stats-card {
+                animation: rise 480ms 140ms ease both;
+            }
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===== 980px：平板 ===== */
+
+        @media (max-width: 980px) {
+            .hero-grid {
+                grid-template-columns: minmax(0, 1fr) 240px;
+                gap: var(--sp-xl);
+            }
+
+            .repo-list.is-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* ===== 640px：手机 ===== */
+
+        @media (max-width: 640px) {
             .shell {
-                width: min(100% - 28px, var(--max));
+                padding-inline: var(--sp-md);
             }
 
-            .site-actions {
-                width: 100%;
+            .header-inner {
                 flex-wrap: wrap;
+                gap: var(--sp-xs);
+                padding-block: var(--sp-sm);
             }
 
-            .search-control {
+            .brand {
+                margin-right: auto;
+            }
+
+            .brand-mark {
+                width: 32px;
+                height: 32px;
+            }
+
+            .search-box {
+                order: 3;
                 width: 100%;
-                order: 2;
+                flex: 1 0 100%;
+                margin-left: 0;
             }
 
-            .index-stat {
-                min-width: 50%;
-                border-bottom: 1px solid var(--line);
+            .search-kbd {
+                display: none;
             }
 
-            .index-stat:nth-child(2n) {
+            .btn-login span {
+                display: none;
+            }
+
+            .btn-add span {
+                display: none;
+            }
+
+            .btn-add {
+                width: 36px;
+                padding: 0;
+            }
+
+            .hero {
+                padding-top: var(--sp-2xl);
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: var(--sp-lg);
+            }
+
+            .hero-title {
+                max-width: none;
+            }
+
+            .hero-lead {
+                margin-top: var(--sp-md);
+            }
+
+            .stats-card {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0 var(--sp-md);
+            }
+
+            .stat-row {
+                padding-block: var(--sp-xs);
+            }
+
+            .stat-row:nth-child(2n) {
                 border-right: 0;
             }
 
-            .repo-card {
-                align-items: flex-start;
-                flex-wrap: wrap;
+            .stat-row:nth-last-child(-n + 2) {
+                border-bottom: 0;
             }
 
-            .repo-controls {
+            .stat-row:nth-child(2n + 1) {
+                border-right: 1px solid var(--line);
+            }
+
+            .library-head {
+                align-items: center;
+            }
+
+            .library-tools {
                 width: 100%;
-                justify-content: flex-start;
-                padding-left: 52px;
-                flex-wrap: wrap;
+                justify-content: space-between;
             }
 
-            .repo-controls .card-meta {
-                margin-right: 8px;
+            .repo-list.is-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .repo-card.is-list {
+                flex-wrap: wrap;
+                align-items: flex-start;
+            }
+
+            .repo-card.is-list .repo-main {
+                flex-basis: calc(100% - 44px);
+            }
+
+            .repo-card.is-list .repo-meta {
+                order: 3;
+                padding-left: 44px;
+            }
+
+            .repo-card.is-list .repo-actions {
+                order: 4;
+                margin-left: auto;
+            }
+
+            .footer-inner {
+                align-items: flex-start;
+                flex-direction: column;
             }
         }
     </style>
 </head>
 <body>
+    <a class="skip-link" href="#library">跳到仓库列表</a>
+
+    <!-- 图标 sprite：全部内联，无外部字体/CDN -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <symbol id="i-github" viewBox="0 0 24 24">
+                <path fill="currentColor" stroke="none" d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </symbol>
+            <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+            <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+            <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+            <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 7 7 0 1 0 20 14.5Z"/></symbol>
+            <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9L12 3Z"/></symbol>
+            <symbol id="i-star-fill" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9L12 3Z"/></symbol>
+            <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+            <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></symbol>
+            <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+            <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4 10-10"/></symbol>
+            <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+            <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></symbol>
+            <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19a4.5 4.5 0 0 0 .5-9 6 6 0 0 0-11.6 1.5A3.5 3.5 0 0 0 6.5 19Z"/></symbol>
+            <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+            <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></symbol>
+            <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></symbol>
+            <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></symbol>
+            <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8Z"/><circle cx="7" cy="7" r="1.2"/></symbol>
+            <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13h4l2 3h4l2-3h4"/><path d="M5 5h14l1 8v6H4v-6Z"/></symbol>
+            <symbol id="i-sync" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4L4 9"/><path d="M4 4v5h5"/><path d="M4 13a8 8 0 0 0 14 4l2-2"/><path d="M20 20v-5h-5"/></symbol>
+            <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></symbol>
+            <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+            <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6"/><path d="m16 6 6 6-6 6"/></symbol>
+        </defs>
+    </svg>
+
     <!-- Header -->
-    <header class="site-header sticky top-0 z-50">
-        <div class="shell py-4">
-            <div class="flex items-center justify-between gap-5 flex-wrap">
-                <div class="flex items-center gap-3">
-                    <div class="brand-mark">
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-black leading-tight">EzGit</h1>
-                        <p class="label-mono mt-0.5">GitHub repo index</p>
-                    </div>
-                </div>
+    <header class="site-header">
+        <div class="shell header-inner">
+            <a class="brand" href="/" aria-label="EzGit 首页">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg class="icon"><use href="#i-github"></use></svg>
+                </span>
+                <span class="brand-name">EzGit</span>
+            </a>
 
-                <div class="site-actions flex items-center gap-2">
-                    <div class="search-control relative">
-                        <input type="text" id="search-input" placeholder="搜索仓库..."
-                            class="pl-10 pr-4 py-2 bg-transparent text-sm focus:outline-none w-60">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-sm" style="color: var(--muted);"></i>
-                    </div>
+            <div class="search-box">
+                <svg class="icon search-icon" aria-hidden="true"><use href="#i-search"></use></svg>
+                <input type="search" id="search-input" placeholder="搜索仓库、作者或评价" autocomplete="off" spellcheck="false" aria-label="搜索仓库">
+                <kbd class="search-kbd" aria-hidden="true">⌘K</kbd>
+            </div>
 
-                    <!-- 导入导出 -->
-                    <button id="export-btn" class="icon-button w-9 h-9 flex items-center justify-center" title="导出数据">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <label class="icon-button w-9 h-9 flex items-center justify-center cursor-pointer" title="导入数据">
-                        <i class="fas fa-upload"></i>
-                        <input type="file" id="import-file" accept=".json" class="hidden">
-                    </label>
+            <div class="header-actions">
+                <button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换深色模式" title="切换主题">
+                    <svg class="icon icon-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+                    <svg class="icon icon-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+                </button>
 
-                    <button id="add-btn" class="text-button primary-action px-4 py-2 flex items-center gap-2 text-sm">
-                        <i class="fas fa-plus"></i>
-                        <span>添加</span>
-                    </button>
+                <button id="login-btn" class="btn btn-outline btn-login hidden" type="button" aria-label="使用 GitHub 登录">
+                    <svg class="icon is-filled" aria-hidden="true"><use href="#i-github"></use></svg>
+                    <span>登录</span>
+                </button>
 
-                    <!-- GitHub 登录按钮 / 用户头像 -->
-                    <div id="auth-container" class="relative ml-2">
-                        <!-- 未登录状态 -->
-                        <button id="login-btn" class="hidden text-button primary-action px-3 py-2 flex items-center gap-2 text-sm">
-                            <i class="fab fa-github"></i>
-                            <span>登录</span>
+                <div id="auth-container" class="auth-container">
+                    <div id="user-menu-container" class="hidden">
+                        <button id="user-avatar-btn" class="avatar-btn" type="button" aria-label="账户菜单" aria-haspopup="true" aria-expanded="false">
+                            <img id="user-avatar" src="" alt="" class="hidden" width="36" height="36">
+                            <svg id="user-avatar-fallback" class="icon" aria-hidden="true"><use href="#i-user"></use></svg>
                         </button>
 
-                        <!-- 已登录状态 -->
-                        <div id="user-menu-container" class="hidden">
-                            <button id="user-avatar-btn" class="icon-button w-9 h-9 overflow-hidden flex items-center justify-center">
-                                <img id="user-avatar" src="" alt="avatar" class="w-full h-full object-cover hidden">
-                                <i id="user-avatar-fallback" class="fas fa-user" style="color: var(--muted);"></i>
-                            </button>
-
-                            <!-- 下拉菜单 -->
-                            <div id="user-menu" class="user-menu hidden absolute right-0 mt-2 w-60 py-2 z-50">
-                                <div class="px-4 py-2 border-b" style="border-color: var(--line);">
-                                    <p id="user-name" class="font-black truncate"></p>
-                                    <p id="user-login" class="text-sm truncate" style="color: var(--muted);"></p>
-                                </div>
-
-                                <div class="px-4 py-2 border-b" style="border-color: var(--line);">
-                                    <div class="flex items-center gap-2 text-sm">
-                                        <div id="sync-status-dot" class="w-2 h-2 rounded-full bg-gray-300"></div>
-                                        <span id="sync-status-text" style="color: var(--muted);">未同步</span>
-                                    </div>
-                                    <p id="sync-time" class="label-mono mt-1"></p>
-                                </div>
-
-                                <button id="manual-sync-btn" class="w-full px-4 py-2 text-left text-sm hover:bg-black/5 flex items-center gap-2">
-                                    <i class="fas fa-sync-alt" style="color: var(--muted);"></i>
-                                    <span>立即同步</span>
-                                </button>
-
-                                <button id="logout-btn" class="w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50 flex items-center gap-2">
-                                    <i class="fas fa-sign-out-alt text-red-500"></i>
-                                    <span>退出登录</span>
-                                </button>
+                        <div id="user-menu" class="user-menu hidden">
+                            <div class="user-menu-head">
+                                <p id="user-name" class="user-name">GitHub User</p>
+                                <p id="user-login" class="user-login">@unknown</p>
                             </div>
+                            <div class="sync-status">
+                                <span id="sync-status-dot" class="sync-dot is-offline"></span>
+                                <div>
+                                    <span id="sync-status-text">未同步</span>
+                                    <p id="sync-time" class="sync-time">—</p>
+                                </div>
+                            </div>
+                            <button id="manual-sync-btn" class="menu-item" type="button">
+                                <svg class="icon" aria-hidden="true"><use href="#i-sync"></use></svg>
+                                <span>立即同步</span>
+                            </button>
+                            <button id="logout-btn" class="menu-item is-danger" type="button">
+                                <svg class="icon" aria-hidden="true"><use href="#i-logout"></use></svg>
+                                <span>退出登录</span>
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                <button id="add-btn" class="btn btn-primary btn-add" type="button" aria-label="添加仓库">
+                    <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+                    <span>添加仓库</span>
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <div class="main-content flex-1">
-        <!-- Stats Hero -->
-        <section class="stats-section index-panel">
+    <!-- Main -->
+    <main id="main">
+        <section class="hero">
             <div class="shell">
-                <div class="flex flex-wrap items-stretch">
-                    <div class="index-stat py-4 pr-6">
-                        <p class="index-label">Repos</p>
-                        <p id="total-count" class="text-3xl font-black leading-tight">0</p>
-                    </div>
-                    <div class="index-stat py-4 px-6">
-                        <p class="index-label">Categories</p>
-                        <p id="category-count" class="text-3xl font-black leading-tight">0</p>
-                    </div>
-                    <div class="index-stat py-4 px-6">
-                        <p class="index-label">Starred</p>
-                        <p id="starred-count" class="text-3xl font-black leading-tight">0</p>
-                    </div>
-                    <div class="py-4 pl-6 flex-1 min-w-56">
-                        <p class="index-label">Workspace</p>
-                        <div class="flex items-center justify-between gap-4">
-                            <p class="workspace-copy text-sm mt-1">管理、筛选、同步值得长期保留的 GitHub 仓库。</p>
-                            <div id="cloud-sync-status" class="hidden items-center gap-2 px-3 py-1.5 border text-sm font-bold" style="border-color: var(--line); border-radius: var(--radius); background: rgba(4,122,85,0.08); color: var(--emerald-strong);">
-                                <i class="fas fa-cloud"></i>
-                                <span>Gist synced</span>
-                            </div>
+                <div class="hero-grid">
+                    <div class="hero-copy">
+                        <p class="eyebrow">GitHub repo index</p>
+                        <h1 class="hero-title">把值得收藏的仓库，<em>整理成自己的索引。</em></h1>
+                        <p class="hero-lead">EzGit 是一个本地优先的 GitHub 收藏夹。按分类归档、写下一句评价，登录后同步到私有 Gist；数据始终握在自己手里。</p>
+                        <div class="hero-actions">
+                            <button id="hero-add-btn" class="btn btn-primary" type="button">
+                                <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+                                添加仓库
+                            </button>
+                            <a class="btn btn-outline" href="#library">浏览收藏</a>
+                            <span class="hero-note">本地优先 · 无需账号</span>
                         </div>
                     </div>
+
+                    <aside class="stats-card" aria-label="收藏数据">
+                        <div class="stat-row">
+                            <span class="stat-label">仓库</span>
+                            <strong id="total-count" class="stat-value">0</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">分类</span>
+                            <strong id="category-count" class="stat-value">0</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">精选</span>
+                            <strong id="starred-count" class="stat-value">0</strong>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">最近同步</span>
+                            <span id="last-sync" class="stat-value is-meta">—</span>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </section>
 
-        <!-- Categories -->
-        <section class="categories-section">
-            <div class="shell py-5">
-                <div class="flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex flex-wrap gap-2" id="category-filters">
-                        <button data-category="all" class="filter-btn is-active">
-                            <i class="fas fa-layer-group mr-1"></i> 全部
+        <section class="library" id="library" aria-labelledby="library-title">
+            <div class="shell">
+                <div class="library-head">
+                    <h2 id="library-title" class="library-title">
+                        仓库索引
+                        <span id="library-count" class="library-count">共 0 个</span>
+                    </h2>
+                    <div class="library-tools">
+                        <span id="cloud-sync-status" class="cloud-badge hidden">
+                            <svg class="icon" aria-hidden="true"><use href="#i-cloud"></use></svg>
+                            <span id="cloud-sync-text">Gist 已连接</span>
+                        </span>
+                        <button id="filter-starred" class="filter-btn starred-filter" type="button" aria-pressed="false">
+                            <svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg>
+                            <span>精选</span>
+                            <span id="starred-count-badge" class="badge-count">0</span>
                         </button>
-                        <button data-category="tools" class="filter-btn">
-                            <i class="fas fa-wrench mr-1"></i> 效率工具
-                        </button>
-                        <button data-category="learning" class="filter-btn">
-                            <i class="fas fa-graduation-cap mr-1"></i> 学习资源
-                        </button>
-                        <button data-category="inspiration" class="filter-btn">
-                            <i class="fas fa-lightbulb mr-1"></i> 参考灵感
-                        </button>
-                        <button data-category="infrastructure" class="filter-btn">
-                            <i class="fas fa-cubes mr-1"></i> 基础建设
-                        </button>
-                    </div>
-
-                    <!-- View Toggle & Starred Filter -->
-                    <div class="flex items-center gap-2">
-                        <button id="filter-starred" class="text-button px-3 py-2 text-sm flex items-center gap-1" title="只看精选">
-                            <i class="far fa-star"></i> 精选 <span id="starred-count-badge" class="label-mono"></span>
-                        </button>
-                        <div class="flex items-center gap-1">
-                            <button id="view-grid" class="view-btn px-3 py-2 text-sm" title="网格视图">
-                                <i class="fas fa-th-large"></i>
+                        <div class="segmented" role="group" aria-label="视图切换">
+                            <button id="view-grid" class="view-btn" type="button" title="网格视图" aria-label="网格视图" aria-pressed="false">
+                                <svg class="icon" aria-hidden="true"><use href="#i-grid"></use></svg>
                             </button>
-                            <button id="view-list" class="view-btn is-active px-3 py-2 text-sm" title="列表视图">
-                                <i class="fas fa-list"></i>
+                            <button id="view-list" class="view-btn is-active" type="button" title="列表视图" aria-label="列表视图" aria-pressed="true">
+                                <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg>
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <div id="category-filters" class="category-bar">
+                    <button data-category="all" class="filter-btn is-active" type="button">
+                        <svg class="icon" aria-hidden="true"><use href="#i-layers"></use></svg>
+                        全部
+                    </button>
+                    <button data-category="tools" class="filter-btn" type="button">
+                        <svg class="icon" aria-hidden="true"><use href="#i-tag"></use></svg>
+                        效率工具
+                    </button>
+                    <button data-category="learning" class="filter-btn" type="button">
+                        <svg class="icon" aria-hidden="true"><use href="#i-tag"></use></svg>
+                        学习资源
+                    </button>
+                    <button data-category="inspiration" class="filter-btn" type="button">
+                        <svg class="icon" aria-hidden="true"><use href="#i-tag"></use></svg>
+                        参考灵感
+                    </button>
+                    <button data-category="infrastructure" class="filter-btn" type="button">
+                        <svg class="icon" aria-hidden="true"><use href="#i-tag"></use></svg>
+                        基础建设
+                    </button>
+                </div>
+
+                <div id="repo-list" class="repo-list is-list"></div>
+                <p id="search-info" class="search-info hidden"></p>
+
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon" aria-hidden="true">
+                        <svg class="icon"><use href="#i-inbox"></use></svg>
+                    </div>
+                    <h3 id="empty-title" class="empty-title">还没有收藏的仓库</h3>
+                    <p id="empty-copy" class="empty-copy">把值得长期保留的 GitHub 项目收进来，按自己的方式整理。</p>
+                    <div id="empty-action" class="empty-action">
+                        <button id="empty-add-btn" class="btn btn-primary" type="button">
+                            <svg class="icon" aria-hidden="true"><use href="#i-plus"></use></svg>
+                            添加第一个仓库
+                        </button>
+                    </div>
+                </div>
+
+                <div id="load-more" class="load-more hidden">
+                    <button id="load-more-btn" class="btn btn-outline" type="button"></button>
+                </div>
             </div>
         </section>
-
-        <!-- Repo List -->
-        <section class="flex-1 overflow-hidden flex flex-col shell pt-5">
-            <div id="repo-list" class="flex-1 overflow-y-auto">
-                <!-- 动态内容 -->
-            </div>
-        </section>
-        
-        <!-- 空状态（在 repo-list 外部，初始隐藏） -->
-        <div id="empty-state" class="hidden text-center py-16 flex-1">
-            <div class="w-20 h-20 flex items-center justify-center mx-auto mb-4" style="border: 1px solid var(--line); border-radius: var(--radius); background: rgba(252,250,245,0.72);">
-                <i class="fas fa-inbox text-4xl" style="color: var(--muted);"></i>
-            </div>
-            <h3 class="text-lg font-black mb-2">还没有收藏的仓库</h3>
-            <p style="color: var(--muted);">添加你发现的有价值的 GitHub 项目</p>
-        </div>
-
-        <!-- 加载更多按钮（在 repo-list 外部） -->
-        <div id="load-more-btn" class="hidden py-4 text-center flex-shrink-0 shell">
-            <button onclick="loadMore()" class="load-more-action px-6 py-2 text-sm">
-                <i class="fas fa-chevron-down mr-1"></i> 加载更多
-            </button>
-        </div>
-    </div>
+    </main>
 
     <!-- Footer -->
-    <footer class="footer-bar mt-auto">
-        <div class="shell py-5">
-            <!-- Top Section -->
-            <div class="flex items-center justify-between gap-6 flex-wrap">
-                <div class="flex items-center gap-3">
-                    <div class="brand-mark" style="background: var(--paper-soft); color: var(--ink);">
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="font-black text-lg text-white">EzGit</h3>
-                        <p class="text-sm">管理和发现有价值的 GitHub 仓库</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-6 text-sm font-bold">
-                    <a href="https://github.com/keepwonder/ezgit" target="_blank" class="hover:text-white transition">GitHub</a>
-                    <a href="https://github.com/keepwonder/ezgit/issues" target="_blank" class="hover:text-white transition">反馈问题</a>
-                    <a href="https://kiang.website" target="_blank" class="hover:text-white transition">更多项目</a>
-                </div>
+    <footer class="site-footer">
+        <div class="shell footer-inner">
+            <div class="footer-brand">
+                <span class="footer-mark" aria-hidden="true">
+                    <svg class="icon is-filled"><use href="#i-github"></use></svg>
+                </span>
+                <span><strong>EzGit</strong> · 管理和发现有价值的 GitHub 仓库</span>
             </div>
+            <nav class="footer-links" aria-label="页脚">
+                <button id="export-btn" type="button">导出备份</button>
+                <label for="import-file">导入备份</label>
+                <input type="file" id="import-file" accept=".json" class="visually-hidden">
+                <a href="https://github.com/keepwonder/ezgit" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://github.com/keepwonder/ezgit/issues" target="_blank" rel="noopener noreferrer">反馈问题</a>
+                <a href="https://kiang.website" target="_blank" rel="noopener noreferrer">更多项目 ↗</a>
+                <span class="footer-copy">© 2026 Kiang</span>
+            </nav>
         </div>
     </footer>
 
-    <!-- Add Modal -->
-    <div id="add-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="modal-panel w-full max-w-md max-h-[85vh] overflow-y-auto">
-            <div class="modal-header px-5 py-4 border-b flex items-center justify-between">
+    <!-- Add / Edit Modal -->
+    <div id="add-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
+        <div class="modal-panel">
+            <div class="modal-header">
                 <div>
-                    <p class="label-mono">Repository</p>
-                    <h3 class="text-lg font-black">添加仓库</h3>
+                    <p class="eyebrow">Repository</p>
+                    <h3 id="add-modal-title" class="modal-title">添加仓库</h3>
                 </div>
-                <button id="close-modal" class="icon-button w-8 h-8 flex items-center justify-center" title="关闭">
-                    <i class="fas fa-times"></i>
+                <button id="close-modal" class="icon-btn" type="button" title="关闭" aria-label="关闭">
+                    <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
                 </button>
             </div>
 
-            <div class="px-5 py-4">
-                <div class="mb-3">
-                    <label class="field-label block mb-1.5">GitHub URL <span class="required-mark">*</span></label>
-                    <div class="flex gap-2">
-                        <input type="text" id="repo-url" placeholder="https://github.com/user/repo"
-                            class="form-input flex-1 px-3 py-2"
-                            onblur="window.fetchRepoInfo&&window.fetchRepoInfo()">
-                        <button id="fetch-btn" class="secondary-action px-3 py-2 text-sm" title="获取仓库信息">
-                            <i class="fas fa-search"></i>
+            <div class="modal-body">
+                <div class="field">
+                    <label class="field-label" for="repo-url">GitHub URL <span class="required-mark">*</span></label>
+                    <div class="input-row">
+                        <input type="text" id="repo-url" placeholder="https://github.com/user/repo" class="input" autocomplete="off" spellcheck="false" onblur="window.fetchRepoInfo&&window.fetchRepoInfo()">
+                        <button id="fetch-btn" class="btn btn-outline" type="button" title="获取仓库信息" aria-label="获取仓库信息">
+                            <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
                         </button>
                     </div>
                 </div>
 
-                <div id="repo-preview" class="note-panel hidden mb-3 p-3">
-                    <div class="flex items-center gap-3">
-                        <img id="preview-avatar" src="" class="repo-avatar w-9 h-9">
-                        <div class="flex-1 min-w-0">
-                            <p id="preview-name" class="font-black text-sm truncate"></p>
-                            <p id="preview-desc" class="text-xs truncate" style="color: var(--muted);"></p>
+                <div id="repo-preview" class="repo-preview hidden">
+                    <div class="repo-preview-head">
+                        <img id="preview-avatar" src="" alt="" class="repo-avatar" width="32" height="32">
+                        <div class="repo-main">
+                            <p id="preview-name" class="repo-preview-name"></p>
+                            <p id="preview-desc" class="repo-preview-desc"></p>
                         </div>
                     </div>
-                    <div class="card-meta flex items-center gap-3 mt-2">
-                        <span><i class="fas fa-star mr-1" style="color: var(--amber);"></i><span id="preview-stars"></span></span>
-                        <span><i class="fas fa-code mr-1"></i><span id="preview-lang"></span></span>
+                    <div class="repo-preview-meta">
+                        <span><svg class="icon" aria-hidden="true"><use href="#i-star"></use></svg><span id="preview-stars"></span></span>
+                        <span><svg class="icon" aria-hidden="true"><use href="#i-code"></use></svg><span id="preview-lang"></span></span>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="field-label block mb-1.5">分类 <span class="required-mark">*</span></label>
-                    <select id="repo-category" class="form-input px-3 py-2">
+                <div class="field">
+                    <label class="field-label" for="repo-category">分类 <span class="required-mark">*</span></label>
+                    <select id="repo-category" class="select">
                         <option value="">选择分类...</option>
-                        <option value="tools">🔧 效率工具</option>
-                        <option value="learning">📚 学习资源</option>
-                        <option value="inspiration">💡 参考灵感</option>
-                        <option value="infrastructure">📦 基础建设</option>
+                        <option value="tools">效率工具</option>
+                        <option value="learning">学习资源</option>
+                        <option value="inspiration">参考灵感</option>
+                        <option value="infrastructure">基础建设</option>
                     </select>
-                    <div id="custom-category-input" class="hidden mt-2">
-                        <div class="flex gap-2">
-                            <input type="text" id="new-category-name" placeholder="分类名称" class="form-input flex-1 px-3 py-2">
-                            <button id="save-category-btn" class="text-button primary-action px-3 py-2 text-sm">添加</button>
-                            <button id="cancel-category-btn" class="secondary-action px-3 py-2 text-sm">取消</button>
-                        </div>
+                    <div id="custom-category-input" class="input-row hidden" style="margin-top: var(--sp-xs)">
+                        <input type="text" id="new-category-name" placeholder="分类名称" class="input">
+                        <button id="save-category-btn" class="btn btn-primary" type="button">添加</button>
+                        <button id="cancel-category-btn" class="btn btn-outline" type="button">取消</button>
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="field-label block mb-1.5">一句话评价</label>
-                    <input type="text" id="repo-title" placeholder="为什么推荐这个仓库？"
-                        class="form-input px-3 py-2">
+                <div class="field">
+                    <label class="field-label" for="repo-title">一句话评价</label>
+                    <input type="text" id="repo-title" placeholder="为什么推荐这个仓库？" class="input">
                 </div>
 
-                <div class="mb-4">
-                    <label class="field-label block mb-1.5">详细笔记</label>
-                    <textarea id="repo-notes" placeholder="更多想法..." rows="3"
-                        class="form-input px-3 py-2 resize-none"></textarea>
+                <div class="field">
+                    <label class="field-label" for="repo-notes">详细笔记</label>
+                    <textarea id="repo-notes" placeholder="更多想法..." rows="3" class="textarea"></textarea>
                 </div>
 
-                <div class="flex items-center gap-2 mb-4">
-                    <input type="checkbox" id="repo-starred" class="checkbox-control">
-                    <label for="repo-starred" class="text-sm font-bold" style="color: var(--muted);">标记为精选</label>
-                </div>
+                <label class="checkbox-row" for="repo-starred">
+                    <input type="checkbox" id="repo-starred">
+                    <span>标记为精选</span>
+                </label>
 
-                <div class="flex gap-3">
-                    <button id="cancel-btn" class="secondary-action flex-1 py-2">取消</button>
-                    <button id="save-btn" class="text-button primary-action flex-1 py-2">添加</button>
+                <div class="modal-actions">
+                    <button id="cancel-btn" class="btn btn-outline" type="button">取消</button>
+                    <button id="save-btn" class="btn btn-primary" type="button">添加</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Custom Confirm Dialog -->
-    <div id="confirm-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="modal-panel w-full max-w-sm p-6">
-            <p class="label-mono">Confirm</p>
-            <h3 class="text-lg font-black mb-2">确认操作</h3>
-            <p id="confirm-message" class="text-sm mb-6" style="color: var(--muted);"></p>
-            <div class="flex gap-3">
-                <button id="confirm-cancel" class="secondary-action flex-1 py-2">取消</button>
-                <button id="confirm-ok" class="danger-action flex-1 py-2">确定</button>
+    <!-- Confirm Dialog -->
+    <div id="confirm-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+        <div class="modal-panel is-sm">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">Confirm</p>
+                    <h3 id="confirm-title" class="modal-title">确认操作</h3>
+                </div>
+                <button id="confirm-close" class="icon-btn" type="button" title="关闭" aria-label="关闭">
+                    <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-message" class="field-note" style="margin-top: 0"></p>
+                <div class="modal-actions">
+                    <button id="confirm-cancel" class="btn btn-outline" type="button">取消</button>
+                    <button id="confirm-ok" class="btn btn-primary" type="button">确定</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Token Input Modal -->
-    <div id="token-modal" class="modal-backdrop hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="modal-panel w-full max-w-md overflow-hidden">
-            <div class="modal-header px-6 py-4 border-b">
-                <p class="label-mono">GitHub Sync</p>
-                <h3 class="text-lg font-black">GitHub 登录</h3>
-                <p class="text-sm mt-1" style="color: var(--muted);">输入 Personal Access Token 以同步数据</p>
+    <!-- GitHub Token Modal -->
+    <div id="token-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="token-title">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <div>
+                    <p class="eyebrow">GitHub sync</p>
+                    <h3 id="token-title" class="modal-title">GitHub 登录</h3>
+                </div>
+                <button id="token-close" class="icon-btn" type="button" title="关闭" aria-label="关闭">
+                    <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+                </button>
             </div>
 
-            <div class="px-6 py-4">
-                <div class="note-panel p-3 mb-4">
-                    <p class="text-sm font-black mb-2">获取 Token 步骤：</p>
-                    <ol class="text-sm space-y-1 list-decimal list-inside">
-                        <li>访问 <a href="https://github.com/settings/tokens" target="_blank" class="underline hover:text-blue-900">github.com/settings/tokens</a></li>
+            <div class="modal-body">
+                <div class="note-panel" style="margin-bottom: var(--sp-md)">
+                    <p><strong>获取 Token 步骤：</strong></p>
+                    <ol>
+                        <li>访问 <a href="https://github.com/settings/tokens" target="_blank" rel="noopener noreferrer">github.com/settings/tokens</a></li>
                         <li>点击 Generate new token (classic)</li>
                         <li>勾选 <strong>gist</strong> 权限</li>
                         <li>生成并复制 Token</li>
                     </ol>
                 </div>
 
-                <label class="field-label block mb-2">GitHub Token</label>
-                <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx"
-                    class="form-input px-4 py-2.5"
-                    autocomplete="off">
-                <p class="label-mono mt-2 normal-case" style="text-transform: none;">Token 仅存储在浏览器本地，不会上传到任何服务器</p>
-            </div>
+                <div class="field">
+                    <label class="field-label" for="token-input">GitHub Token</label>
+                    <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx" class="input" autocomplete="off">
+                    <p class="field-note">Token 仅存储在浏览器本地，不会上传到任何服务器。</p>
+                </div>
 
-            <div class="modal-footer px-6 py-4 border-t flex gap-3">
-                <button id="token-cancel" class="secondary-action flex-1 py-2.5 text-sm">取消</button>
-                <button id="token-confirm" class="text-button primary-action flex-1 py-2.5 text-sm">登录</button>
+                <div class="modal-actions">
+                    <button id="token-cancel" class="btn btn-outline" type="button">取消</button>
+                    <button id="token-confirm" class="btn btn-primary" type="button">登录</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Toast -->
-    <div id="toast" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform -translate-y-2 opacity-0">
-        <div class="bg-white shadow-xl flex items-center gap-3 min-w-[320px] rounded-lg border border-gray-200 px-4 py-3">
-            <div id="toast-icon" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
-                <i class="fas fa-info text-sm"></i>
+    <div id="toast" class="toast" role="status" aria-live="polite">
+        <div class="toast-inner">
+            <div id="toast-icon" class="toast-icon">
+                <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
             </div>
-            <div class="flex-1">
-                <p id="toast-message" class="text-sm font-medium text-gray-800"></p>
-            </div>
-            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600 transition">
-                <i class="fas fa-times"></i>
+            <p id="toast-message" class="toast-message"></p>
+            <button class="toast-close" type="button" onclick="hideToast()" aria-label="关闭提示">
+                <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
             </button>
         </div>
     </div>
 
     <script>
+
         // ===== GitHub OAuth & Gist Sync Configuration =====
         const GITHUB_CLIENT_ID = 'YOUR_CLIENT_ID'; // 请替换为您的 GitHub OAuth App Client ID
         const REDIRECT_URI = window.location.origin + window.location.pathname;
@@ -804,7 +2243,7 @@
                 description: '🚀 基于 Claude Code 的去AI味写作系统',
                 language: 'Markdown',
                 stars: '2.1k',
-                category: 'ai',
+                category: 'tools',
                 title: 'AI写作工作流，反AI味设计值得借鉴',
                 notes: 'Skills + Subagents 架构很棒',
                 starred: true,
@@ -818,7 +2257,7 @@
         let editingRepoId = null;
 
         // 懒加载配置
-        const GRID_ITEMS_PER_BATCH = 16; // 网格视图：16个（4行x4列）
+        const GRID_ITEMS_PER_BATCH = 12; // 网格视图：12个（4行x3列）
         const LIST_ITEMS_PER_BATCH = 20; // 列表视图：20个
         let visibleItems = GRID_ITEMS_PER_BATCH; // 当前已加载数量
         let isLoading = false; // 是否正在加载
@@ -850,8 +2289,41 @@
         const emptyState = document.getElementById('empty-state');
         const addModal = document.getElementById('add-modal');
         const toast = document.getElementById('toast');
+        let toastTimer = null;
 
-        // ===== GitHub OAuth Functions =====
+        // 用户输入转义：仓库名/描述/评价可能来自导入的 JSON
+        function esc(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function safeUrl(value) {
+            try {
+                const url = new URL(String(value || ''), window.location.origin);
+                if (url.protocol === 'http:' || url.protocol === 'https:') return url.href;
+            } catch (error) {}
+            return '#';
+        }
+
+        function icon(name, className = '') {
+            return `<svg class="icon${className ? ' ' + className : ''}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
+        }
+
+        function formatSyncTime(date) {
+            try {
+                return date
+                    .toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+                    .replace(/\//g, '.');
+            } catch (error) {
+                return '—';
+            }
+        }
+
+        // ===== GitHub OAuth Functions =====        // ===== GitHub OAuth Functions =====
 
         // 检查是否已登录
         function checkAuthStatus() {
@@ -884,6 +2356,7 @@
 
             if (currentUser && currentUser.avatar_url) {
                 avatarImg.src = currentUser.avatar_url;
+                avatarImg.alt = (currentUser.login || 'GitHub') + ' 头像';
                 avatarImg.classList.remove('hidden');
                 avatarFallback.classList.add('hidden');
             } else {
@@ -893,8 +2366,10 @@
 
             document.getElementById('user-name').textContent = currentUser?.name || currentUser?.login || 'GitHub User';
             document.getElementById('user-login').textContent = '@' + (currentUser?.login || 'unknown');
+            document.getElementById('user-avatar-btn').setAttribute('aria-expanded', 'false');
 
-            updateSyncStatus('synced');
+            // 登录成功但尚未拉到 Gist 时，先显示未同步，避免伪造时间
+            updateSyncStatus('offline');
         }
 
         // 显示未登录 UI
@@ -902,9 +2377,14 @@
             document.getElementById('login-btn').classList.remove('hidden');
             document.getElementById('user-menu-container').classList.add('hidden');
             document.getElementById('cloud-sync-status').classList.add('hidden');
+            document.getElementById('user-menu').classList.add('hidden');
+            document.getElementById('sync-time').textContent = '—';
+            document.getElementById('last-sync').textContent = '—';
+            document.getElementById('user-avatar-btn').setAttribute('aria-expanded', 'false');
             currentUser = null;
         }
 
+        // GitHub 登录
         // GitHub 登录
         function login() {
             // 如果没有配置 Client ID，使用手动输入 Token 的方式
@@ -926,6 +2406,7 @@
             const input = document.getElementById('token-input');
             const confirmBtn = document.getElementById('token-confirm');
             const cancelBtn = document.getElementById('token-cancel');
+            const closeBtn = document.getElementById('token-close');
 
             modal.classList.remove('hidden');
             input.value = '';
@@ -951,6 +2432,7 @@
             // 绑定事件
             confirmBtn.onclick = handleConfirm;
             cancelBtn.onclick = handleCancel;
+            closeBtn.onclick = handleCancel;
 
             // 回车确认
             input.onkeydown = (e) => {
@@ -967,6 +2449,7 @@
             };
         }
 
+        // 隐藏 Token 模态框
         // 隐藏 Token 模态框
         function hideTokenModal() {
             const modal = document.getElementById('token-modal');
@@ -1105,7 +2588,10 @@
         // 切换用户菜单显示
         function toggleUserMenu() {
             const menu = document.getElementById('user-menu');
+            const button = document.getElementById('user-avatar-btn');
+            const willOpen = menu.classList.contains('hidden');
             menu.classList.toggle('hidden');
+            button.setAttribute('aria-expanded', String(willOpen));
         }
 
         // 点击外部关闭菜单
@@ -1114,33 +2600,40 @@
             const menu = document.getElementById('user-menu');
             if (!container.contains(e.target) && !menu.classList.contains('hidden')) {
                 menu.classList.add('hidden');
+                document.getElementById('user-avatar-btn').setAttribute('aria-expanded', 'false');
             }
         }
 
-        // ===== Gist Sync Functions =====
+        // ===== Gist Sync Functions =====        // ===== Gist Sync Functions =====
 
         // 更新同步状态显示
         function updateSyncStatus(status, message = '') {
             const dot = document.getElementById('sync-status-dot');
             const text = document.getElementById('sync-status-text');
             const time = document.getElementById('sync-time');
+            const lastSync = document.getElementById('last-sync');
+            const cloudText = document.getElementById('cloud-sync-text');
 
             const statusMap = {
-                'syncing': { color: 'bg-yellow-400', text: '同步中...', icon: 'fa-sync fa-spin' },
-                'synced': { color: 'bg-green-400', text: '已同步 ✓', icon: 'fa-check' },
-                'error': { color: 'bg-red-400', text: message || '同步失败', icon: 'fa-exclamation' },
-                'offline': { color: 'bg-gray-400', text: '未同步', icon: 'fa-cloud' }
+                syncing: { cls: 'is-syncing', text: '同步中…', cloud: '正在同步…' },
+                synced: { cls: 'is-synced', text: '已同步', cloud: 'Gist 已同步' },
+                error: { cls: 'is-error', text: message || '同步失败', cloud: 'Gist 同步失败' },
+                offline: { cls: 'is-offline', text: '未同步', cloud: 'Gist 已连接' }
             };
 
-            const s = statusMap[status] || statusMap['offline'];
-            dot.className = `w-2 h-2 rounded-full ${s.color}`;
-            text.textContent = s.text;
+            const current = statusMap[status] || statusMap.offline;
+            dot.className = 'sync-dot ' + current.cls;
+            text.textContent = current.text;
+            if (cloudText) cloudText.textContent = current.cloud;
 
             if (status === 'synced') {
-                time.textContent = new Date().toLocaleString('zh-CN');
+                const stamp = formatSyncTime(new Date());
+                if (time) time.textContent = stamp;
+                if (lastSync) lastSync.textContent = stamp;
             }
         }
 
+        // 同步到 Gist
         // 同步到 Gist
         async function syncToGist() {
             if (!githubToken || isSyncing) return;
@@ -1230,6 +2723,7 @@
                         // 没有找到 Gist，首次使用，保持 synced 状态（表示登录成功）
                         // 数据将保存在本地，下次保存时会自动创建 Gist
                         isSyncing = false;
+                        updateSyncStatus('offline');
                         return;
                     }
                 }
@@ -1331,33 +2825,37 @@
         // 渲染分类筛选按钮
         function renderCategoryFilters() {
             const container = document.getElementById('category-filters');
-            const allBtn = container.querySelector('[data-category="all"]');
 
             // 清除现有分类按钮（保留"全部"按钮）
             container.querySelectorAll('.filter-btn:not([data-category="all"])').forEach(btn => btn.remove());
-            container.querySelectorAll('.category-wrapper').forEach(wrapper => wrapper.remove());
+            container.querySelectorAll('.category-item').forEach(wrapper => wrapper.remove());
 
             // 添加所有分类按钮
             Object.entries(categoryNames).forEach(([key, name]) => {
-                const isCustom = customCategories[key];
+                const isCustom = Boolean(customCategories[key]);
                 const isActive = currentCategory === key;
+
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'filter-btn' + (isActive ? ' is-active' : '');
+                btn.dataset.category = key;
+                btn.innerHTML = icon('tag');
+                const label = document.createElement('span');
+                label.textContent = name;
+                btn.appendChild(label);
+                btn.onclick = () => filterByCategory(key);
 
                 if (isCustom) {
                     // 自定义分类：使用 wrapper 包含按钮和删除图标
                     const wrapper = document.createElement('div');
-                    wrapper.className = 'category-wrapper relative group';
+                    wrapper.className = 'category-item';
 
-                    const btn = document.createElement('button');
-                    btn.className = `filter-btn pr-8 ${isActive ? 'is-active' : ''}`;
-                    btn.dataset.category = key;
-                    btn.innerHTML = `<i class="fas fa-tag mr-1"></i> ${name}`;
-                    btn.onclick = () => filterByCategory(key);
-
-                    // 删除按钮
                     const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'absolute right-1 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-red-700 hover:bg-red-50 rounded opacity-0 group-hover:opacity-100 transition';
-                    deleteBtn.innerHTML = '<i class="fas fa-times text-xs"></i>';
+                    deleteBtn.type = 'button';
+                    deleteBtn.className = 'category-remove';
+                    deleteBtn.innerHTML = icon('x');
                     deleteBtn.title = '删除分类';
+                    deleteBtn.setAttribute('aria-label', `删除分类 ${name}`);
                     deleteBtn.onclick = (e) => {
                         e.stopPropagation();
                         deleteCustomCategory(key, name);
@@ -1367,17 +2865,12 @@
                     wrapper.appendChild(deleteBtn);
                     container.appendChild(wrapper);
                 } else {
-                    // 默认分类：普通按钮
-                    const btn = document.createElement('button');
-                    btn.className = `filter-btn ${isActive ? 'is-active' : ''}`;
-                    btn.dataset.category = key;
-                    btn.innerHTML = `<i class="fas fa-tag mr-1"></i> ${name}`;
-                    btn.onclick = () => filterByCategory(key);
                     container.appendChild(btn);
                 }
             });
         }
 
+        // 删除自定义分类
         // 删除自定义分类
         function deleteCustomCategory(key, name) {
             // 检查该分类下是否有仓库
@@ -1477,6 +2970,7 @@
             const messageEl = document.getElementById('confirm-message');
             const okBtn = document.getElementById('confirm-ok');
             const cancelBtn = document.getElementById('confirm-cancel');
+            const closeBtn = document.getElementById('confirm-close');
 
             messageEl.textContent = message;
             confirmCallback = onConfirm;
@@ -1499,6 +2993,7 @@
             const cleanup = () => {
                 okBtn.removeEventListener('click', handleOk);
                 cancelBtn.removeEventListener('click', handleCancel);
+                closeBtn.removeEventListener('click', handleCancel);
                 modal.removeEventListener('click', handleOutsideClick);
             };
 
@@ -1510,6 +3005,7 @@
 
             okBtn.addEventListener('click', handleOk);
             cancelBtn.addEventListener('click', handleCancel);
+            closeBtn.addEventListener('click', handleCancel);
             modal.addEventListener('click', handleOutsideClick);
         }
 
@@ -1525,9 +3021,20 @@
             const badge = document.getElementById('starred-count-badge');
             if (badge) {
                 badge.textContent = starredCount;
-                // 如果有精选，显示黄色背景
-                badge.style.color = starredCount > 0 ? 'var(--amber)' : 'var(--muted)';
+                badge.classList.toggle('has-count', starredCount > 0);
             }
+        }
+
+        // 空状态文案：区分「还没收藏」和「筛选无结果」
+        function updateEmptyState() {
+            const searchTerm = document.getElementById('search-input').value.trim();
+            const hasFilter = currentCategory !== 'all' || showOnlyStarred || Boolean(searchTerm);
+
+            document.getElementById('empty-title').textContent = hasFilter ? '没有匹配的仓库' : '还没有收藏的仓库';
+            document.getElementById('empty-copy').textContent = hasFilter
+                ? '换个关键词或分类再试试。'
+                : '把值得长期保留的 GitHub 项目收进来，按自己的方式整理。';
+            document.getElementById('empty-action').classList.toggle('hidden', hasFilter);
         }
 
         // 渲染
@@ -1545,80 +3052,55 @@
                 filteredRepos = filteredRepos.filter(r => r.starred);
             }
 
-            // 搜索筛选
-            const searchTermLower = document.getElementById('search-input').value.toLowerCase();
-            if (searchTermLower) {
+            // 搜索筛选（名称 / 作者 / 评价 / 描述 / 分类）
+            const searchTerm = document.getElementById('search-input').value.trim();
+            if (searchTerm) {
+                const query = searchTerm.toLowerCase();
                 filteredRepos = filteredRepos.filter(r =>
-                    r.name.toLowerCase().includes(searchTermLower) ||
-                    r.owner.toLowerCase().includes(searchTermLower) ||
-                    (r.title || '').toLowerCase().includes(searchTermLower) ||
-                    (r.description || '').toLowerCase().includes(searchTermLower)
+                    [r.name, r.owner, r.title, r.description, categoryNames[r.category] || r.category]
+                        .some(value => (value || '').toLowerCase().includes(query))
                 );
             }
+
+            document.getElementById('library-count').textContent = `共 ${filteredRepos.length} 个`;
+
+            const searchInfo = document.getElementById('search-info');
+            const loadMoreWrap = document.getElementById('load-more');
 
             if (filteredRepos.length === 0) {
                 repoList.innerHTML = '';
                 emptyState.classList.remove('hidden');
-                document.getElementById('load-more-btn').classList.add('hidden');
-                // 清除搜索提示
-                const existingSearchInfo = document.querySelector('.search-info');
-                if (existingSearchInfo) {
-                    existingSearchInfo.remove();
-                }
+                loadMoreWrap.classList.add('hidden');
+                searchInfo.classList.add('hidden');
+                updateEmptyState();
                 return;
             }
 
             emptyState.classList.add('hidden');
 
             // 搜索结果提示
-            const searchTerm = document.getElementById('search-input').value.trim();
-            let searchInfo = '';
             if (searchTerm) {
-                searchInfo = `<div class="text-sm text-gray-500 mb-4 px-4">搜索 "${searchTerm}" 找到 ${filteredRepos.length} 个结果</div>`;
+                searchInfo.textContent = `搜索“${searchTerm}”找到 ${filteredRepos.length} 个结果`;
+                searchInfo.classList.remove('hidden');
+            } else {
+                searchInfo.classList.add('hidden');
             }
 
             // 懒加载：只渲染前 visibleItems 个
             const reposToRender = filteredRepos.slice(0, visibleItems);
 
-            // 设置容器样式
-            if (currentView === 'grid') {
-                // 使用固定列数，卡片高度一致
-                repoList.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4';
-            } else {
-                repoList.className = 'flex flex-col gap-2.5';
-            }
-
-            // 渲染仓库
+            repoList.className = `repo-list is-${currentView}`;
             repoList.innerHTML = reposToRender.map(r => {
-                if (currentView === 'grid') {
-                    return renderGridCard(r);
-                } else {
-                    return renderListCard(r);
-                }
+                return currentView === 'grid' ? renderGridCard(r) : renderListCard(r);
             }).join('');
-            
-            // 清除之前的搜索提示
-            const existingSearchInfo = document.querySelector('.search-info');
-            if (existingSearchInfo) {
-                existingSearchInfo.remove();
-            }
-            
-            // 插入搜索提示（在卡片下方）
-            if (searchInfo) {
-                const searchDiv = document.createElement('div');
-                searchDiv.className = 'search-info label-mono mt-3';
-                searchDiv.innerHTML = `搜索 "${searchTerm}" 找到 ${filteredRepos.length} 个结果`;
-                repoList.parentNode.insertBefore(searchDiv, repoList.nextSibling);
-            }
 
             // 显示或隐藏"加载更多"按钮
-            const loadMoreBtn = document.getElementById('load-more-btn');
             if (visibleItems >= filteredRepos.length) {
-                loadMoreBtn.classList.add('hidden');
+                loadMoreWrap.classList.add('hidden');
             } else {
-                loadMoreBtn.classList.remove('hidden');
-                loadMoreBtn.querySelector('button').innerHTML = `
-                    <i class="fas fa-chevron-down mr-1"></i> 加载更多 (${filteredRepos.length - visibleItems} 个)`;
+                loadMoreWrap.classList.remove('hidden');
+                document.getElementById('load-more-btn').innerHTML =
+                    `${icon('chevron-down')}<span>加载更多（剩余 ${filteredRepos.length - visibleItems} 个）</span>`;
             }
 
             // 初始化拖拽
@@ -1627,84 +3109,82 @@
 
         // 渲染网格卡片
         function renderGridCard(r) {
+            const id = esc(r.id);
+            const owner = esc(r.owner || 'unknown');
+            const name = esc(r.name || '');
+            const url = esc(safeUrl(r.url));
+            const avatar = esc(`https://github.com/${encodeURIComponent(r.owner || 'github')}.png`);
+            const category = esc(categoryNames[r.category] || r.category || '未分类');
+            const description = r.description ? esc(r.description) : '';
+            const note = r.title ? esc(r.title) : '';
+
+            const meta = [
+                r.language ? `<span class="repo-meta-item">${icon('code')}${esc(r.language)}</span>` : '',
+                r.stars ? `<span class="repo-meta-item">${icon('star')}${esc(r.stars)}</span>` : ''
+            ].join('');
+
             return `
-                <div class="repo-card p-4 flex flex-col h-full" draggable="true" data-id="${r.id}">
-                    <div class="flex items-start gap-3 flex-1">
-                        <img src="https://github.com/${r.owner}.png" class="repo-avatar w-10 h-10 flex-shrink-0" onerror="this.src='https://github.com/github.png'">
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2 mb-1 min-w-0">
-                                <span class="category-chip px-2 py-0.5">${categoryNames[r.category] || r.category}</span>
-                                ${r.starred ? '<i class="fas fa-star" style="color: var(--amber);"></i>' : ''}
+                <article class="repo-card is-grid" draggable="true" data-id="${id}">
+                    <div class="repo-card-top">
+                        <img src="${avatar}" alt="" class="repo-avatar" width="32" height="32" loading="lazy" decoding="async" onerror="this.src='https://github.com/github.png'">
+                        <div class="repo-main">
+                            <div class="repo-head">
+                                <span class="category-chip">${category}</span>
+                                ${r.starred ? icon('star-fill', 'repo-star') : ''}
                             </div>
-                            <a href="${r.url}" target="_blank" class="repo-title-link truncate block min-w-0">${r.owner}/${r.name}</a>
-                            ${r.description ? `<p class="text-xs mt-1 truncate" style="color: var(--muted);">${r.description}</p>` : ''}
-                            ${r.title ? `<p class="text-sm mt-2 line-clamp-2" style="color: #343a33;">${r.title}</p>` : '<p class="text-sm mt-2" style="color: var(--muted);">&nbsp;</p>'}
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="repo-name" title="${owner}/${name}"><span class="repo-owner">${owner}/</span>${name}</a>
+                            ${description ? `<p class="repo-desc">${description}</p>` : ''}
+                            ${note ? `<p class="repo-note">${note}</p>` : ''}
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between mt-3 pt-3 border-t" style="border-color: var(--line);">
-                        <div class="flex items-center gap-3 card-meta">
-                            ${r.language ? `<span><i class="fas fa-code mr-1"></i>${r.language}</span>` : '<span>&nbsp;</span>'}
-                            ${r.stars ? `<span><i class="fas fa-star mr-1" style="color: var(--amber);"></i>${r.stars}</span>` : '<span>&nbsp;</span>'}
-                        </div>
-                        <div class="repo-controls flex gap-1">
-                            <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="repo-action w-8 h-8 flex items-center justify-center" title="编辑">
-                                <i class="fas fa-pen text-xs"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="repo-action w-8 h-8 flex items-center justify-center" title="${r.starred ? '取消精选' : '精选'}" style="${r.starred ? 'color: var(--amber);' : 'color: var(--muted);'}">
-                                <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="repo-action w-8 h-8 flex items-center justify-center" title="删除" style="color: var(--clay);">
-                                <i class="fas fa-trash text-xs"></i>
-                            </button>
+                    <div class="repo-foot">
+                        <div class="repo-meta">${meta}</div>
+                        <div class="repo-actions">
+                            <button type="button" class="icon-btn" data-action="edit" data-id="${id}" title="编辑" aria-label="编辑 ${owner}/${name}">${icon('pencil')}</button>
+                            <button type="button" class="icon-btn" data-action="star" data-id="${id}" aria-pressed="${r.starred ? 'true' : 'false'}" title="${r.starred ? '取消精选' : '加入精选'}" aria-label="${r.starred ? '取消精选' : '加入精选'} ${owner}/${name}">${icon(r.starred ? 'star-fill' : 'star')}</button>
+                            <button type="button" class="icon-btn is-danger" data-action="delete" data-id="${id}" title="删除" aria-label="删除 ${owner}/${name}">${icon('trash')}</button>
                         </div>
                     </div>
-                </div>
+                </article>
             `;
         }
 
         // 渲染列表卡片
         function renderListCard(r) {
+            const id = esc(r.id);
+            const owner = esc(r.owner || 'unknown');
+            const name = esc(r.name || '');
+            const url = esc(safeUrl(r.url));
+            const avatar = esc(`https://github.com/${encodeURIComponent(r.owner || 'github')}.png`);
+            const category = esc(categoryNames[r.category] || r.category || '未分类');
+            const description = r.description ? esc(r.description) : '';
+            const note = r.title ? esc(r.title) : '';
+
+            const meta = [
+                r.language ? `<span class="repo-meta-item">${icon('code')}${esc(r.language)}</span>` : '',
+                r.stars ? `<span class="repo-meta-item">${icon('star')}${esc(r.stars)}</span>` : ''
+            ].join('');
+
             return `
-                <div class="repo-card p-3 flex items-center gap-3" draggable="true" data-id="${r.id}">
-                    <img src="https://github.com/${r.owner}.png" class="repo-avatar w-9 h-9" onerror="this.src='https://github.com/github.png'">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 min-w-0">
-                            <span class="category-chip px-2 py-0.5">${categoryNames[r.category] || r.category}</span>
-                            ${r.starred ? '<i class="fas fa-star" style="color: var(--amber);"></i>' : ''}
-                            <a href="${r.url}" target="_blank" class="repo-title-link truncate flex-1 min-w-0">${r.owner}/${r.name}</a>
+                <article class="repo-card is-list" draggable="true" data-id="${id}">
+                    <img src="${avatar}" alt="" class="repo-avatar" width="32" height="32" loading="lazy" decoding="async" onerror="this.src='https://github.com/github.png'">
+                    <div class="repo-main">
+                        <div class="repo-head">
+                            <span class="category-chip">${category}</span>
+                            ${r.starred ? icon('star-fill', 'repo-star') : ''}
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="repo-name" title="${owner}/${name}"><span class="repo-owner">${owner}/</span>${name}</a>
                         </div>
-                        ${r.title ? `<p class="text-xs mt-0.5 truncate" style="color: var(--muted);">${r.title}</p>` : ''}
+                        ${note ? `<p class="repo-note">${note}</p>` : description ? `<p class="repo-desc">${description}</p>` : ''}
                     </div>
-                    <div class="repo-controls flex items-center gap-1">
-                        ${r.language ? `<span class="card-meta mr-2"><i class="fas fa-code mr-1"></i>${r.language}</span>` : ''}
-                        ${r.stars ? `<span class="card-meta mr-2"><i class="fas fa-star mr-1" style="color: var(--amber);"></i>${r.stars}</span>` : ''}
-                        <button onclick="event.stopPropagation(); window.editRepo('${r.id}')" class="repo-action w-7 h-7 flex items-center justify-center" title="编辑">
-                            <i class="fas fa-pen text-xs"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); window.toggleStar('${r.id}')" class="repo-action w-7 h-7 flex items-center justify-center" title="${r.starred ? '取消精选' : '精选'}" style="${r.starred ? 'color: var(--amber);' : 'color: var(--muted);'}">
-                            <i class="${r.starred ? 'fas' : 'far'} fa-star text-xs"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); window.deleteRepo('${r.id}')" class="repo-action w-7 h-7 flex items-center justify-center" title="删除" style="color: var(--clay);">
-                            <i class="fas fa-trash text-xs"></i>
-                        </button>
+                    <div class="repo-meta">${meta}</div>
+                    <div class="repo-actions">
+                        <button type="button" class="icon-btn" data-action="edit" data-id="${id}" title="编辑" aria-label="编辑 ${owner}/${name}">${icon('pencil')}</button>
+                        <button type="button" class="icon-btn" data-action="star" data-id="${id}" aria-pressed="${r.starred ? 'true' : 'false'}" title="${r.starred ? '取消精选' : '加入精选'}" aria-label="${r.starred ? '取消精选' : '加入精选'} ${owner}/${name}">${icon(r.starred ? 'star-fill' : 'star')}</button>
+                        <button type="button" class="icon-btn is-danger" data-action="delete" data-id="${id}" title="删除" aria-label="删除 ${owner}/${name}">${icon('trash')}</button>
                     </div>
-                </div>
+                </article>
             `;
-        }
-
-        // 初始化懒加载
-        function initLazyLoad() {
-            const repoList = document.getElementById('repo-list');
-            repoList.addEventListener('scroll', () => {
-                if (isLoading) return;
-
-                const { scrollTop, scrollHeight, clientHeight } = repoList;
-                if (scrollTop + clientHeight >= scrollHeight - 100) {
-                    // 接近底部，加载更多
-                    loadMore();
-                }
-            });
         }
 
         // 加载更多
@@ -1719,54 +3199,35 @@
 
         // 显示提示
         function showToast(msg, type = 'info') {
-            const toast = document.getElementById('toast');
             const iconEl = document.getElementById('toast-icon');
             const msgEl = document.getElementById('toast-message');
 
-            // 设置图标
-            const icons = {
-                success: '<i class="fas fa-check text-green-600"></i>',
-                error: '<i class="fas fa-exclamation text-red-600"></i>',
-                warning: '<i class="fas fa-exclamation-triangle text-yellow-600"></i>',
-                info: '<i class="fas fa-info text-blue-600"></i>'
+            const iconMap = {
+                success: 'check',
+                error: 'alert',
+                warning: 'alert',
+                info: 'info'
             };
 
-            // 设置图标背景色
-            const bgColors = {
-                success: 'bg-green-100',
-                error: 'bg-red-100',
-                warning: 'bg-yellow-100',
-                info: 'bg-blue-100'
-            };
-
-            iconEl.innerHTML = icons[type] || icons.info;
-            iconEl.className = `w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${bgColors[type] || bgColors.info}`;
+            iconEl.className = 'toast-icon is-' + type;
+            iconEl.innerHTML = icon(iconMap[type] || 'info');
             msgEl.textContent = msg;
 
-            // 显示动画
-            toast.classList.remove('hidden');
-            requestAnimationFrame(() => {
-                toast.classList.remove('-translate-y-2', 'opacity-0');
-                toast.classList.add('translate-y-0', 'opacity-100');
-            });
-
-            // 自动隐藏
-            setTimeout(() => {
-                hideToast();
-            }, 3000);
+            toast.classList.add('is-visible');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(hideToast, 3000);
         }
 
         // 隐藏提示
         function hideToast() {
-            const toast = document.getElementById('toast');
-            toast.classList.add('-translate-y-2', 'opacity-0');
-            toast.classList.remove('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 300);
+            toast.classList.remove('is-visible');
+            if (toastTimer) {
+                clearTimeout(toastTimer);
+                toastTimer = null;
+            }
         }
 
+        // 添加/更新仓库
         // 添加/更新仓库
         async function addRepo() {
             const url = document.getElementById('repo-url').value.trim();
@@ -1794,7 +3255,7 @@
 
             // 编辑模式
             if (editingRepoId) {
-                const repo = repos.find(r => r.id === editingRepoId);
+                const repo = repos.find(r => String(r.id) === String(editingRepoId));
                 if (repo) {
                     repo.url = parsedRepo.url;
                     repo.owner = parsedRepo.owner;
@@ -1926,7 +3387,7 @@
 
         // 编辑仓库
         function editRepo(id) {
-            const repo = repos.find(r => r.id === id);
+            const repo = repos.find(r => String(r.id) === String(id));
             if (!repo) return;
 
             editingRepoId = id;
@@ -1945,7 +3406,7 @@
 
         // 切换精选
         async function toggleStar(id) {
-            const repo = repos.find(r => r.id === id);
+            const repo = repos.find(r => String(r.id) === String(id));
             if (!repo) return;
 
             repo.starred = !repo.starred;
@@ -1958,7 +3419,7 @@
         // 删除仓库
         function deleteRepo(id) {
             showConfirm('确定要删除这个仓库吗？', async () => {
-                repos = repos.filter(r => r.id !== id);
+                repos = repos.filter(r => String(r.id) !== String(id));
                 await saveRepos();
                 updateStats();
                 render();
@@ -2064,16 +3525,10 @@
             visibleItems = getItemsPerBatch(); // 重置懒加载
 
             const btn = document.getElementById('filter-starred');
-            const starredCount = repos.filter(r => r.starred).length;
+            btn.classList.toggle('is-active', showOnlyStarred);
+            btn.setAttribute('aria-pressed', String(showOnlyStarred));
 
-            if (showOnlyStarred) {
-                btn.classList.add('is-active');
-                btn.innerHTML = `<i class="fas fa-star"></i> 精选 <span id="starred-count-badge" class="label-mono" style="color: var(--amber);">${starredCount}</span>`;
-            } else {
-                btn.classList.remove('is-active');
-                updateStats();
-            }
-
+            updateStats();
             render();
         }
 
@@ -2086,13 +3541,10 @@
             const gridBtn = document.getElementById('view-grid');
             const listBtn = document.getElementById('view-list');
 
-            if (view === 'grid') {
-                gridBtn.classList.add('is-active');
-                listBtn.classList.remove('is-active');
-            } else {
-                listBtn.classList.add('is-active');
-                gridBtn.classList.remove('is-active');
-            }
+            gridBtn.classList.toggle('is-active', view === 'grid');
+            listBtn.classList.toggle('is-active', view === 'list');
+            gridBtn.setAttribute('aria-pressed', String(view === 'grid'));
+            listBtn.setAttribute('aria-pressed', String(view === 'list'));
 
             render();
         }
@@ -2103,6 +3555,7 @@
             document.getElementById('save-btn').textContent = '添加';
             resetForm();
             addModal.classList.remove('hidden');
+            setTimeout(() => document.getElementById('repo-url').focus(), 0);
         }
 
         function hideAddModal() {
@@ -2112,15 +3565,85 @@
             resetForm();
         }
 
-        // 暴露全局函数（供内联事件调用）
-        window.editRepo = editRepo;
-        window.toggleStar = toggleStar;
-        window.deleteRepo = deleteRepo;
+        // 暴露全局函数（供表单内联 onblur 调用）
         window.fetchRepoInfo = fetchRepoInfo;
-        window.loadMore = loadMore;
+
+        // 仓库卡片操作：事件委托，避免把用户字段拼进内联 JS
+        repoList.addEventListener('click', (e) => {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            const action = btn.dataset.action;
+
+            if (action === 'edit') editRepo(id);
+            if (action === 'star') toggleStar(id);
+            if (action === 'delete') deleteRepo(id);
+        });
+
+        // 主题切换（与主站共用 kiang-theme 键）
+        const themeButton = document.getElementById('theme-toggle');
+        const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function syncThemeLabel() {
+            const effective =
+                document.documentElement.getAttribute('data-theme') ||
+                (darkQuery.matches ? 'dark' : 'light');
+            themeButton.setAttribute('aria-label', effective === 'dark' ? '切换到浅色模式' : '切换到深色模式');
+        }
+
+        syncThemeLabel();
+
+        themeButton.addEventListener('click', () => {
+            const root = document.documentElement;
+            const current = root.getAttribute('data-theme') || (darkQuery.matches ? 'dark' : 'light');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('kiang-theme', next);
+            syncThemeLabel();
+        });
+
+        darkQuery.addEventListener('change', () => {
+            // 只在用户没有手动固定主题时跟随系统更新可访问名称
+            if (!document.documentElement.getAttribute('data-theme')) syncThemeLabel();
+        });
+
+        // 快捷键：⌘K / Ctrl+K 聚焦搜索；Esc 关闭浮层；/ 聚焦搜索
+        document.addEventListener('keydown', (e) => {
+            const target = e.target;
+            const typing =
+                target &&
+                (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                const searchInput = document.getElementById('search-input');
+                searchInput.focus();
+                searchInput.select();
+            } else if (e.key === '/' && !typing) {
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            } else if (e.key === 'Escape') {
+                document.getElementById('user-menu').classList.add('hidden');
+                document.getElementById('user-avatar-btn').setAttribute('aria-expanded', 'false');
+
+                const tokenModal = document.getElementById('token-modal');
+                if (!tokenModal.classList.contains('hidden')) tokenModal.classList.add('hidden');
+
+                if (!addModal.classList.contains('hidden')) hideAddModal();
+
+                const confirmModal = document.getElementById('confirm-modal');
+                if (!confirmModal.classList.contains('hidden')) {
+                    document.getElementById('confirm-cancel').click();
+                }
+            }
+        });
 
         // 事件绑定
         document.getElementById('add-btn').addEventListener('click', showAddModal);
+        document.getElementById('hero-add-btn').addEventListener('click', showAddModal);
+        document.getElementById('empty-add-btn').addEventListener('click', showAddModal);
         document.getElementById('close-modal').addEventListener('click', hideAddModal);
         document.getElementById('cancel-btn').addEventListener('click', hideAddModal);
         document.getElementById('save-btn').addEventListener('click', addRepo);
@@ -2128,7 +3651,9 @@
         document.getElementById('export-btn').addEventListener('click', exportData);
         document.getElementById('import-file').addEventListener('change', (e) => {
             if (e.target.files[0]) importData(e.target.files[0]);
+            e.target.value = '';
         });
+        document.getElementById('load-more-btn').addEventListener('click', loadMore);
         document.getElementById('search-input').addEventListener('input', searchRepos);
 
         // GitHub 登录相关事件
@@ -2143,6 +3668,11 @@
             }
         });
         document.addEventListener('click', handleClickOutside);
+
+        // 弹窗关闭按钮
+        document.getElementById('token-close').addEventListener('click', () => {
+            document.getElementById('token-modal').classList.add('hidden');
+        });
 
         // 分类筛选事件
         document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -2224,11 +3754,11 @@
             this.classList.remove('drag-over');
 
             const droppedId = this.dataset.id;
-            if (draggedId === droppedId) return;
+            if (String(draggedId) === String(droppedId)) return;
 
             // 找到拖拽的索引和目标索引
-            const draggedIndex = repos.findIndex(r => r.id === draggedId);
-            const droppedIndex = repos.findIndex(r => r.id === droppedId);
+            const draggedIndex = repos.findIndex(r => String(r.id) === String(draggedId));
+            const droppedIndex = repos.findIndex(r => String(r.id) === String(droppedId));
 
             if (draggedIndex === -1 || droppedIndex === -1) return;
 
@@ -2249,15 +3779,10 @@
 
         // 初始化
         async function init() {
-            // 先渲染一次以获取正确的布局
             renderCategoryFilters();
             updateCategorySelect();
             updateStats();
             toggleView(currentView);
-
-            render();
-            initDragAndDrop();
-            initLazyLoad(); // 初始化懒加载
 
             // 处理 OAuth 回调
             await handleOAuthCallback();
@@ -2266,6 +3791,7 @@
             checkAuthStatus();
         }
 
+        // 启动
         // 启动
         init();
     </script>
