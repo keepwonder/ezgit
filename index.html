@@ -322,25 +322,8 @@
         .brand {
             display: inline-flex;
             align-items: center;
-            gap: var(--sp-sm);
             flex: none;
             border-radius: var(--r-md);
-        }
-
-        .brand-mark {
-            width: 36px;
-            height: 36px;
-            display: grid;
-            place-items: center;
-            flex: none;
-            border-radius: var(--r-md);
-            background: var(--ink);
-            color: var(--paper);
-        }
-
-        .brand-mark .icon {
-            width: 18px;
-            height: 18px;
         }
 
         .brand-name {
@@ -1273,25 +1256,8 @@
         .footer-brand {
             display: flex;
             align-items: center;
-            gap: var(--sp-xs);
             color: var(--muted);
             font-size: var(--fs-meta);
-        }
-
-        .footer-mark {
-            width: 28px;
-            height: 28px;
-            display: grid;
-            place-items: center;
-            flex: none;
-            border: 1px solid var(--line);
-            border-radius: var(--r-sm);
-            color: var(--ink);
-        }
-
-        .footer-mark .icon {
-            width: 14px;
-            height: 14px;
         }
 
         .footer-brand strong {
@@ -1722,11 +1688,6 @@
                 margin-right: auto;
             }
 
-            .brand-mark {
-                width: 32px;
-                height: 32px;
-            }
-
             .search-box {
                 order: 3;
                 width: 100%;
@@ -1867,9 +1828,6 @@
     <header class="site-header">
         <div class="shell header-inner">
             <a class="brand" href="/" aria-label="EzGit 首页">
-                <span class="brand-mark" aria-hidden="true">
-                    <svg class="icon"><use href="#i-github"></use></svg>
-                </span>
                 <span class="brand-name">EzGit</span>
             </a>
 
@@ -2049,9 +2007,6 @@
     <footer class="site-footer">
         <div class="shell footer-inner">
             <div class="footer-brand">
-                <span class="footer-mark" aria-hidden="true">
-                    <svg class="icon is-filled"><use href="#i-github"></use></svg>
-                </span>
                 <span><strong>EzGit</strong> · 管理和发现有价值的 GitHub 仓库</span>
             </div>
             <nav class="footer-links" aria-label="页脚">
