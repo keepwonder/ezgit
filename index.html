@@ -58,116 +58,374 @@
            - 暗色跟随系统，可用 header 按钮覆盖（kiang-theme）
            ============================================================ */
 
-        :root {
-            color-scheme: light;
+        /* >>> GENERATED FROM tokens.css · 不要手改；改完跑 node scripts/sync-tokens.mjs <<< */
+/* =============================================================================
+ * Kiang 设计 token · 单一来源（SINGLE SOURCE OF TRUTH）
+ * =============================================================================
+ *
+ * ⚠️ 这是**唯一**可以定义设计 token 的文件。
+ *    任何站点（静态 HTML / Next / Tailwind）都必须从这里派生，不许手抄色值。
+ *
+ * 事实源（语义定义）：
+ *   site/DESIGN-COLOR.md      4 角色字色梯度 + 6 token 律
+ *   site/DESIGN-LAYOUT.md     4-8 律（圆角 4 档 / 间距 8 档 / 2 断点 / 3 层容器）
+ *   site/DESIGN-TYPOGRAPHY.md 字号 4 档 / 字重 3 档 / 字族 3 套 / 行高 4 档 / 字距 3 档
+ * 规范：
+ *   FRONTEND-STACK.md §4
+ * 分发（改完必须跑）：
+ *   node scripts/sync-tokens.mjs
+ *
+ * ── 结构（必须保持这个顺序）─────────────────────────────────────────────
+ *   §1 基础层   调色板：所有原始色值，只在这里出现一次
+ *   §2 语义层   站点语义 token：--ink / --emerald / …，引用 §1
+ *   §3 主题     [data-theme="dark"] + 系统偏好兜底
+ *   §4 尺度     字号 / 字重 / 字族 / 行高 / 字距 / 圆角 / 间距 / 阴影
+ *   §5 兼容别名 旧名 → 语义层，**只准收缩不准扩张**
+ *
+ * ── 改 token 的红线 ────────────────────────────────────────────────────
+ *   1. 新增颜色先进 §1 调色板，再在 §2 语义层引用；不要在语义层直接写 hex。
+ *   2. 不许新增同义 token（没有 --green，只有 --emerald）。
+ *   3. 语义层改名必须在 §5 补别名，且同一次提交里把引用方改完。
+ *   4. 暗色只覆盖语义层的"表面/文字/强调"三类，尺度类不随主题变化。
+ * ========================================================================== */
 
-            /* 字色 token */
-            --ink: #151713;
-            --muted: #62685f;
-            --line: rgba(21, 23, 19, 0.14);
-            --emerald: #047a55;
-            --emerald-strong: #035f43;
-            --amber: #bd6b1b;
-            --on-image: #ffffff;
-            --mist: #f1f1ef;
+/* =============================================================================
+ * §1 基础层 · 调色板
+ * 页面样式中不允许直接引用 pal-*，只能被 §2 引用。
+ * ========================================================================== */
+:root {
+  /* 中性色（暖墨绿灰，非纯灰） */
+  --pal-ink-900: #151713;
+  --pal-ink-700: #2a2d25;
+  --pal-ink-100: #e8eae2;
+  --pal-ink-050: #f0f2ea;
 
-            /* 面 */
-            --paper: #ffffff;
-            --surface: #ffffff;
-            --surface-blur: rgba(255, 255, 255, 0.86);
-            --overlay: rgba(21, 23, 19, 0.48);
-            --hover: rgba(21, 23, 19, 0.04);
-            --emerald-wash: rgba(4, 122, 85, 0.08);
-            --shadow-lift: 0 2px 4px rgba(43, 36, 24, 0.05), 0 12px 32px rgba(43, 36, 24, 0.1);
-            --shadow-deep: 0 4px 8px rgba(43, 36, 24, 0.05), 0 24px 56px rgba(43, 36, 24, 0.13);
+  --pal-muted-600: #62685f;
+  --pal-muted-400: #9ba093;
 
-            /* 字族（与主站同源） */
-            --font-display: Georgia, "Times New Roman", "Songti SC", serif;
-            --font-body: "Avenir Next", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
-            --font-mono: "SF Mono", Menlo, Consolas, monospace;
+  --pal-paper-000: #ffffff;
+  --pal-paper-050: #f7f7f5;
+  --pal-paper-100: #f1f1ef;
+  --pal-paper-900: #12140f;
+  --pal-paper-800: #1a1d16;
+  --pal-paper-750: #23261e;
 
-            /* 字号：4 档 */
-            --fs-display: clamp(36px, 5.4vw, 56px);
-            --fs-title: clamp(22px, 2.4vw, 26px);
-            --fs-body: 16px;
-            --fs-meta: 13px;
+  /* emerald 品牌色 */
+  --pal-emerald-700: #035f43;
+  --pal-emerald-600: #047a55;
+  --pal-emerald-400: #3fbb85;
+  --pal-emerald-300: #5ed19c;
 
-            /* 字重：3 档 */
-            --fw-regular: 400;
-            --fw-medium: 500;
-            --fw-bold: 700;
+  /* 状态色 */
+  --pal-amber-600: #bd6b1b;
+  --pal-amber-400: #e0954a;
+  --pal-red-700: #a33b2d;
+  --pal-red-300: #e58b7d;
 
-            /* 行高：4 档 */
-            --lh-tight: 1.05;
-            --lh-snug: 1.25;
-            --lh-normal: 1.5;
-            --lh-relaxed: 1.7;
+  --pal-clay-600: #8f4d35;
+  --pal-clay-400: #c98a6b;
+  --pal-red-700-alt: #a33b2d;
 
-            /* 字距：3 档 */
-            --ls-normal: 0;
-            --ls-wide: 0.04em;
-            --ls-xwide: 0.08em;
+  /* 语义色（EzInfo / EzLedger 原有，尚未统一，见 FRONTEND-STACK.md §10） */
+  --pal-blue-700: #275d8f;
+  --pal-gold-600: #b98022;
 
-            /* 圆角：4 档 */
-            --r-sm: 6px;
-            --r-md: 10px;
-            --r-lg: 16px;
-            --r-pill: 999px;
+  /* 透明叠加 */
+  --pal-ink-a04: rgba(21, 23, 19, 0.04);
+  --pal-ink-a14: rgba(21, 23, 19, 0.14);
+  --pal-ink-a28: rgba(21, 23, 19, 0.28);
+  --pal-ink-a42: rgba(21, 23, 19, 0.42);
+  --pal-ink-a48: rgba(21, 23, 19, 0.48);
+  --pal-ink-100-a05: rgba(232, 234, 226, 0.05);
+  --pal-ink-100-a07: rgba(232, 234, 226, 0.07);
+  --pal-ink-100-a14: rgba(232, 234, 226, 0.14);
+  --pal-ink-100-a16: rgba(232, 234, 226, 0.16);
+  --pal-ink-100-a28: rgba(232, 234, 226, 0.28);
+  --pal-paper-a86: rgba(255, 255, 255, 0.86);
+  --pal-paper-900-a86: rgba(18, 20, 15, 0.86);
+  --pal-paper-900-a88: rgba(24, 26, 20, 0.88);
+  --pal-black-a30: rgba(0, 0, 0, 0.3);
+  --pal-black-a34: rgba(0, 0, 0, 0.34);
+  --pal-black-a42: rgba(0, 0, 0, 0.42);
+  --pal-black-a50: rgba(0, 0, 0, 0.5);
+  --pal-black-a55: rgba(0, 0, 0, 0.55);
+  --pal-black-a62: rgba(0, 0, 0, 0.62);
+}
 
-            /* 间距：8 档 */
-            --sp-3xs: 2px;
-            --sp-2xs: 4px;
-            --sp-xs: 8px;
-            --sp-sm: 12px;
-            --sp-md: 16px;
-            --sp-lg: 24px;
-            --sp-xl: 32px;
-            --sp-2xl: 48px;
-            --sp-3xl: 72px;
+/* =============================================================================
+ * §2 语义层 · 亮色（默认）
+ * 页面样式只准引用这一层的名字。
+ * ========================================================================== */
+:root {
+  color-scheme: light;
 
-            /* 容器 */
-            --shell-max: 984px;
-        }
+  /* 文字（4 角色梯度，见 DESIGN-COLOR.md §2） */
+  --ink: var(--pal-ink-900);
+  --muted: var(--pal-muted-600);
+  --on-image: var(--pal-paper-000);
+  --emerald: var(--pal-emerald-600);
+  --emerald-strong: var(--pal-emerald-700);
+  --amber: var(--pal-amber-600);
+  --amber-deep: #a95f14;   /* ezskills：比标准 amber 深一档 */
 
-        [data-theme="dark"] {
-            color-scheme: dark;
-            --paper: #12140f;
-            --surface: #12140f;
-            --surface-blur: rgba(18, 20, 15, 0.88);
-            --ink: #e8eae2;
-            --muted: #9ba093;
-            --line: rgba(232, 234, 226, 0.16);
-            --emerald: #3fbb85;
-            --emerald-strong: #5ed19c;
-            --amber: #e0954a;
-            --mist: #23261e;
-            --hover: rgba(232, 234, 226, 0.07);
-            --emerald-wash: rgba(63, 187, 133, 0.14);
-            --overlay: rgba(0, 0, 0, 0.62);
-            --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
-            --shadow-deep: 0 4px 8px rgba(0, 0, 0, 0.34), 0 24px 56px rgba(0, 0, 0, 0.5);
-        }
+  /* 表面 */
+  --paper: var(--pal-paper-000);
+  --paper-soft: var(--pal-paper-000);
+  --surface: var(--pal-paper-000);
+  --surface-solid: var(--pal-paper-050);
+  --surface-blur: var(--pal-paper-a86);
+  --mist: var(--pal-paper-100);
+  --overlay: var(--pal-ink-a42);
 
-        @media (prefers-color-scheme: dark) {
-            :root:not([data-theme="light"]) {
-                color-scheme: dark;
-                --paper: #12140f;
-                --surface: #12140f;
-                --surface-blur: rgba(18, 20, 15, 0.88);
-                --ink: #e8eae2;
-                --muted: #9ba093;
-                --line: rgba(232, 234, 226, 0.16);
-                --emerald: #3fbb85;
-                --emerald-strong: #5ed19c;
-                --amber: #e0954a;
-                --mist: #23261e;
-                --hover: rgba(232, 234, 226, 0.07);
-                --emerald-wash: rgba(63, 187, 133, 0.14);
-                --overlay: rgba(0, 0, 0, 0.62);
-                --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
-                --shadow-deep: 0 4px 8px rgba(0, 0, 0, 0.34), 0 24px 56px rgba(0, 0, 0, 0.5);
-            }
-        }
+  /* 线 / 叠加 */
+  --line: var(--pal-ink-a14);
+  --line-strong: var(--pal-ink-a28);
+  --line-soft: rgba(21, 23, 19, 0.14);   /* ezskills 暗色也要淡描边 */
+  --hover: var(--pal-ink-a04);
+  --emerald-wash: rgba(4, 122, 85, 0.08);
+  /* ezskills 站点级差异 */
+  --emerald-wash-soft: rgba(4, 122, 85, 0.09);
+  --hover-soft: rgba(21, 23, 19, 0.045);
+  /* eznav header 背景：0.88 白，比标准 0.86 略实 */
+  --header-bg-nav: rgba(255, 255, 255, 0.88);   /* eznav */
+  --header-bg-git: rgba(255, 255, 255, 0.86);   /* ezgit（亮色走标准值）*/
+
+  /* 状态 */
+  --danger: var(--pal-red-700);
+  --danger-wash: rgba(163, 59, 45, 0.08);
+  --warning: var(--pal-gold-600);
+  --info: var(--pal-blue-700);
+
+  /* 阴影（亮色：暖棕投影） */
+  --shadow-soft: 0 1px 2px rgba(43, 36, 24, 0.04), 0 4px 16px rgba(43, 36, 24, 0.06);
+  --shadow-lift: 0 2px 4px rgba(43, 36, 24, 0.05), 0 12px 32px rgba(43, 36, 24, 0.1);
+  --shadow-deep: 0 4px 8px rgba(43, 36, 24, 0.05), 0 24px 56px rgba(43, 36, 24, 0.13);
+}
+
+/* =============================================================================
+ * §3-a 主题 · 显式暗色（用户手动选择，优先级最高）
+ * ========================================================================== */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink: var(--pal-ink-100);
+  --muted: var(--pal-muted-400);
+  /* --on-image 不在暗色覆盖：图片遮罩永远深色，反白文字保持白 */
+  --emerald: var(--pal-emerald-400);
+  --emerald-strong: var(--pal-emerald-300);
+  --amber: var(--pal-amber-400);
+  --amber-deep: var(--pal-amber-400);
+
+  --paper: var(--pal-paper-900);
+  --paper-soft: var(--pal-paper-900);
+  --surface: var(--pal-paper-900);
+  --surface-solid: var(--pal-paper-800);
+  --surface-blur: var(--pal-paper-900-a88);
+  --mist: var(--pal-paper-750);
+  --overlay: var(--pal-black-a55);
+
+  --line: var(--pal-ink-100-a16);
+  --line-strong: var(--pal-ink-100-a28);
+  --line-soft: rgba(232, 234, 226, 0.14);
+  --hover: var(--pal-ink-100-a07);
+  --emerald-wash: rgba(63, 187, 133, 0.14);
+  --emerald-wash-soft: rgba(63, 187, 133, 0.14);
+  --hover-soft: rgba(232, 234, 226, 0.06);
+  --header-bg-nav: rgba(18, 20, 15, 0.88);
+  --header-bg-git: rgba(18, 20, 15, 0.88);
+
+  --danger: var(--pal-red-300);
+  --danger-wash: rgba(229, 139, 125, 0.12);
+
+  --shadow-soft: 0 1px 2px var(--pal-black-a30), 0 4px 16px var(--pal-black-a34);
+  --shadow-lift: 0 2px 4px var(--pal-black-a34), 0 12px 32px var(--pal-black-a42);
+  --shadow-deep: 0 4px 8px var(--pal-black-a34), 0 24px 56px var(--pal-black-a50);
+}
+
+/* =============================================================================
+ * §3-b 主题 · 系统偏好兜底（无手动选择时跟随系统）
+ * 选择器同时覆盖两种写法，静态站与 Next 站都适用。
+ * ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]),
+  html:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --ink: var(--pal-ink-100);
+    --muted: var(--pal-muted-400);
+    --emerald: var(--pal-emerald-400);
+    --emerald-strong: var(--pal-emerald-300);
+    --amber: var(--pal-amber-400);
+    --amber-deep: var(--pal-amber-400);
+
+    --paper: var(--pal-paper-900);
+    --paper-soft: var(--pal-paper-900);
+    --surface: var(--pal-paper-900);
+    --surface-solid: var(--pal-paper-800);
+    --surface-blur: var(--pal-paper-900-a88);
+    --mist: var(--pal-paper-750);
+    --overlay: var(--pal-black-a55);
+
+    --line: var(--pal-ink-100-a16);
+    --line-strong: var(--pal-ink-100-a28);
+    --line-soft: rgba(232, 234, 226, 0.14);
+    --hover: var(--pal-ink-100-a07);
+    --emerald-wash: rgba(63, 187, 133, 0.14);
+    --emerald-wash-soft: rgba(63, 187, 133, 0.14);
+    --hover-soft: rgba(232, 234, 226, 0.06);
+    --header-bg-nav: rgba(18, 20, 15, 0.88);
+    --header-bg-git: rgba(18, 20, 15, 0.88);
+
+    --danger: var(--pal-red-300);
+    --danger-wash: rgba(229, 139, 125, 0.12);
+
+    --shadow-soft: 0 1px 2px var(--pal-black-a30), 0 4px 16px var(--pal-black-a34);
+    --shadow-lift: 0 2px 4px var(--pal-black-a34), 0 12px 32px var(--pal-black-a42);
+    --shadow-deep: 0 4px 8px var(--pal-black-a34), 0 24px 56px var(--pal-black-a50);
+  }
+}
+
+/* =============================================================================
+ * §4 尺度（不随主题变化）
+ * ========================================================================== */
+:root {
+  /* 字号 4 档（DESIGN-TYPOGRAPHY.md） */
+  --fs-display: clamp(36px, 5.4vw, 56px);
+  --fs-title: clamp(22px, 2.4vw, 26px);
+  --fs-body: 16px;
+  --fs-meta: 13px;
+
+  /* 字重 3 档 */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-bold: 700;
+
+  /* 字族 3 套 */
+  /* 字族保持与主站完全一致（含具体写法），避免字体回退链变化带来的全局渲染偏移。
+     只有显式声明过 Microsoft YaHei / Noto Serif SC 的站（ezskills）才需要差异化。 */
+  --font-display: Georgia, "Times New Roman", "Songti SC", serif;
+  --font-body: "Avenir Next", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --font-mono: "SF Mono", Menlo, Consolas, monospace;
+
+  /* 行高 4 档 */
+  --lh-tight: 1.05;
+  --lh-snug: 1.25;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.7;
+
+  /* 字距 3 档 */
+  --ls-normal: 0;
+  --ls-wide: 0.04em;
+  --ls-xwide: 0.08em;
+
+  /* 圆角 4 档（DESIGN-LAYOUT.md §3） */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* 间距 8 档（DESIGN-LAYOUT.md §4） */
+  --sp-3xs: 2px;
+  --sp-2xs: 4px;
+  --sp-xs: 8px;
+  --sp-sm: 12px;
+  --sp-md: 16px;
+  --sp-lg: 24px;
+  --sp-xl: 32px;
+  --sp-2xl: 48px;
+  --sp-3xl: 72px;
+
+  /* 纵向节奏 + 容器（DESIGN-LAYOUT.md §5） */
+  --sp-section-sm: 56px;
+  --sp-section: 72px;
+  --sp-section-lg: 96px;
+  --sp-gap: 48px;
+  --max: 920px;
+  --shell-max: 984px;
+}
+
+/* =============================================================================
+ * §5 兼容别名 · 旧名 → 语义层
+ * ⚠️ 只准收缩，不准扩张。新代码一律用 §2 / §4 的规范名。
+ *    每迁完一个站点，就把该站的旧名从这里划掉。
+ * ========================================================================== */
+:root {
+  /* 尺寸别名 */
+  --radius: var(--r-md);      /* ezskills */
+  --radius-sm: 8px;           /* ezskills：历史值 8px，待其迁移到 --r-sm 后删掉 */
+  --pill: var(--r-pill);      /* ezskills */
+  --shell: var(--shell-max);  /* eznav */
+  --container: var(--shell-max); /* ezskills */
+
+  /* 颜色别名（已到达收敛目标的站，见 FRONTEND-STACK.md §10） */
+  --footer-bg: var(--paper);          /* site */
+  --footer-text: var(--ink);          /* site */
+  --footer-muted: var(--muted);       /* site */
+  --footer-line: var(--line);         /* site */
+  --wash: var(--hover);               /* ezskills */
+  --emerald-soft: var(--emerald-wash); /* ezskills */
+  --amber-soft: rgba(169, 95, 20, 0.1); /* ezskills */
+  /* EzSkills 站点级差异（待其对齐主站后删除这三条）：
+     1. amber 更深一档（#a95f14），用于学习状态徽章
+     2. primary 按钮前景走暖白 #fffdf8，不是纯白
+     3. 阴影比主站更"浮"（扩散更远） */
+  --btn-primary-fg-warm: #fffdf8;
+  --clay: var(--pal-clay-600);        /* ezskills：待统一，暂保留原值 */
+  --clay-soft: rgba(143, 77, 53, 0.1); /* ezskills */
+  --btn-primary-bg: var(--ink);       /* ezskills */
+  --btn-primary-fg: var(--btn-primary-fg-warm); /* ezskills：暖白，非纯白 */
+  --btn-primary-hover: var(--pal-ink-700); /* ezskills */
+  --on-ink: var(--pal-ink-a04);       /* site */
+  --shadow: 0 22px 70px rgba(43, 36, 24, 0.14); /* site：单档大阴影 */
+  --modal-backdrop: var(--pal-ink-a48); /* ezgit：旧值 0.48，比标准 overlay 略重 */
+  /* ezskills 阴影：扩散更远的一档，待其对齐主站 --shadow-* 后删除 */
+  --shadow-soft-wide: 0 1px 2px rgba(43, 36, 24, 0.05), 0 8px 24px rgba(43, 36, 24, 0.06);
+  --shadow-lift-wide: 0 2px 6px rgba(43, 36, 24, 0.06), 0 18px 40px rgba(43, 36, 24, 0.12);
+  /* ezskills header 背景：0.86 白 */
+  --header-bg: rgba(255, 255, 255, 0.86);
+  /* ezskills 暗色下面把描边保持更淡（0.14） */
+  /* EzNav 行高：正文 1.65 / 卡片 1.3 / 标题 1.08，比主站 1.5/1.25/1.05 松一格，属站点级设计 */
+  --lh-tight-nav: 1.08;
+  --lh-snug-nav: 1.3;
+  --lh-normal-nav: 1.65;
+}
+
+/* 暗色下的别名覆写（只写与亮色不同的部分） */
+[data-theme="dark"] {
+  --amber-soft: rgba(224, 149, 74, 0.14);
+  --clay: var(--pal-clay-400);
+  --clay-soft: rgba(201, 138, 107, 0.14);
+  --btn-primary-hover: #f7f9f1;
+  --header-bg: rgba(18, 20, 15, 0.86);
+  --shadow-soft-wide: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.34);
+  --shadow-lift-wide: 0 2px 4px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
+  /* site footer：暗色下用更高不透明度的白，保持 footer 区视觉差异 */
+  --footer-text: rgba(240, 242, 234, 0.78);
+  --footer-muted: rgba(240, 242, 234, 0.62);
+  --footer-line: rgba(240, 242, 234, 0.16);
+  --shadow: 0 22px 70px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]),
+  html:not([data-theme="light"]) {
+    --amber-soft: rgba(224, 149, 74, 0.14);
+    --clay: var(--pal-clay-400);
+    --clay-soft: rgba(201, 138, 107, 0.14);
+    --btn-primary-hover: #f7f9f1;
+    --header-bg: rgba(18, 20, 15, 0.86);
+    --shadow-soft-wide: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.34);
+    --shadow-lift-wide: 0 2px 4px rgba(0, 0, 0, 0.34), 0 12px 32px rgba(0, 0, 0, 0.42);
+    /* site footer：暗色下用更高不透明度的白，保持 footer 区视觉差异 */
+    --footer-text: rgba(240, 242, 234, 0.78);
+    --footer-muted: rgba(240, 242, 234, 0.62);
+    --footer-line: rgba(240, 242, 234, 0.16);
+    --shadow: 0 22px 70px rgba(0, 0, 0, 0.5);
+    --modal-backdrop: rgba(0, 0, 0, 0.62);
+    --btn-primary-fg: var(--pal-paper-900);
+  }
+}
+/* <<< GENERATED FROM tokens.css <<< */
 
         *,
         *::before,
@@ -306,7 +564,7 @@
             top: 0;
             z-index: 50;
             border-bottom: 1px solid var(--line);
-            background: var(--surface-blur);
+            background: var(--header-bg-git);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
         }
@@ -1306,7 +1564,7 @@
             align-items: center;
             justify-content: center;
             padding: var(--sp-md);
-            background: var(--overlay);
+            background: var(--modal-backdrop);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
         }
